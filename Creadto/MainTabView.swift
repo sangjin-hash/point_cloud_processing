@@ -12,41 +12,42 @@ struct MainTabView: View {
     @State private var selectedIndex = 0
     
     var body: some View {
-        TabView(selection: $selectedIndex) {
-            GalleryView()
-                .onTapGesture {
-                    self.selectedIndex = 0
-                }
-                .tabItem{
-                    VStack(spacing: 4){
-                        Image(systemName: "photo")
-                        Text("Gallery")
+            TabView(selection: $selectedIndex) {
+                GalleryView()
+                    .onTapGesture {
+                        self.selectedIndex = 0
                     }
-                }.tag(0)
-            
-            CameraController()
-                .onTapGesture {
-                    self.selectedIndex = 1
-                }
-                .tabItem{
-                    VStack(spacing: 4){
-                        Image(systemName: "camera")
-                        Text("Camera")
+                    .tabItem{
+                        VStack(spacing: 4){
+                            Image(systemName: "photo")
+                            Text("Gallery")
+                        }
+                    }.tag(0)
+                
+                CameraController()
+                    .onTapGesture {
+                        self.selectedIndex = 1
                     }
-                }.tag(1)
-            
-            ExportView()
-                .onTapGesture {
-                    self.selectedIndex = 2
-                }
-                .tabItem{
-                    VStack(spacing: 4){
-                        Image(systemName: "square.and.arrow.up")
-                        Text("Export")
+                    .tabItem{
+                        VStack(spacing: 4){
+                            Image(systemName: "camera")
+                            Text("Camera")
+                        }
+                    }.tag(1)
+                
+                ExportView()
+                    .onTapGesture {
+                        self.selectedIndex = 2
                     }
-                }.tag(2)
+                    .tabItem{
+                        VStack(spacing: 4){
+                            Image(systemName: "square.and.arrow.up")
+                            Text("Export")
+                        }
+                    }.tag(2)
+            }
         }
-    }
+    
 }
 
 struct MainTabView_Previews: PreviewProvider {
@@ -59,7 +60,6 @@ struct CameraController : UIViewControllerRepresentable {
     func makeUIViewController(context: UIViewControllerRepresentableContext<CameraController>) -> UIViewControllerType {
         let storyBoard = UIStoryboard(name: "Main", bundle: Bundle.main)
         let controller = storyBoard.instantiateViewController(identifier: "Camera")
-        controller.hidesBottomBarWhenPushed
         return controller
     }
     

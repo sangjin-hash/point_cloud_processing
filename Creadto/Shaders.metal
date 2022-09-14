@@ -1,167 +1,125 @@
-//
-//  Shaders.metal
-//  Creadto
-//
-//  Created by 이상진 on 2022/09/13.
-//
-
 #include <metal_stdlib>
 #include <simd/simd.h>
-
-// Include header shared between this Metal shader code and C code executing Metal API commands
 #import "ShaderTypes.h"
 
 using namespace metal;
 
-typedef struct {
-    float2 position [[attribute(kVertexAttributePosition)]];
-    float2 texCoord [[attribute(kVertexAttributeTexcoord)]];
-} ImageVertex;
-
-
-typedef struct {
+// Camera's RGB vertex shader outputs
+struct RGBVertexOut {
     float4 position [[position]];
     float2 texCoord;
-} ImageColorInOut;
+};
 
+// Particle vertex shader outputs and fragment shader inputs
+struct ParticleVertexOut {
+    float4 position [[position]];
+    float pointSize [[point_size]];
+    float4 color;
+};
 
-// Captured image vertex function
-vertex ImageColorInOut capturedImageVertexTransform(ImageVertex in [[stage_in]]) {
-    ImageColorInOut out;
+constexpr sampler colorSampler(mip_filter::linear, mag_filter::linear, min_filter::linear);
+constant auto yCbCrToRGB = float4x4(float4(+1.0000f, +1.0000f, +1.0000f, +0.0000f),
+                                    float4(+0.0000f, -0.3441f, +1.7720f, +0.0000f),
+                                    float4(+1.4020f, -0.7141f, +0.0000f, +0.0000f),
+                                    float4(-0.7010f, +0.5291f, -0.8860f, +1.0000f));
+constant float2 viewVertices[] = { float2(-1, 1), float2(-1, -1), float2(1, 1), float2(1, -1) };
+constant float2 viewTexCoords[] = { float2(0, 0), float2(0, 1), float2(1, 0), float2(1, 1) };
+
+/// Retrieves the world position of a specified camera point with depth
+static simd_float4 worldPoint(simd_float2 cameraPoint, float depth, matrix_float3x3 cameraIntrinsicsInversed, matrix_float4x4 localToWorld) {
+    const auto localPoint = cameraIntrinsicsInversed * simd_float3(cameraPoint, 1) * depth;
+    const auto worldPoint = localToWorld * simd_float4(localPoint, 1);
     
-    // Pass through the image vertex's position
-    out.position = float4(in.position, 0.0, 1.0);
-    
-    // Pass through the texture coordinate
-    out.texCoord = in.texCoord;
-    
-    return out;
+    return worldPoint / worldPoint.w;
 }
 
-// Captured image fragment function
-fragment float4 capturedImageFragmentShader(ImageColorInOut in [[stage_in]],
-                                            texture2d<float, access::sample> capturedImageTextureY [[ texture(kTextureIndexY) ]],
-                                            texture2d<float, access::sample> capturedImageTextureCbCr [[ texture(kTextureIndexCbCr) ]]) {
+///  Vertex shader that takes in a 2D grid-point and infers its 3D position in world-space, along with RGB and confidence
+vertex void unprojectVertex(uint vertexID [[vertex_id]],
+                            constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
+                            device ParticleUniforms *particleUniforms [[buffer(kParticleUniforms)]],
+                            constant float2 *gridPoints [[buffer(kGridPoints)]],
+                            texture2d<float, access::sample> capturedImageTextureY [[texture(kTextureY)]],
+                            texture2d<float, access::sample> capturedImageTextureCbCr [[texture(kTextureCbCr)]],
+                            texture2d<float, access::sample> depthTexture [[texture(kTextureDepth)]],
+                            texture2d<unsigned int, access::sample> confidenceTexture [[texture(kTextureConfidence)]]) {
     
-    constexpr sampler colorSampler(mip_filter::linear,
-                                   mag_filter::linear,
-                                   min_filter::linear);
-    
-    const float4x4 ycbcrToRGBTransform = float4x4(
-        float4(+1.0000f, +1.0000f, +1.0000f, +0.0000f),
-        float4(+0.0000f, -0.3441f, +1.7720f, +0.0000f),
-        float4(+1.4020f, -0.7141f, +0.0000f, +0.0000f),
-        float4(-0.7010f, +0.5291f, -0.8860f, +1.0000f)
-    );
+    const auto gridPoint = gridPoints[vertexID];
+    const auto currentPointIndex = (uniforms.pointCloudCurrentIndex + vertexID) % uniforms.maxPoints;
+    const auto texCoord = gridPoint / uniforms.cameraResolution;
+    // Sample the depth map to get the depth value
+    const auto depth = depthTexture.sample(colorSampler, texCoord).r;
+    // With a 2D point plus depth, we can now get its 3D position
+    const auto position = worldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.localToWorld);
     
     // Sample Y and CbCr textures to get the YCbCr color at the given texture coordinate
-    float4 ycbcr = float4(capturedImageTextureY.sample(colorSampler, in.texCoord).r,
-                          capturedImageTextureCbCr.sample(colorSampler, in.texCoord).rg, 1.0);
+    const auto ycbcr = float4(capturedImageTextureY.sample(colorSampler, texCoord).r, capturedImageTextureCbCr.sample(colorSampler, texCoord.xy).rg, 1);
+    const auto sampledColor = (yCbCrToRGB * ycbcr).rgb;
+    // Sample the confidence map to get the confidence value
+    const auto confidence = confidenceTexture.sample(colorSampler, texCoord).r;
     
-    // Return converted RGB color
-    return ycbcrToRGBTransform * ycbcr;
+    // Write the data to the buffer
+    particleUniforms[currentPointIndex].position = position.xyz;
+    particleUniforms[currentPointIndex].color = sampledColor;
+    particleUniforms[currentPointIndex].confidence = confidence;
 }
 
-
-typedef struct {
-    float3 position [[attribute(kVertexAttributePosition)]];
-    float2 texCoord [[attribute(kVertexAttributeTexcoord)]];
-    half3 normal    [[attribute(kVertexAttributeNormal)]];
-} Vertex;
-
-
-typedef struct {
-    float4 position [[position]];
-    float4 color;
-    half3  eyePosition;
-    half3  normal;
-} ColorInOut;
-
-
-// Anchor geometry vertex function
-vertex ColorInOut anchorGeometryVertexTransform(Vertex in [[stage_in]],
-                                                constant SharedUniforms &sharedUniforms [[ buffer(kBufferIndexSharedUniforms) ]],
-                                                constant InstanceUniforms *instanceUniforms [[ buffer(kBufferIndexInstanceUniforms) ]],
-                                                ushort vid [[vertex_id]],
-                                                ushort iid [[instance_id]]) {
-    ColorInOut out;
+vertex RGBVertexOut rgbVertex(uint vertexID [[vertex_id]],
+                              constant RGBUniforms &uniforms [[buffer(0)]]) {
+    const float3 texCoord = float3(viewTexCoords[vertexID], 1) * uniforms.viewToCamera;
     
-    // Make position a float4 to perform 4x4 matrix math on it
-    float4 position = float4(in.position, 1.0);
-    
-    float4x4 modelMatrix = instanceUniforms[iid].modelMatrix;
-    float4x4 modelViewMatrix = sharedUniforms.viewMatrix * modelMatrix;
-    
-    // Calculate the position of our vertex in clip space and output for clipping and rasterization
-    out.position = sharedUniforms.projectionMatrix * modelViewMatrix * position;
-    
-    // Color each face a different color
-    ushort colorID = vid / 4 % 6;
-    out.color = colorID == 0 ? float4(0.0, 1.0, 0.0, 1.0) // Right face
-              : colorID == 1 ? float4(1.0, 0.0, 0.0, 1.0) // Left face
-              : colorID == 2 ? float4(0.0, 0.0, 1.0, 1.0) // Top face
-              : colorID == 3 ? float4(1.0, 0.5, 0.0, 1.0) // Bottom face
-              : colorID == 4 ? float4(1.0, 1.0, 0.0, 1.0) // Back face
-              : float4(1.0, 1.0, 1.0, 1.0); // Front face
-    
-    // Calculate the position of our vertex in eye space
-    out.eyePosition = half3((modelViewMatrix * position).xyz);
-    
-    // Rotate our normals to world coordinates
-    float4 normal = modelMatrix * float4(in.normal.x, in.normal.y, in.normal.z, 0.0f);
-    out.normal = normalize(half3(normal.xyz));
+    RGBVertexOut out;
+    out.position = float4(viewVertices[vertexID], 0, 1);
+    out.texCoord = texCoord.xy;
     
     return out;
 }
 
-// Anchor geometry fragment function
-fragment float4 anchorGeometryFragmentLighting(ColorInOut in [[stage_in]],
-                                               constant SharedUniforms &uniforms [[ buffer(kBufferIndexSharedUniforms) ]]) {
+fragment float4 rgbFragment(RGBVertexOut in [[stage_in]],
+                            constant RGBUniforms &uniforms [[buffer(0)]],
+                            texture2d<float, access::sample> capturedImageTextureY [[texture(kTextureY)]],
+                            texture2d<float, access::sample> capturedImageTextureCbCr [[texture(kTextureCbCr)]]) {
     
-    float3 normal = float3(in.normal);
+    const float2 offset = (in.texCoord - 0.5) * float2(1, 1 / uniforms.viewRatio) * 2;
+    const float visibility = saturate(uniforms.radius * uniforms.radius - length_squared(offset));
+    const float4 ycbcr = float4(capturedImageTextureY.sample(colorSampler, in.texCoord.xy).r, capturedImageTextureCbCr.sample(colorSampler, in.texCoord.xy).rg, 1);
     
-    // Calculate the contribution of the directional light as a sum of diffuse and specular terms
-    float3 directionalContribution = float3(0);
-    {
-        // Light falls off based on how closely aligned the surface normal is to the light direction
-        float nDotL = saturate(dot(normal, -uniforms.directionalLightDirection));
-        
-        // The diffuse term is then the product of the light color, the surface material
-        // reflectance, and the falloff
-        float3 diffuseTerm = uniforms.directionalLightColor * nDotL;
-        
-        // Apply specular lighting...
-        
-        // 1) Calculate the halfway vector between the light direction and the direction they eye is looking
-        float3 halfwayVector = normalize(-uniforms.directionalLightDirection - float3(in.eyePosition));
-        
-        // 2) Calculate the reflection angle between our reflection vector and the eye's direction
-        float reflectionAngle = saturate(dot(normal, halfwayVector));
-        
-        // 3) Calculate the specular intensity by multiplying our reflection angle with our object's
-        //    shininess
-        float specularIntensity = saturate(powr(reflectionAngle, uniforms.materialShininess));
-        
-        // 4) Obtain the specular term by multiplying the intensity by our light's color
-        float3 specularTerm = uniforms.directionalLightColor * specularIntensity;
-        
-        // Calculate total contribution from this light is the sum of the diffuse and specular values
-        directionalContribution = diffuseTerm + specularTerm;
+    // convert and save the color back to the buffer
+    const float3 sampledColor = (yCbCrToRGB * ycbcr).rgb;
+    return float4(sampledColor, 1) * visibility;
+}
+
+vertex ParticleVertexOut particleVertex(uint vertexID [[vertex_id]],
+                                        constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
+                                        constant ParticleUniforms *particleUniforms [[buffer(kParticleUniforms)]]) {
+    
+    // get point data
+    const auto particleData = particleUniforms[vertexID];
+    const auto position = particleData.position;
+    const auto confidence = particleData.confidence;
+    const auto sampledColor = particleData.color;
+    const auto visibility = confidence >= uniforms.confidenceThreshold;
+    
+    // animate and project the point
+    float4 projectedPosition = uniforms.viewProjectionMatrix * float4(position, 1.0);
+    const float pointSize = max(uniforms.particleSize / max(1.0, projectedPosition.z), 2.0);
+    projectedPosition /= projectedPosition.w;
+    
+    // prepare for output
+    ParticleVertexOut out;
+    out.position = projectedPosition;
+    out.pointSize = pointSize;
+    out.color = float4(sampledColor, visibility);
+    
+    return out;
+}
+
+fragment float4 particleFragment(ParticleVertexOut in [[stage_in]],
+                                 const float2 coords [[point_coord]]) {
+    // we draw within a circle
+    const float distSquared = length_squared(coords - float2(0.5));
+    if (in.color.a == 0 || distSquared > 0.25) {
+        discard_fragment();
     }
     
-    // The ambient contribution, which is an approximation for global, indirect lighting, is
-    // the product of the ambient light intensity multiplied by the material's reflectance
-    float3 ambientContribution = uniforms.ambientLightColor;
-    
-    // Now that we have the contributions our light sources in the scene, we sum them together
-    // to get the fragment's lighting value
-    float3 lightContributions = ambientContribution + directionalContribution;
-    
-    // We compute the final color by multiplying the sample from our color maps by the fragment's
-    // lighting value
-    float3 color = in.color.rgb * lightContributions;
-    
-    // We use the color we just computed and the alpha channel of our
-    // colorMap for this fragment's alpha value
-    return float4(color, in.color.w);
+    return in.color;
 }

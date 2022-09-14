@@ -1,62 +1,43 @@
-//
-//  ShaderTypes.h
-//  Creadto
-//
-//  Created by 이상진 on 2022/09/13.
-//
-
-//
-//  Header containing types and enum constants shared between Metal shaders and C/ObjC source
-//
 #ifndef ShaderTypes_h
 #define ShaderTypes_h
 
 #include <simd/simd.h>
 
+enum TextureIndices {
+    kTextureY = 0,
+    kTextureCbCr = 1,
+    kTextureDepth = 2,
+    kTextureConfidence = 3
+};
 
-// Buffer index values shared between shader and C code to ensure Metal shader buffer inputs match
-//   Metal API buffer set calls
-typedef enum BufferIndices {
-    kBufferIndexMeshPositions    = 0,
-    kBufferIndexMeshGenerics     = 1,
-    kBufferIndexInstanceUniforms = 2,
-    kBufferIndexSharedUniforms   = 3
-} BufferIndices;
+enum BufferIndices {
+    kPointCloudUniforms = 0,
+    kParticleUniforms = 1,
+    kGridPoints = 2,
+};
 
-// Attribute index values shared between shader and C code to ensure Metal shader vertex
-//   attribute indices match the Metal API vertex descriptor attribute indices
-typedef enum VertexAttributes {
-    kVertexAttributePosition  = 0,
-    kVertexAttributeTexcoord  = 1,
-    kVertexAttributeNormal    = 2
-} VertexAttributes;
+struct RGBUniforms {
+    matrix_float3x3 viewToCamera;
+    float viewRatio;
+    float radius;
+};
 
-// Texture index values shared between shader and C code to ensure Metal shader texture indices
-//   match indices of Metal API texture set calls
-typedef enum TextureIndices {
-    kTextureIndexColor    = 0,
-    kTextureIndexY        = 1,
-    kTextureIndexCbCr     = 2
-} TextureIndices;
-
-// Structure shared between shader and C code to ensure the layout of shared uniform data accessed in
-//    Metal shaders matches the layout of uniform data set in C code
-typedef struct {
-    // Camera Uniforms
-    matrix_float4x4 projectionMatrix;
-    matrix_float4x4 viewMatrix;
+struct PointCloudUniforms {
+    matrix_float4x4 viewProjectionMatrix;
+    matrix_float4x4 localToWorld;
+    matrix_float3x3 cameraIntrinsicsInversed;
+    simd_float2 cameraResolution;
     
-    // Lighting Properties
-    vector_float3 ambientLightColor;
-    vector_float3 directionalLightDirection;
-    vector_float3 directionalLightColor;
-    float materialShininess;
-} SharedUniforms;
+    float particleSize;
+    int maxPoints;
+    int pointCloudCurrentIndex;
+    int confidenceThreshold;
+};
 
-// Structure shared between shader and C code to ensure the layout of instance uniform data accessed in
-//    Metal shaders matches the layout of uniform data set in C code
-typedef struct {
-    matrix_float4x4 modelMatrix;
-} InstanceUniforms;
+struct ParticleUniforms {
+    simd_float3 position;
+    simd_float3 color;
+    float confidence;
+};
 
 #endif /* ShaderTypes_h */
