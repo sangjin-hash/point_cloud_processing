@@ -5,7 +5,7 @@
 import Metal
 import MetalKit
 import ARKit
-
+//import CoreImage.CIFilterBuiltins
 
 // MARK: - Core Metal Scan Renderer
 final class Renderer {
@@ -34,6 +34,10 @@ final class Renderer {
     private lazy var rotateToARCamera = Self.makeRotateToARCameraMatrix(orientation: orientation)
     private let session: ARSession
     
+    // Segmentation에 사용되는 object들
+//    public var ciContext : CIContext!
+//    public var segmentationImage : CIImage?
+
     // Metal objects and textures
     private let device: MTLDevice
     private let library: MTLLibrary
@@ -50,6 +54,10 @@ final class Renderer {
     private var capturedImageTextureCbCr: CVMetalTexture?
     private var depthTexture: CVMetalTexture?
     private var confidenceTexture: CVMetalTexture?
+    
+    // texture for segmentaion image
+    private var segmentationImageTextureY : CVMetalTexture?
+    private var segmentationImageTextureCbCr : CVMetalTexture?
     
     // Multi-buffer rendering pipeline
     private let inFlightSemaphore: DispatchSemaphore
@@ -95,7 +103,7 @@ final class Renderer {
     // interfaces
     var confidenceThreshold = 2
     
-    var rgbOn: Bool = false {
+    var rgbOn: Bool = true {
         didSet {
             // apply the change for the shader
             rgbUniforms.radius = rgbOn ? 2 : 0
@@ -107,7 +115,8 @@ final class Renderer {
         self.device = device
         self.renderDestination = renderDestination
         library = device.makeDefaultLibrary()!
-  
+        //ciContext = CIContext(mtlDevice: device)
+        
         commandQueue = device.makeCommandQueue()!
         // initialize our buffers
         for _ in 0 ..< maxInFlightBuffers {
@@ -142,6 +151,8 @@ final class Renderer {
         
         capturedImageTextureY = makeTexture(fromPixelBuffer: pixelBuffer, pixelFormat: .r8Unorm, planeIndex: 0)
         capturedImageTextureCbCr = makeTexture(fromPixelBuffer: pixelBuffer, pixelFormat: .rg8Unorm, planeIndex: 1)
+        
+        segmentationImageTextureY = makeTexture(fromPixelBuffer: frame.segmentationBuffer!, pixelFormat: .r8Unorm, planeIndex: 0)
     }
     
     private func updateDepthTextures(frame: ARFrame) -> Bool {
@@ -168,11 +179,13 @@ final class Renderer {
         pointCloudUniforms.cameraIntrinsicsInversed = cameraIntrinsicsInversed
     }
     
-    func draw() {
+    func draw(in view: MTKView) {
         guard let currentFrame = session.currentFrame,
             let renderDescriptor = renderDestination.currentRenderPassDescriptor,
             let commandBuffer = commandQueue.makeCommandBuffer(),
-            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderDescriptor) else {
+            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderDescriptor)
+            //let segmentationBuffer = currentFrame.segmentationBuffer
+            else {
                 return
         }
         
@@ -185,6 +198,7 @@ final class Renderer {
         
         // update frame data
         update(frame: currentFrame)
+        //segmentation(original: currentFrame.capturedImage, mask: segmentationBuffer)
         updateCapturedImageTextures(frame: currentFrame)
         
         // handle buffer rotating
@@ -211,23 +225,71 @@ final class Renderer {
             renderEncoder.setFragmentTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
             renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         }
-       
-        // render particles
+        
         if self.showParticles {
-            renderEncoder.setDepthStencilState(depthStencilState)
-            renderEncoder.setRenderPipelineState(particlePipelineState)
-            renderEncoder.setVertexBuffer(pointCloudUniformsBuffers[currentBufferIndex])
-            renderEncoder.setVertexBuffer(particlesBuffer)
-            renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
+            // filter turn on/off
+            var retainingTextures = [segmentationImageTextureY]
+            commandBuffer.addCompletedHandler{ buffer in
+                retainingTextures.removeAll()
+            }
+            rgbUniformsBuffers[currentBufferIndex][0] = rgbUniforms
+            renderEncoder.setDepthStencilState(relaxedStencilState)
+            renderEncoder.setRenderPipelineState(rgbPipelineState)
+            renderEncoder.setVertexBuffer(rgbUniformsBuffers[currentBufferIndex])
+            renderEncoder.setFragmentBuffer(rgbUniformsBuffers[currentBufferIndex])
+            renderEncoder.setFragmentTexture(CVMetalTextureGetTexture(segmentationImageTextureY!), index: Int(kTextureY.rawValue))
+            renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         }
+        
+        renderEncoder.setDepthStencilState(depthStencilState)
+        renderEncoder.setRenderPipelineState(particlePipelineState)
+        renderEncoder.setVertexBuffer(pointCloudUniformsBuffers[currentBufferIndex])
+        renderEncoder.setVertexBuffer(particlesBuffer)
+        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
         
         renderEncoder.endEncoding()
         commandBuffer.present(renderDestination.currentDrawable!)
         commandBuffer.commit()
     }
     
+/**
+ *  Description : Segmentation 결과를 보여주기 위해, 원본 이미지 + 마스크 이미지 + 배경 이미지를 합친 Filter를 blend 하여 하나의 CIImage를 생성
+ *
+ *
+    private func segmentation(original framePixelBuffer : CVPixelBuffer,
+                       mask maskPixelBuffer : CVPixelBuffer) {
+        // Create CIImage objects for the video frame and the segmentation mask.
+        let originalImage = CIImage(cvPixelBuffer: framePixelBuffer).oriented(.right)
+        var maskImage = CIImage(cvPixelBuffer: maskPixelBuffer).oriented(.right)
+        // Scale the mask image to fit the bounds of the video frame.
+        let scaleX = originalImage.extent.width / maskImage.extent.width
+        let scaleY = originalImage.extent.height / maskImage.extent.height
+        maskImage = maskImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
+        
+        // Define RGB vectors for CIColorMatrix filter.
+        let vectors = [
+            "inputRVector": CIVector(x: 0, y: 0, z: 0, w: 0),
+            "inputGVector": CIVector(x: 0, y: 0, z: 0, w: 0),
+            "inputBVector": CIVector(x: 0, y: 0, z: 0, w: 0)
+        ]
+        
+        // Create a colored background image.
+        let backgroundImage = maskImage.applyingFilter("CIColorMatrix",
+                                                       parameters: vectors)
+        
+        // Blend the original, background, and mask images.
+        let blendFilter = CIFilter.blendWithRedMask()
+        blendFilter.inputImage = originalImage
+        blendFilter.backgroundImage = backgroundImage
+        blendFilter.maskImage = maskImage
+        
+        // Set the new, blended image as current.
+        segmentationImage = blendFilter.outputImage?.oriented(.right)
+    }
+ */
+    
     private func shouldAccumulate(frame: ARFrame) -> Bool {
-        if self.isInViewSceneMode || !self.showParticles {
+        if self.isInViewSceneMode {
             return false
         }
         let cameraTransform = frame.camera.transform

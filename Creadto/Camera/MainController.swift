@@ -91,7 +91,7 @@ final class MainController: UIViewController, ARSessionDelegate {
         // Create a world-tracking configuration, and
         // enable the scene depth frame-semantic.
         let configuration = ARWorldTrackingConfiguration()
-        configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth]
+        configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth, .personSegmentationWithDepth]
         // Run the view's session
         session.run(configuration)
         
@@ -124,8 +124,6 @@ final class MainController: UIViewController, ARSessionDelegate {
         case showSceneButton:
             renderer.isInViewSceneMode = !renderer.isInViewSceneMode
             if !renderer.isInViewSceneMode {
-                renderer.showParticles = true
-                self.toggleParticlesButton.setBackgroundImage(.init(systemName: "circle.grid.hex.fill"), for: .normal)
                 self.setShowSceneButtonStyle(isScanning: true)
             } else {
                 self.setShowSceneButtonStyle(isScanning: false)
@@ -133,10 +131,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             
         case toggleParticlesButton:
             renderer.showParticles = !renderer.showParticles
-            if (!renderer.showParticles) {
-                renderer.isInViewSceneMode = true
-                self.setShowSceneButtonStyle(isScanning: false)
-            }
             let iconName = "circle.grid.hex" + (renderer.showParticles ? ".fill" : "")
             self.toggleParticlesButton.setBackgroundImage(.init(systemName: iconName), for: .normal)
             
@@ -190,7 +184,7 @@ extension MainController: MTKViewDelegate {
     
     // Called whenever the view needs to render
     func draw(in view: MTKView) {
-        renderer.draw()
+        renderer.draw(in : view)
     }
 }
 
