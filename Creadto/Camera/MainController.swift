@@ -34,6 +34,7 @@ final class MainController: UIViewController, ARSessionDelegate {
             // Configure the renderer to draw to the view
             renderer = Renderer(session: session, metalDevice: device, renderDestination: view)
             renderer.drawRectResized(size: view.bounds.size)
+            //renderer.drawRectResized(size: CGSize(width: 256, height: 192))
         }
         
         clearButton = createButton(mainView: self, iconName: "trash.circle.fill",
@@ -180,6 +181,7 @@ extension MainController: MTKViewDelegate {
     // Called whenever view changes orientation or layout is changed
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         renderer.drawRectResized(size: size)
+        //renderer.drawRectResized(size: CGSize(width: 256, height: 192))
     }
     
     // Called whenever the view needs to render

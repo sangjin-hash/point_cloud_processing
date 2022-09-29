@@ -5,13 +5,14 @@
 import Metal
 import MetalKit
 import ARKit
-//import CoreImage.CIFilterBuiltins
+import CoreImage
+import Vision
 
 // MARK: - Core Metal Scan Renderer
 final class Renderer {
     var savedCloudURLs = [URL]()
     private var cpuParticlesBuffer = [CPUParticle]()
-    var showParticles = true
+    var showParticles = false
     var isInViewSceneMode = true
     var isSavingFile = false
     var highConfCount = 0
@@ -20,7 +21,7 @@ final class Renderer {
     private let maxPoints = 3_000_000
     // Number of sample points on the grid initial: 3M
     var numGridPoints = 700
-    // Particle's size in pixels
+    // Particle's size in pixels -> 얘 크기를 pixel 크기에 맞춰서 바꾸면 될듯
     private let particleSize: Float = 8
     // We only use portrait orientation in this app
     private let orientation = UIInterfaceOrientation.portrait
@@ -35,8 +36,8 @@ final class Renderer {
     private let session: ARSession
     
     // Segmentation에 사용되는 object들
-//    public var ciContext : CIContext!
-//    public var segmentationImage : CIImage?
+    public var ciContext : CIContext!
+    //public var segmentationImage : CIImage?
 
     // Metal objects and textures
     private let device: MTLDevice
@@ -57,7 +58,10 @@ final class Renderer {
     
     // texture for segmentaion image
     private var segmentationImageTextureY : CVMetalTexture?
-    private var segmentationImageTextureCbCr : CVMetalTexture?
+    
+//    // texture for segmentation & depth image
+//    private var segDepthImageTextureY : CVMetalTexture?
+//    private var segDepthImageTextureCbCr : CVMetalTexture?
     
     // Multi-buffer rendering pipeline
     private let inFlightSemaphore: DispatchSemaphore
@@ -115,7 +119,7 @@ final class Renderer {
         self.device = device
         self.renderDestination = renderDestination
         library = device.makeDefaultLibrary()!
-        //ciContext = CIContext(mtlDevice: device)
+        ciContext = CIContext(mtlDevice: device)
         
         commandQueue = device.makeCommandQueue()!
         // initialize our buffers
@@ -161,9 +165,108 @@ final class Renderer {
                 return false
         }
         
-        depthTexture = makeTexture(fromPixelBuffer: depthMap, pixelFormat: .r32Float, planeIndex: 0)
-        confidenceTexture = makeTexture(fromPixelBuffer: confidenceMap, pixelFormat: .r8Uint, planeIndex: 0)
+        /**
+                시도 1)
+                - CVPixelBuffer(depthMap) -> CIImage -> CGImage -> 1d array
+                - CVPixelBuffer(segmentation) -> CIImage -> CGImage -> 1d array
+                - 위의 두 array mix -> CGImage -> CVPixelBuffer -> texture
+         
+         
+         let depthMapCIImage = CIImage(cvPixelBuffer: depthMap)
+         let depthMapCGImage = ciContext.createCGImage(depthMapCIImage, from: depthMapCIImage.extent)
+         let (depth_pixelValues, depth_info) = convertImageToArray(fromCGImage: depthMapCGImage) // width : 256, height : 192 => 256 * 192 = 49152
+         
+         let segmentationCIImage = CIImage(cvPixelBuffer: frame.segmentationBuffer!)
+         let segmentationCGImage = ciContext.createCGImage(segmentationCIImage, from: segmentationCIImage.extent)
+         let (seg_pixelValues, seg_info) = convertImageToArray(fromCGImage: segmentationCGImage) // width : 256, height : 192 => 256 * 192 = 49152
+         let seg_scale_pixelValues = seg_pixelValues!.map { $0 / UInt8(255) }
+         
+         // Matrix product(element product)
+         let productValues = zip(depth_pixelValues!, seg_scale_pixelValues).map{ $0 * $1 }    // 1차원 배열 곱
+         
+         // 2차원 배열 생성 후 iterator를 이용하여 값 대입하기 => O(n^2)
+         //var product_Matrix = [[UInt8]](repeating: Array(repeating: 0, count : Int(segmentationCIImage.extent.width)), count: Int(segmentationCIImage.extent.height))
+         //var product_iter = productValues.makeIterator()
+         //product_Matrix = product_Matrix.map { $0.compactMap { _ in product_iter.next()}}    // segmentation * depthMap 2차원 배열
+         
+         let productCGImage = convertArrayToImage(fromPixelValues: productValues, fromImageInfo: seg_info)
+         let productCVPixelBuffer = pixelBufferFromCGImage(image: productCGImage!)
+         
+         depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer, pixelFormat: .r32Float, planeIndex: 0)
+         */
         
+        /**
+                시도 2)
+                - CVPixelBuffer(depthMap) --> 1d array
+                - depth 1d array * segmentation 1d array
+                - 위에서 나온 1d array -> CGImage -> CVPixelBuffer -> texture
+         
+         let width = CVPixelBufferGetWidth(depthMap)
+         let height = CVPixelBufferGetHeight(depthMap)
+         CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
+         let floatBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthMap), to: UnsafeMutablePointer<Float32>.self)
+         var depthMap1DArray : Array<Float32> = []
+         let bufferPointer = UnsafeBufferPointer(start: floatBuffer, count: width * height)
+         for (index, value) in bufferPointer.enumerated() {
+             depthMap1DArray.append(value)
+         }
+         CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
+         
+         let segmentationCIImage = CIImage(cvPixelBuffer: frame.segmentationBuffer!)
+         let segmentationCGImage = ciContext.createCGImage(segmentationCIImage, from: segmentationCIImage.extent)
+         let (seg_pixelValues, seg_info) = convertImageToArray(fromCGImage: segmentationCGImage) // width : 256, height : 192 => 256 * 192 = 49152
+         let seg_scale_pixelValues = seg_pixelValues!.map { $0 / UInt8(255) }
+         
+         let productValues = zip(depthMap1DArray, seg_scale_pixelValues).map{ $0 * Float32($1) }
+         
+         let productCGImage = convertArrayToImage(fromPixelValues: productValues, fromImageInfo: seg_info)
+         let productCVPixelBuffer = pixelBufferFromCGImage(image: productCGImage!)
+         
+         depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer, pixelFormat: .r32Float, planeIndex: 0)
+         */
+        
+        /**
+                시도 3)
+                - CVPixelBuffer(depthMap) --> 1d array
+                - depth 1d array * segmentation 1d array
+                - 위에서 나온 1d array -> CVPixelBuffer
+                - 위의 CVPixelBuffer -> CIImage 로 변환했으나 렌더링 x
+         
+         let width = CVPixelBufferGetWidth(depthMap)
+         let height = CVPixelBufferGetHeight(depthMap)
+         CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
+         let floatBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthMap), to: UnsafeMutablePointer<Float32>.self)
+         var depthMap1DArray : Array<Float32> = []
+         let bufferPointer = UnsafeBufferPointer(start: floatBuffer, count: width * height)
+         for (index, value) in bufferPointer.enumerated() {
+             depthMap1DArray.append(value)
+         }
+         CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
+         
+         let segmentationCIImage = CIImage(cvPixelBuffer: frame.segmentationBuffer!)
+         let segmentationCGImage = ciContext.createCGImage(segmentationCIImage, from: segmentationCIImage.extent)
+         let (seg_pixelValues, seg_info) = convertImageToArray(fromCGImage: segmentationCGImage) // width : 256, height : 192 => 256 * 192 = 49152
+         let seg_scale_pixelValues = seg_pixelValues!.map { $0 / UInt8(255) }
+         
+         let productValues = zip(depthMap1DArray, seg_scale_pixelValues).map{ $0 * Float32($1) }
+         let options: NSDictionary = [:]
+         var productCVPixelBuffer : CVPixelBuffer? = nil
+         CVPixelBufferCreate(
+             kCFAllocatorDefault,
+             width,
+             height,
+             kCVPixelFormatType_DepthFloat32,
+             options,
+             &productCVPixelBuffer)
+         
+         depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer!, pixelFormat: .r32Float, planeIndex: 0)
+         
+         */
+        
+        
+        depthTexture = makeTexture(fromPixelBuffer: depthMap, pixelFormat: .r32Float, planeIndex: 0)
+        //depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer!, pixelFormat: .r32Float, planeIndex: 0)
+        confidenceTexture = makeTexture(fromPixelBuffer: confidenceMap, pixelFormat: .r8Uint, planeIndex: 0)
         return true
     }
     
@@ -183,8 +286,8 @@ final class Renderer {
         guard let currentFrame = session.currentFrame,
             let renderDescriptor = renderDestination.currentRenderPassDescriptor,
             let commandBuffer = commandQueue.makeCommandBuffer(),
-            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderDescriptor)
-            //let segmentationBuffer = currentFrame.segmentationBuffer
+            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderDescriptor),
+            let segmentationBuffer = currentFrame.segmentationBuffer
             else {
                 return
         }
@@ -200,12 +303,13 @@ final class Renderer {
         update(frame: currentFrame)
         //segmentation(original: currentFrame.capturedImage, mask: segmentationBuffer)
         updateCapturedImageTextures(frame: currentFrame)
+        updateDepthTextures(frame: currentFrame)
         
         // handle buffer rotating
         currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
         pointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
         
-        if shouldAccumulate(frame: currentFrame), updateDepthTextures(frame: currentFrame) {
+        if shouldAccumulate(frame: currentFrame) {
             accumulatePoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
         }
         
@@ -216,7 +320,6 @@ final class Renderer {
                 retainingTextures.removeAll()
             }
             rgbUniformsBuffers[currentBufferIndex][0] = rgbUniforms
-            
             renderEncoder.setDepthStencilState(relaxedStencilState)
             renderEncoder.setRenderPipelineState(rgbPipelineState)
             renderEncoder.setVertexBuffer(rgbUniformsBuffers[currentBufferIndex])
@@ -226,18 +329,19 @@ final class Renderer {
             renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         }
         
-        if self.showParticles {
+        if self.showParticles, depthTexture != nil {
             // filter turn on/off
-            var retainingTextures = [segmentationImageTextureY]
+            var retainingTextures = [depthTexture]
             commandBuffer.addCompletedHandler{ buffer in
                 retainingTextures.removeAll()
             }
+            
             rgbUniformsBuffers[currentBufferIndex][0] = rgbUniforms
-            renderEncoder.setDepthStencilState(relaxedStencilState)
-            renderEncoder.setRenderPipelineState(rgbPipelineState)
+            renderEncoder.setDepthStencilState(depthStencilState)
+            renderEncoder.setRenderPipelineState(particlePipelineState)
             renderEncoder.setVertexBuffer(rgbUniformsBuffers[currentBufferIndex])
             renderEncoder.setFragmentBuffer(rgbUniformsBuffers[currentBufferIndex])
-            renderEncoder.setFragmentTexture(CVMetalTextureGetTexture(segmentationImageTextureY!), index: Int(kTextureY.rawValue))
+            renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
             renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         }
         
@@ -290,6 +394,7 @@ final class Renderer {
     
     private func shouldAccumulate(frame: ARFrame) -> Bool {
         if self.isInViewSceneMode {
+            
             return false
         }
         let cameraTransform = frame.camera.transform
@@ -302,12 +407,15 @@ final class Renderer {
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
         
         var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture, confidenceTexture]
+        //var retainingTextures = [depthTexture]
         
+        // 밑에 있는 코드(renderEncoder 작업) command를 모두 수행한 뒤에 호출됨
         commandBuffer.addCompletedHandler { buffer in
             retainingTextures.removeAll()
             // copy gpu point buffer to cpu
             var i = self.cpuParticlesBuffer.count
             while (i < self.maxPoints && self.particlesBuffer[i].position != simd_float3(0.0,0.0,0.0)) {
+                //print("particlesBuffer[\(i)] = \(self.particlesBuffer[i].position)")    // Rendering 좌표
                 let position = self.particlesBuffer[i].position
                 let color = self.particlesBuffer[i].color
                 let confidence = self.particlesBuffer[i].confidence
@@ -416,6 +524,7 @@ private extension Renderer {
         
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.vertexFunction = vertexFunction
+        // false -> no fragments are processed and vertex shader function must return void
         descriptor.isRasterizationEnabled = false
         descriptor.depthAttachmentPixelFormat = renderDestination.depthStencilPixelFormat
         descriptor.colorAttachments[0].pixelFormat = renderDestination.colorPixelFormat
@@ -459,6 +568,7 @@ private extension Renderer {
     
     /// Makes sample points on camera image, also precompute the anchor point for animation
     func makeGridPoints() -> [Float2] {
+        // cameraResolution = 1920 * 1440
         let gridArea = cameraResolution.x * cameraResolution.y
         let spacing = sqrt(gridArea / Float(numGridPoints))
         let deltaX = Int(round(cameraResolution.x / spacing))
@@ -488,10 +598,10 @@ private extension Renderer {
     func makeTexture(fromPixelBuffer pixelBuffer: CVPixelBuffer, pixelFormat: MTLPixelFormat, planeIndex: Int) -> CVMetalTexture? {
         let width = CVPixelBufferGetWidthOfPlane(pixelBuffer, planeIndex)
         let height = CVPixelBufferGetHeightOfPlane(pixelBuffer, planeIndex)
-        
+
         var texture: CVMetalTexture? = nil
         let status = CVMetalTextureCacheCreateTextureFromImage(nil, textureCache, pixelBuffer, nil, pixelFormat, width, height, planeIndex, &texture)
-        
+
         if status != kCVReturnSuccess {
             texture = nil
         }
@@ -523,4 +633,145 @@ private extension Renderer {
         let rotationAngle = Float(cameraToDisplayRotation(orientation: orientation)) * .degreesToRadian
         return flipYZ * matrix_float4x4(simd_quaternion(rotationAngle, Float3(0, 0, 1)))
     }
+    
+    func convertImageToArray(fromCGImage imageRef: CGImage?) -> (pixelValues: [UInt8]?, imageInfo : [String : Any])
+    {
+        var imageInfo : [String : Any] = [:]
+        
+        var pixelValues: [UInt8]?
+        if let imageRef = imageRef {
+            let width = imageRef.width
+            imageInfo["width"] = width
+            
+            let height = imageRef.height
+            imageInfo["height"] = height
+            
+            let bitsPerComponent = imageRef.bitsPerComponent
+            imageInfo["bitsPerComponent"] = bitsPerComponent
+            
+            let bytesPerRow = imageRef.bytesPerRow / 4
+            imageInfo["bytesPerRow"] = bytesPerRow
+            
+            let totalBytes = height * bytesPerRow
+            imageInfo["totalBytes"] = totalBytes
+
+            let colorSpace = CGColorSpaceCreateDeviceGray()
+            var intensities = [UInt8](repeating: 0, count: totalBytes)
+            let contextRef = CGContext(data: &intensities, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: 0)
+            contextRef?.draw(imageRef, in: CGRect(x: 0.0, y: 0.0, width: CGFloat(width), height: CGFloat(height)))
+
+            pixelValues = intensities
+        }
+        
+        return (pixelValues, imageInfo)
+    }
+
+    
+    func convertArrayToImage(fromPixelValues pixelValues: [UInt8]?, fromImageInfo imageInfo : [String : Any]) -> CGImage?
+    {
+        var imageRef: CGImage?
+        if var pixelValues = pixelValues {
+            imageRef = withUnsafePointer(to: &pixelValues, {
+                ptr -> CGImage? in
+                var imageRef: CGImage?
+                let colorSpaceRef = CGColorSpaceCreateDeviceGray()
+                let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue).union(CGBitmapInfo())
+                let data = UnsafeRawPointer(ptr.pointee).assumingMemoryBound(to: UInt8.self)
+                let releaseData: CGDataProviderReleaseDataCallback = {
+                    (info: UnsafeMutableRawPointer?, data: UnsafeRawPointer, size: Int) -> () in
+                }
+                
+                if let providerRef = CGDataProvider(dataInfo: nil, data: data, size: imageInfo["totalBytes"] as! Int, releaseData: releaseData) {
+                    imageRef = CGImage(width: imageInfo["width"] as! Int,
+                                       height: imageInfo["height"] as! Int,
+                                       bitsPerComponent: imageInfo["bitsPerComponent"] as! Int,
+                                       bitsPerPixel: imageInfo["bitsPerComponent"] as! Int,
+                                       bytesPerRow: imageInfo["bytesPerRow"] as! Int,
+                                       space: colorSpaceRef,
+                                       bitmapInfo: bitmapInfo,
+                                       provider: providerRef,
+                                       decode: nil,
+                                       shouldInterpolate: false,
+                                       intent: CGColorRenderingIntent.defaultIntent)
+                }
+                return imageRef
+            })
+        }
+
+        return imageRef
+    }
+    
+    func convertArrayToImage(fromPixelValues pixelValues: [Float32]?, fromImageInfo imageInfo : [String : Any]) -> CGImage?
+    {
+        var imageRef: CGImage?
+        if var pixelValues = pixelValues {
+            imageRef = withUnsafePointer(to: &pixelValues, {
+                ptr -> CGImage? in
+                var imageRef: CGImage?
+                let colorSpaceRef = CGColorSpaceCreateDeviceGray()
+                let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue).union(CGBitmapInfo())
+                let data = UnsafeRawPointer(ptr.pointee).assumingMemoryBound(to: UInt8.self)
+                let releaseData: CGDataProviderReleaseDataCallback = {
+                    (info: UnsafeMutableRawPointer?, data: UnsafeRawPointer, size: Int) -> () in
+                }
+                
+                if let providerRef = CGDataProvider(dataInfo: nil, data: data, size: imageInfo["totalBytes"] as! Int, releaseData: releaseData) {
+                    imageRef = CGImage(width: imageInfo["width"] as! Int,
+                                       height: imageInfo["height"] as! Int,
+                                       bitsPerComponent: imageInfo["bitsPerComponent"] as! Int,
+                                       bitsPerPixel: imageInfo["bitsPerComponent"] as! Int,
+                                       bytesPerRow: imageInfo["bytesPerRow"] as! Int,
+                                       space: colorSpaceRef,
+                                       bitmapInfo: bitmapInfo,
+                                       provider: providerRef,
+                                       decode: nil,
+                                       shouldInterpolate: false,
+                                       intent: CGColorRenderingIntent.defaultIntent)
+                }
+                return imageRef
+            })
+        }
+
+        return imageRef
+    }
+    
+    func pixelBufferFromCGImage(image: CGImage) -> CVPixelBuffer {
+        var pxbuffer: CVPixelBuffer? = nil
+        let options: NSDictionary = [:]
+
+        let width =  image.width
+        let height = image.height
+        let bytesPerRow = image.bytesPerRow
+
+        let dataFromImageDataProvider = CFDataCreateMutableCopy(kCFAllocatorDefault, 0, image.dataProvider!.data)
+        let x = CFDataGetMutableBytePtr(dataFromImageDataProvider)
+        
+        CVPixelBufferCreateWithBytes(
+            kCFAllocatorDefault,
+            width,
+            height,
+            kCVPixelFormatType_DepthFloat32,
+            x!,
+            bytesPerRow,
+            nil,
+            nil,
+            options,
+            &pxbuffer
+        )
+        return pxbuffer!;
+    }
+    
+    
+//    func resizeCIImage(_ inputImage : CIImage, _ size : CGSize) -> CIImage {
+//        let resizeFilter = CIFilter(name: "CILanczosScaleTransform")!
+//        let scale = size.width / (inputImage.extent.height)
+//        let aspectRatio = size.height / ((inputImage.extent.width) * scale)
+//
+//        resizeFilter.setValue(inputImage, forKey: kCIInputImageKey)
+//        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
+//        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+//
+//        let outputImage = resizeFilter.outputImage!
+//        return outputImage
+//    }
 }
