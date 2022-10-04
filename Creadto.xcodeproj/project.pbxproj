@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E652401A28EB41840064D766 /* PLYFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401928EB41840064D766 /* PLYFile.swift */; };
 		E65ADF8D28D169DF007C5886 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */; };
 		E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8E28D16A2E007C5886 /* Helpers.swift */; };
 		E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9028D16A58007C5886 /* CPUParticle.swift */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E652401928EB41840064D766 /* PLYFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLYFile.swift; sourceTree = "<group>"; };
 		E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalBuffer.swift; sourceTree = "<group>"; };
 		E65ADF8E28D16A2E007C5886 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		E65ADF9028D16A58007C5886 /* CPUParticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUParticle.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 				E65ADF8E28D16A2E007C5886 /* Helpers.swift */,
 				E65ADF9028D16A58007C5886 /* CPUParticle.swift */,
 				E65ADF9228D16AD5007C5886 /* XError.swift */,
+				E652401928EB41840064D766 /* PLYFile.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -200,6 +203,7 @@
 				E6B5159628D09685006FCE79 /* Renderer.swift in Sources */,
 				E65ADF8D28D169DF007C5886 /* MetalBuffer.swift in Sources */,
 				E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */,
+				E652401A28EB41840064D766 /* PLYFile.swift in Sources */,
 				E6B515AF28D0D178006FCE79 /* MainTabView.swift in Sources */,
 				E6B5159828D09685006FCE79 /* MainController.swift in Sources */,
 				E6B5159128D09685006FCE79 /* AppDelegate.swift in Sources */,

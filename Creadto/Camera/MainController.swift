@@ -180,6 +180,7 @@ final class MainController: UIViewController, ARSessionDelegate {
 extension MainController: MTKViewDelegate {
     // Called whenever view changes orientation or layout is changed
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        
         renderer.drawRectResized(size: size)
         //renderer.drawRectResized(size: CGSize(width: 256, height: 192))
     }

@@ -49,6 +49,7 @@ final class Renderer {
     private lazy var unprojectPipelineState = makeUnprojectionPipelineState()!
     private lazy var rgbPipelineState = makeRGBPipelineState()!
     private lazy var particlePipelineState = makeParticlePipelineState()!
+    private lazy var depthPipelineState = makeDepthPipelineState()!
     // texture cache for captured image
     private lazy var textureCache = makeTextureCache()
     private var capturedImageTextureY: CVMetalTexture?
@@ -232,6 +233,7 @@ final class Renderer {
                 - 위에서 나온 1d array -> CVPixelBuffer
                 - 위의 CVPixelBuffer -> CIImage 로 변환했으나 렌더링 x
          
+        
          let width = CVPixelBufferGetWidth(depthMap)
          let height = CVPixelBufferGetHeight(depthMap)
          CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
@@ -241,29 +243,27 @@ final class Renderer {
          for (index, value) in bufferPointer.enumerated() {
              depthMap1DArray.append(value)
          }
-         CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
-         
-         let segmentationCIImage = CIImage(cvPixelBuffer: frame.segmentationBuffer!)
-         let segmentationCGImage = ciContext.createCGImage(segmentationCIImage, from: segmentationCIImage.extent)
-         let (seg_pixelValues, seg_info) = convertImageToArray(fromCGImage: segmentationCGImage) // width : 256, height : 192 => 256 * 192 = 49152
-         let seg_scale_pixelValues = seg_pixelValues!.map { $0 / UInt8(255) }
-         
-         let productValues = zip(depthMap1DArray, seg_scale_pixelValues).map{ $0 * Float32($1) }
-         let options: NSDictionary = [:]
-         var productCVPixelBuffer : CVPixelBuffer? = nil
-         CVPixelBufferCreate(
-             kCFAllocatorDefault,
-             width,
-             height,
-             kCVPixelFormatType_DepthFloat32,
-             options,
-             &productCVPixelBuffer)
-         
-         depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer!, pixelFormat: .r32Float, planeIndex: 0)
-         
-         */
+        
+        let segmentationCIImage = CIImage(cvPixelBuffer: frame.segmentationBuffer!)
+        let segmentationCGImage = ciContext.createCGImage(segmentationCIImage, from: segmentationCIImage.extent)
+        let (seg_pixelValues, seg_info) = convertImageToArray(fromCGImage: segmentationCGImage) // width : 256, height : 192 => 256 * 192 = 49152
+        let seg_scale_pixelValues = seg_pixelValues!.map { $0 / UInt8(255) }
+        
+        let productValues = zip(depthMap1DArray, seg_scale_pixelValues).map{ $0 * Float32($1) }
+        let options: NSDictionary = [:]
+        var productCVPixelBuffer : CVPixelBuffer? = nil
+        CVPixelBufferCreate(
+            kCFAllocatorDefault,
+            width,
+            height,
+            kCVPixelFormatType_DepthFloat32,
+            options,
+            &productCVPixelBuffer)
         
         
+        depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer!, pixelFormat: .r32Float, planeIndex: 0)
+        CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
+        */
         depthTexture = makeTexture(fromPixelBuffer: depthMap, pixelFormat: .r32Float, planeIndex: 0)
         //depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer!, pixelFormat: .r32Float, planeIndex: 0)
         confidenceTexture = makeTexture(fromPixelBuffer: confidenceMap, pixelFormat: .r8Uint, planeIndex: 0)
@@ -329,19 +329,14 @@ final class Renderer {
             renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         }
         
-        if self.showParticles, depthTexture != nil {
+        if self.showParticles {
             // filter turn on/off
             var retainingTextures = [depthTexture]
             commandBuffer.addCompletedHandler{ buffer in
                 retainingTextures.removeAll()
             }
-            
-            rgbUniformsBuffers[currentBufferIndex][0] = rgbUniforms
-            renderEncoder.setDepthStencilState(depthStencilState)
-            renderEncoder.setRenderPipelineState(particlePipelineState)
-            renderEncoder.setVertexBuffer(rgbUniformsBuffers[currentBufferIndex])
-            renderEncoder.setFragmentBuffer(rgbUniformsBuffers[currentBufferIndex])
-            renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
+            renderEncoder.setRenderPipelineState(depthPipelineState)
+            renderEncoder.setFragmentTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureCbCr.rawValue))
             renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         }
         
@@ -415,7 +410,7 @@ final class Renderer {
             // copy gpu point buffer to cpu
             var i = self.cpuParticlesBuffer.count
             while (i < self.maxPoints && self.particlesBuffer[i].position != simd_float3(0.0,0.0,0.0)) {
-                //print("particlesBuffer[\(i)] = \(self.particlesBuffer[i].position)")    // Rendering 좌표
+                
                 let position = self.particlesBuffer[i].position
                 let color = self.particlesBuffer[i].color
                 let confidence = self.particlesBuffer[i].confidence
@@ -476,13 +471,13 @@ extension Renderer {
                 for task in beforeGlobalThread { task() }
             }
 
-//            do { self.savedCloudURLs.append(try PLYFile.write(
-//                    fileName: fileName,
-//                    cpuParticlesBuffer: &self.cpuParticlesBuffer,
-//                    highConfCount: self.highConfCount,
-//                    format: format)) } catch {
-//                self.savingError = XError.savingFailed
-//            }
+            do { self.savedCloudURLs.append(try PLYFile.write(
+                    fileName: fileName,
+                    cpuParticlesBuffer: &self.cpuParticlesBuffer,
+                    highConfCount: self.highConfCount,
+                    format: format)) } catch {
+                self.savingError = XError.savingFailed
+            }
     
             DispatchQueue.main.async {
                 for task in afterGlobalThread { task() }
@@ -547,6 +542,23 @@ private extension Renderer {
         return try? device.makeRenderPipelineState(descriptor: descriptor)
     }
     
+    func makeDepthPipelineState() -> MTLRenderPipelineState? {
+        guard let vertexFunction = library.makeFunction(name: "rgbVertex"),
+            let fragmentFunction = library.makeFunction(name: "rgbFragment") else {
+                return nil
+        }
+        
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.vertexFunction = vertexFunction
+        descriptor.fragmentFunction = fragmentFunction
+        descriptor.depthAttachmentPixelFormat = .depth32Float
+        descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+        descriptor.vertexDescriptor = createPlaneMetalVertexDescriptor()
+        
+        
+        return try? device.makeRenderPipelineState(descriptor: descriptor)
+    }
+    
     func makeParticlePipelineState() -> MTLRenderPipelineState? {
         guard let vertexFunction = library.makeFunction(name: "particleVertex"),
             let fragmentFunction = library.makeFunction(name: "particleFragment") else {
@@ -566,9 +578,28 @@ private extension Renderer {
         return try? device.makeRenderPipelineState(descriptor: descriptor)
     }
     
+    func createPlaneMetalVertexDescriptor() -> MTLVertexDescriptor {
+        let mtlVertexDescriptor: MTLVertexDescriptor = MTLVertexDescriptor()
+        // Store position in `attribute[[0]]`.
+        mtlVertexDescriptor.attributes[0].format = .float2
+        mtlVertexDescriptor.attributes[0].offset = 0
+        mtlVertexDescriptor.attributes[0].bufferIndex = 0
+        
+        // Store texture coordinates in `attribute[[1]]`.
+        mtlVertexDescriptor.attributes[1].format = .float2
+        mtlVertexDescriptor.attributes[1].offset = 8
+        mtlVertexDescriptor.attributes[1].bufferIndex = 0
+        
+        // Set stride to twice the `float2` bytes per vertex.
+        mtlVertexDescriptor.layouts[0].stride = 2 * MemoryLayout<SIMD2<Float>>.stride
+        mtlVertexDescriptor.layouts[0].stepRate = 1
+        mtlVertexDescriptor.layouts[0].stepFunction = .perVertex
+        
+        return mtlVertexDescriptor
+    }
+    
     /// Makes sample points on camera image, also precompute the anchor point for animation
     func makeGridPoints() -> [Float2] {
-        // cameraResolution = 1920 * 1440
         let gridArea = cameraResolution.x * cameraResolution.y
         let spacing = sqrt(gridArea / Float(numGridPoints))
         let deltaX = Int(round(cameraResolution.x / spacing))
@@ -579,7 +610,6 @@ private extension Renderer {
             let alternatingOffsetX = Float(gridY % 2) * spacing / 2
             for gridX in 0 ..< deltaX {
                 let cameraPoint = Float2(alternatingOffsetX + (Float(gridX) + 0.5) * spacing, (Float(gridY) + 0.5) * spacing)
-                
                 points.append(cameraPoint)
             }
         }
