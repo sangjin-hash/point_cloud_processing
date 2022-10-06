@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		E652401A28EB41840064D766 /* PLYFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401928EB41840064D766 /* PLYFile.swift */; };
+		E652401C28EC0F670064D766 /* SaveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401B28EC0F670064D766 /* SaveController.swift */; };
+		E652401E28EC4F650064D766 /* PointCloudVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401D28EC4F650064D766 /* PointCloudVertex.swift */; };
 		E65ADF8D28D169DF007C5886 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */; };
 		E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8E28D16A2E007C5886 /* Helpers.swift */; };
 		E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9028D16A58007C5886 /* CPUParticle.swift */; };
@@ -23,10 +25,13 @@
 		E6B515AA28D0C1CF006FCE79 /* CreadtoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B515A928D0C1CF006FCE79 /* CreadtoApp.swift */; };
 		E6B515AF28D0D178006FCE79 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B515AE28D0D178006FCE79 /* MainTabView.swift */; };
 		E6B515B128D0D216006FCE79 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B515B028D0D216006FCE79 /* ExportView.swift */; };
+		E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E05AB228EDB08E0075732A /* CustomSceneView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E652401928EB41840064D766 /* PLYFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLYFile.swift; sourceTree = "<group>"; };
+		E652401B28EC0F670064D766 /* SaveController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveController.swift; sourceTree = "<group>"; };
+		E652401D28EC4F650064D766 /* PointCloudVertex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloudVertex.swift; sourceTree = "<group>"; };
 		E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalBuffer.swift; sourceTree = "<group>"; };
 		E65ADF8E28D16A2E007C5886 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		E65ADF9028D16A58007C5886 /* CPUParticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUParticle.swift; sourceTree = "<group>"; };
@@ -45,6 +50,7 @@
 		E6B515A928D0C1CF006FCE79 /* CreadtoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreadtoApp.swift; sourceTree = "<group>"; };
 		E6B515AE28D0D178006FCE79 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		E6B515B028D0D216006FCE79 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
+		E6E05AB228EDB08E0075732A /* CustomSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSceneView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				E6B515A728D0A3D6006FCE79 /* GalleryView.swift */,
+				E6E05AB228EDB08E0075732A /* CustomSceneView.swift */,
 			);
 			path = Gallery;
 			sourceTree = "<group>";
@@ -103,6 +110,7 @@
 			children = (
 				E6B5159528D09685006FCE79 /* Renderer.swift */,
 				E6B5159728D09685006FCE79 /* MainController.swift */,
+				E652401B28EC0F670064D766 /* SaveController.swift */,
 				E6B5159C28D09685006FCE79 /* Assets.xcassets */,
 				E6B5159928D09685006FCE79 /* Main.storyboard */,
 				E6B5159E28D09685006FCE79 /* LaunchScreen.storyboard */,
@@ -111,6 +119,7 @@
 				E65ADF9028D16A58007C5886 /* CPUParticle.swift */,
 				E65ADF9228D16AD5007C5886 /* XError.swift */,
 				E652401928EB41840064D766 /* PLYFile.swift */,
+				E652401D28EC4F650064D766 /* PointCloudVertex.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -195,8 +204,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6B515B128D0D216006FCE79 /* ExportView.swift in Sources */,
+				E652401E28EC4F650064D766 /* PointCloudVertex.swift in Sources */,
 				E65ADF9328D16AD5007C5886 /* XError.swift in Sources */,
 				E6B515AA28D0C1CF006FCE79 /* CreadtoApp.swift in Sources */,
+				E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */,
 				E6B5159328D09685006FCE79 /* Shaders.metal in Sources */,
 				E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */,
 				E6B515A828D0A3D6006FCE79 /* GalleryView.swift in Sources */,
@@ -204,6 +215,7 @@
 				E65ADF8D28D169DF007C5886 /* MetalBuffer.swift in Sources */,
 				E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */,
 				E652401A28EB41840064D766 /* PLYFile.swift in Sources */,
+				E652401C28EC0F670064D766 /* SaveController.swift in Sources */,
 				E6B515AF28D0D178006FCE79 /* MainTabView.swift in Sources */,
 				E6B5159828D09685006FCE79 /* MainController.swift in Sources */,
 				E6B5159128D09685006FCE79 /* AppDelegate.swift in Sources */,
