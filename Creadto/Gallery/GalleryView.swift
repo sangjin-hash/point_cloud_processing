@@ -9,19 +9,33 @@ import SwiftUI
 import SceneKit
 
 struct GalleryView: View {
-    private var scnItems = [URL]()
-    private var scnFileName = [String]()
+    @State private var scnItems = [URL]()
+    @State private var scnFileName = [String]()
     @State private var selectedSCN = 0
+    @State private var isPath : Bool = false
     
-    init(){
+    init() {
+        refresh()
+    }
+    
+    func refresh() {
         let docs = FileManager.default.urls(
             for: .documentDirectory, in: .userDomainMask)[0]
+        
+        scnItems.removeAll()
+        scnFileName.removeAll()
+        
         scnItems = try! FileManager.default.contentsOfDirectory(
             at: docs, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
         scnItems.map{ scnFileName.append(
             $0.path.components(separatedBy: "/").last!
         ) }
+        
+        if scnItems.count > 0 {
+            isPath = true
+        }
     }
+    
     
     var body: some View {
         NavigationView(content: {
@@ -29,27 +43,33 @@ struct GalleryView: View {
                 Spacer()
                 
                 Picker("Choose a .scn file", selection: $selectedSCN){
-                    ForEach(0..<scnFileName.count){
-                        Text(self.scnFileName[$0])
+                    ForEach(0..<scnFileName.count, id: \.self){
+                        Text(self.scnFileName[$0]).tag($0)
                     }
                 }
                 .pickerStyle(.wheel)
                 .background(.yellow)
                 .cornerRadius(15)
                 .padding()
-                
-                Spacer()
-                
-                NavigationLink(
-                    destination: SceneRenderView(scnPath: scnItems[selectedSCN]),
-                    label: {
-                        Text("Render")
-                    })
-                
-                Spacer()
-                
+                .onAppear{
+                    refresh()
                 }
-            })
+                
+                Spacer()
+                
+                if isPath {
+                    NavigationLink(
+                        destination: SceneRenderView(scnPath: scnItems[selectedSCN]),
+                        label: {
+                            Text("Render")
+                        })
+                    
+                    
+                    Spacer()
+                }
+            }
+            
+        })
     }
 }
 
@@ -64,16 +84,19 @@ struct SceneRenderView : View {
     }
     
     var body : some View {
-        VStack{
-            NavigationLink(
-                destination: GalleryView(),
-                label: {}
-            )
-            
-            CustomSceneView(scene: $scene)
-                .frame(height:350)
+        ZStack{
+            Color.white.ignoresSafeArea()
+            VStack{
+                NavigationLink(
+                    destination: GalleryView(),
+                    label: {}
+                )
+                
+                CustomSceneView(scene: $scene)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+            }
         }
-        .padding()
     }
 }
 

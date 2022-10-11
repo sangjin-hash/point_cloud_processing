@@ -504,7 +504,7 @@ extension Renderer {
     func convertCloud() -> SCNNode{
         
         let vertices = self.cpuParticlesBuffer.map { (v: CPUParticle) -> PointCloudVertex in
-            return PointCloudVertex(x: v.position.x, y: v.position.y, z: v.position.z, r: v.color.x, g: v.color.y, b: v.color.z)
+            return PointCloudVertex(x: v.position.x, y: v.position.y, z: v.position.z, r: v.color.x/255.0, g: v.color.y/255.0, b: v.color.z/255.0)
         }
         
         let node = buildNode(points: vertices)
@@ -548,6 +548,7 @@ extension Renderer {
         elements.pointSize = 2.0
         
         let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [elements])
+        pointsGeometry.firstMaterial?.lightingModel = SCNMaterial.LightingModel.constant
         return SCNNode(geometry: pointsGeometry)
     }
     
