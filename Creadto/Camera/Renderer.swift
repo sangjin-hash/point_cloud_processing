@@ -5,6 +5,7 @@
 import Metal
 import MetalKit
 import ARKit
+import SceneKit
 import CoreImage
 import Vision
 
@@ -74,6 +75,8 @@ final class Renderer {
     private lazy var gridPointsBuffer = MetalBuffer<Float2>(device: device,
                                                             array: makeGridPoints(),
                                                             index: kGridPoints.rawValue, options: [])
+    
+    var convertedScene = SCNScene()
     
     // RGB buffer
     private lazy var rgbUniforms: RGBUniforms = {
@@ -475,17 +478,88 @@ extension Renderer {
                     fileName: fileName,
                     cpuParticlesBuffer: &self.cpuParticlesBuffer,
                     highConfCount: self.highConfCount,
-                    format: format)) } catch {
+                    format: format))
+                let cloud = self.convertCloud()
+                cloud.name = "cloud"
+                self.convertedScene.rootNode.addChildNode(cloud)
+                
+                let output = self.savedCloudURLs.last!.deletingPathExtension().appendingPathExtension("scn")
+                self.savedCloudURLs.append(output)
+                //let usdzOutput = self.savedCloudURLs.last!.deletingPathExtension().appendingPathExtension("usdz")
+                self.saveConvertedScene(path: output.path)
+                // /var/mobile/Containers/Data/Application/5F7E7D6F-D59A-4047-BF09-6A24C0EC32A2/Documents/Mn.scn
+            
+            } catch {
                 self.savingError = XError.savingFailed
             }
-    
+
             DispatchQueue.main.async {
                 for task in afterGlobalThread { task() }
             }
             self.isSavingFile = false
         }
+        
     }
     
+    func convertCloud() -> SCNNode{
+        
+        let vertices = self.cpuParticlesBuffer.map { (v: CPUParticle) -> PointCloudVertex in
+            return PointCloudVertex(x: v.position.x, y: v.position.y, z: v.position.z, r: v.color.x/255.0, g: v.color.y/255.0, b: v.color.z/255.0)
+        }
+        
+        let node = buildNode(points: vertices)
+        return node
+    }
+    
+    private func buildNode(points: [PointCloudVertex]) -> SCNNode {
+        let vertexData = NSData(
+            bytes: points,
+            length: MemoryLayout<PointCloudVertex>.size * points.count
+        )
+        let positionSource = SCNGeometrySource(
+            data: vertexData as Data,
+            semantic: SCNGeometrySource.Semantic.vertex,
+            vectorCount: points.count,
+            usesFloatComponents: true,
+            componentsPerVector: 3,
+            bytesPerComponent: MemoryLayout<Float>.size,
+            dataOffset: 0,
+            dataStride: MemoryLayout<PointCloudVertex>.size
+        )
+        let colorSource = SCNGeometrySource(
+            data: vertexData as Data,
+            semantic: SCNGeometrySource.Semantic.color,
+            vectorCount: points.count,
+            usesFloatComponents: true,
+            componentsPerVector: 3,
+            bytesPerComponent: MemoryLayout<Float>.size,
+            dataOffset: MemoryLayout<Float>.size * 3,
+            dataStride: MemoryLayout<PointCloudVertex>.size
+        )
+        let elements = SCNGeometryElement(
+            data: nil,
+            primitiveType: .point,
+            primitiveCount: points.count,
+            bytesPerIndex: MemoryLayout<Int>.size
+        )
+        
+        elements.maximumPointScreenSpaceRadius = 2.0
+        elements.minimumPointScreenSpaceRadius = 2.0
+        elements.pointSize = 2.0
+        
+        let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [elements])
+        pointsGeometry.firstMaterial?.lightingModel = SCNMaterial.LightingModel.constant
+        return SCNNode(geometry: pointsGeometry)
+    }
+    
+    func saveConvertedScene(path: String){
+        
+        let success = convertedScene.write(to: URL.init(fileURLWithPath:path), options: nil, delegate: nil) { (totalProgress, error, stop) in
+            print("Progress \(totalProgress) Error: \(String(describing: error))")
+        }
+        print("Success : \(success)")
+    }
+        
     func clearParticles() {
         highConfCount = 0
         currentPointIndex = 0

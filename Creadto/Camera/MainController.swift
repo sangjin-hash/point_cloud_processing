@@ -120,7 +120,7 @@ final class MainController: UIViewController, ARSessionDelegate {
         case saveButton:
             renderer.isInViewSceneMode = true
             setShowSceneButtonStyle(isScanning: false)
-//            goToSaveCurrentScanView()
+            goToSaveCurrentScanView()
         
         case showSceneButton:
             renderer.isInViewSceneMode = !renderer.isInViewSceneMode
@@ -228,12 +228,12 @@ extension MainController {
         onSaveError(error: err!)
     }
     
-//    func goToSaveCurrentScanView() {
-//        let saveContoller = SaveController()
-//        saveContoller.mainController = self
-//        present(saveContoller, animated: true, completion: nil)
-//    }
-//
+    func goToSaveCurrentScanView() {
+        let saveContoller = SaveController()
+        saveContoller.mainController = self
+        present(saveContoller, animated: true, completion: nil)
+    }
+
 //    func goToExportView() -> Void {
 //        let exportController = ExportController()
 //        exportController.mainController = self
