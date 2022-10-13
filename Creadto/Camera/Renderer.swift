@@ -19,11 +19,11 @@ final class Renderer {
     var highConfCount = 0
     var savingError: XError? = nil
     // Maximum number of points we store in the point cloud inital: 15M
-    private let maxPoints = 3_000_000
+    private let maxPoints = 8_000_000
     // Number of sample points on the grid initial: 3M
-    var numGridPoints = 700
+    var numGridPoints = 110592 // spacing : 5
     // Particle's size in pixels -> 얘 크기를 pixel 크기에 맞춰서 바꾸면 될듯
-    private let particleSize: Float = 8
+    private let particleSize: Float = 1
     // We only use portrait orientation in this app
     private let orientation = UIInterfaceOrientation.portrait
     // Camera's threshold values for detecting when the camera moves so that we can accumulate the points
@@ -38,6 +38,8 @@ final class Renderer {
     
     // Segmentation에 사용되는 object들
     public var ciContext : CIContext!
+    let requestHandler = VNSequenceRequestHandler()
+    var segmentationRequest = VNGeneratePersonSegmentationRequest()
     //public var segmentationImage : CIImage?
 
     // Metal objects and textures
@@ -58,23 +60,16 @@ final class Renderer {
     private var depthTexture: CVMetalTexture?
     private var confidenceTexture: CVMetalTexture?
     
-    // texture for segmentaion image
-    private var segmentationImageTextureY : CVMetalTexture?
-    
-//    // texture for segmentation & depth image
-//    private var segDepthImageTextureY : CVMetalTexture?
-//    private var segDepthImageTextureCbCr : CVMetalTexture?
-    
     // Multi-buffer rendering pipeline
     private let inFlightSemaphore: DispatchSemaphore
     private var currentBufferIndex = 0
     
     // The current viewport size
     private var viewportSize = CGSize()
-    // The grid of sample points
-    private lazy var gridPointsBuffer = MetalBuffer<Float2>(device: device,
-                                                            array: makeGridPoints(),
-                                                            index: kGridPoints.rawValue, options: [])
+//    // The grid of sample points
+//    private lazy var gridPointsBuffer = MetalBuffer<Float2>(device: device,
+//                                                            array: makeGridPoints(),
+//                                                            index: kGridPoints.rawValue, options: [])
     
     var convertedScene = SCNScene()
     
@@ -144,6 +139,7 @@ final class Renderer {
         
         inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
         self.loadSavedClouds()
+        self.initializeRequests()
     }
     
     func drawRectResized(size: CGSize) {
@@ -159,8 +155,6 @@ final class Renderer {
         
         capturedImageTextureY = makeTexture(fromPixelBuffer: pixelBuffer, pixelFormat: .r8Unorm, planeIndex: 0)
         capturedImageTextureCbCr = makeTexture(fromPixelBuffer: pixelBuffer, pixelFormat: .rg8Unorm, planeIndex: 1)
-        
-        segmentationImageTextureY = makeTexture(fromPixelBuffer: frame.segmentationBuffer!, pixelFormat: .r8Unorm, planeIndex: 0)
     }
     
     private func updateDepthTextures(frame: ARFrame) -> Bool {
@@ -289,12 +283,10 @@ final class Renderer {
         guard let currentFrame = session.currentFrame,
             let renderDescriptor = renderDestination.currentRenderPassDescriptor,
             let commandBuffer = commandQueue.makeCommandBuffer(),
-            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderDescriptor),
-            let segmentationBuffer = currentFrame.segmentationBuffer
-            else {
+            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderDescriptor) else {
                 return
         }
-        
+                
         _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
         commandBuffer.addCompletedHandler { [weak self] commandBuffer in
             if let self = self {
@@ -402,6 +394,26 @@ final class Renderer {
     }
     
     private func accumulatePoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
+        try? requestHandler.perform([segmentationRequest],
+                                    on: frame.capturedImage)
+        guard let maskPixelBuffer =
+                segmentationRequest.results?.first?.pixelBuffer else { return }
+        
+        /**
+            해당 maskPixelBuffer resize -> 1920 * 1440 -> CGImage -> 1d-array 로 만들기 -> makeGridPoints에 전달하기
+         */
+        
+        let debugCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
+        let originalCIImage = CIImage(cvPixelBuffer: frame.capturedImage)
+        let targetSize = CGSize(width: originalCIImage.extent.height, height: originalCIImage.extent.width)
+        let resizeDebugCIImage = resizeCIImage(debugCIImage, targetSize)
+        let resizeDebugCGImage = ciContext.createCGImage(resizeDebugCIImage, from: resizeDebugCIImage.extent)
+        let (segmentation1DArray, segmentationInfo) = convertImageToArray(fromCGImage: resizeDebugCGImage)
+        
+        let gridPointsBuffer = MetalBuffer<Float2>(device: device,
+                                                   array: makeGridPoints(array: segmentation1DArray!),
+                                                   index: kGridPoints.rawValue, options: [])
+        
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
         
         var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture, confidenceTexture]
@@ -445,6 +457,13 @@ final class Renderer {
 
 // MARK:  - Added Renderer functionality
 extension Renderer {
+    /** Segmentation Request Initialize */
+    func initializeRequests(){
+        segmentationRequest = VNGeneratePersonSegmentationRequest()
+        segmentationRequest.qualityLevel = .accurate
+        segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8
+    }
+    
     func toggleParticles() {
         self.showParticles = !self.showParticles
     }
@@ -673,8 +692,8 @@ private extension Renderer {
     }
     
     /// Makes sample points on camera image, also precompute the anchor point for animation
-    func makeGridPoints() -> [Float2] {
-        let gridArea = cameraResolution.x * cameraResolution.y
+    func makeGridPoints(array segmentation1DArray : [UInt8]) -> [Float2] {
+        let gridArea = cameraResolution.x * cameraResolution.y   // x = 1920, y = 1440
         let spacing = sqrt(gridArea / Float(numGridPoints))
         let deltaX = Int(round(cameraResolution.x / spacing))
         let deltaY = Int(round(cameraResolution.y / spacing))
@@ -684,7 +703,9 @@ private extension Renderer {
             let alternatingOffsetX = Float(gridY % 2) * spacing / 2
             for gridX in 0 ..< deltaX {
                 let cameraPoint = Float2(alternatingOffsetX + (Float(gridX) + 0.5) * spacing, (Float(gridY) + 0.5) * spacing)
-                points.append(cameraPoint)
+                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] > 250) {
+                    points.append(cameraPoint)
+                }
             }
         }
         
@@ -865,17 +886,17 @@ private extension Renderer {
         return pxbuffer!;
     }
     
-    
-//    func resizeCIImage(_ inputImage : CIImage, _ size : CGSize) -> CIImage {
-//        let resizeFilter = CIFilter(name: "CILanczosScaleTransform")!
-//        let scale = size.width / (inputImage.extent.height)
-//        let aspectRatio = size.height / ((inputImage.extent.width) * scale)
-//
-//        resizeFilter.setValue(inputImage, forKey: kCIInputImageKey)
-//        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
-//        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
-//
-//        let outputImage = resizeFilter.outputImage!
-//        return outputImage
-//    }
+    // Lanczos interpolation
+    func resizeCIImage(_ inputImage : CIImage, _ size : CGSize) -> CIImage {
+        let resizeFilter = CIFilter(name: "CILanczosScaleTransform")!
+        let scale = size.width / (inputImage.extent.height)
+        let aspectRatio = size.height / ((inputImage.extent.width) * scale)
+
+        resizeFilter.setValue(inputImage, forKey: kCIInputImageKey)
+        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
+        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+
+        let outputImage = resizeFilter.outputImage!
+        return outputImage
+    }
 }
