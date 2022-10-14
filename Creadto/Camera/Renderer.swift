@@ -40,7 +40,6 @@ final class Renderer {
     public var ciContext : CIContext!
     let requestHandler = VNSequenceRequestHandler()
     var segmentationRequest = VNGeneratePersonSegmentationRequest()
-    //public var segmentationImage : CIImage?
 
     // Metal objects and textures
     private let device: MTLDevice
@@ -66,10 +65,6 @@ final class Renderer {
     
     // The current viewport size
     private var viewportSize = CGSize()
-//    // The grid of sample points
-//    private lazy var gridPointsBuffer = MetalBuffer<Float2>(device: device,
-//                                                            array: makeGridPoints(),
-//                                                            index: kGridPoints.rawValue, options: [])
     
     var convertedScene = SCNScene()
     
@@ -163,104 +158,6 @@ final class Renderer {
                 return false
         }
         
-        /**
-                시도 1)
-                - CVPixelBuffer(depthMap) -> CIImage -> CGImage -> 1d array
-                - CVPixelBuffer(segmentation) -> CIImage -> CGImage -> 1d array
-                - 위의 두 array mix -> CGImage -> CVPixelBuffer -> texture
-         
-         
-         let depthMapCIImage = CIImage(cvPixelBuffer: depthMap)
-         let depthMapCGImage = ciContext.createCGImage(depthMapCIImage, from: depthMapCIImage.extent)
-         let (depth_pixelValues, depth_info) = convertImageToArray(fromCGImage: depthMapCGImage) // width : 256, height : 192 => 256 * 192 = 49152
-         
-         let segmentationCIImage = CIImage(cvPixelBuffer: frame.segmentationBuffer!)
-         let segmentationCGImage = ciContext.createCGImage(segmentationCIImage, from: segmentationCIImage.extent)
-         let (seg_pixelValues, seg_info) = convertImageToArray(fromCGImage: segmentationCGImage) // width : 256, height : 192 => 256 * 192 = 49152
-         let seg_scale_pixelValues = seg_pixelValues!.map { $0 / UInt8(255) }
-         
-         // Matrix product(element product)
-         let productValues = zip(depth_pixelValues!, seg_scale_pixelValues).map{ $0 * $1 }    // 1차원 배열 곱
-         
-         // 2차원 배열 생성 후 iterator를 이용하여 값 대입하기 => O(n^2)
-         //var product_Matrix = [[UInt8]](repeating: Array(repeating: 0, count : Int(segmentationCIImage.extent.width)), count: Int(segmentationCIImage.extent.height))
-         //var product_iter = productValues.makeIterator()
-         //product_Matrix = product_Matrix.map { $0.compactMap { _ in product_iter.next()}}    // segmentation * depthMap 2차원 배열
-         
-         let productCGImage = convertArrayToImage(fromPixelValues: productValues, fromImageInfo: seg_info)
-         let productCVPixelBuffer = pixelBufferFromCGImage(image: productCGImage!)
-         
-         depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer, pixelFormat: .r32Float, planeIndex: 0)
-         */
-        
-        /**
-                시도 2)
-                - CVPixelBuffer(depthMap) --> 1d array
-                - depth 1d array * segmentation 1d array
-                - 위에서 나온 1d array -> CGImage -> CVPixelBuffer -> texture
-         
-         let width = CVPixelBufferGetWidth(depthMap)
-         let height = CVPixelBufferGetHeight(depthMap)
-         CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
-         let floatBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthMap), to: UnsafeMutablePointer<Float32>.self)
-         var depthMap1DArray : Array<Float32> = []
-         let bufferPointer = UnsafeBufferPointer(start: floatBuffer, count: width * height)
-         for (index, value) in bufferPointer.enumerated() {
-             depthMap1DArray.append(value)
-         }
-         CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
-         
-         let segmentationCIImage = CIImage(cvPixelBuffer: frame.segmentationBuffer!)
-         let segmentationCGImage = ciContext.createCGImage(segmentationCIImage, from: segmentationCIImage.extent)
-         let (seg_pixelValues, seg_info) = convertImageToArray(fromCGImage: segmentationCGImage) // width : 256, height : 192 => 256 * 192 = 49152
-         let seg_scale_pixelValues = seg_pixelValues!.map { $0 / UInt8(255) }
-         
-         let productValues = zip(depthMap1DArray, seg_scale_pixelValues).map{ $0 * Float32($1) }
-         
-         let productCGImage = convertArrayToImage(fromPixelValues: productValues, fromImageInfo: seg_info)
-         let productCVPixelBuffer = pixelBufferFromCGImage(image: productCGImage!)
-         
-         depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer, pixelFormat: .r32Float, planeIndex: 0)
-         */
-        
-        /**
-                시도 3)
-                - CVPixelBuffer(depthMap) --> 1d array
-                - depth 1d array * segmentation 1d array
-                - 위에서 나온 1d array -> CVPixelBuffer
-                - 위의 CVPixelBuffer -> CIImage 로 변환했으나 렌더링 x
-         
-        
-         let width = CVPixelBufferGetWidth(depthMap)
-         let height = CVPixelBufferGetHeight(depthMap)
-         CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
-         let floatBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthMap), to: UnsafeMutablePointer<Float32>.self)
-         var depthMap1DArray : Array<Float32> = []
-         let bufferPointer = UnsafeBufferPointer(start: floatBuffer, count: width * height)
-         for (index, value) in bufferPointer.enumerated() {
-             depthMap1DArray.append(value)
-         }
-        
-        let segmentationCIImage = CIImage(cvPixelBuffer: frame.segmentationBuffer!)
-        let segmentationCGImage = ciContext.createCGImage(segmentationCIImage, from: segmentationCIImage.extent)
-        let (seg_pixelValues, seg_info) = convertImageToArray(fromCGImage: segmentationCGImage) // width : 256, height : 192 => 256 * 192 = 49152
-        let seg_scale_pixelValues = seg_pixelValues!.map { $0 / UInt8(255) }
-        
-        let productValues = zip(depthMap1DArray, seg_scale_pixelValues).map{ $0 * Float32($1) }
-        let options: NSDictionary = [:]
-        var productCVPixelBuffer : CVPixelBuffer? = nil
-        CVPixelBufferCreate(
-            kCFAllocatorDefault,
-            width,
-            height,
-            kCVPixelFormatType_DepthFloat32,
-            options,
-            &productCVPixelBuffer)
-        
-        
-        depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer!, pixelFormat: .r32Float, planeIndex: 0)
-        CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: 0))
-        */
         depthTexture = makeTexture(fromPixelBuffer: depthMap, pixelFormat: .r32Float, planeIndex: 0)
         //depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer!, pixelFormat: .r32Float, planeIndex: 0)
         confidenceTexture = makeTexture(fromPixelBuffer: confidenceMap, pixelFormat: .r8Uint, planeIndex: 0)
@@ -346,42 +243,6 @@ final class Renderer {
         commandBuffer.commit()
     }
     
-/**
- *  Description : Segmentation 결과를 보여주기 위해, 원본 이미지 + 마스크 이미지 + 배경 이미지를 합친 Filter를 blend 하여 하나의 CIImage를 생성
- *
- *
-    private func segmentation(original framePixelBuffer : CVPixelBuffer,
-                       mask maskPixelBuffer : CVPixelBuffer) {
-        // Create CIImage objects for the video frame and the segmentation mask.
-        let originalImage = CIImage(cvPixelBuffer: framePixelBuffer).oriented(.right)
-        var maskImage = CIImage(cvPixelBuffer: maskPixelBuffer).oriented(.right)
-        // Scale the mask image to fit the bounds of the video frame.
-        let scaleX = originalImage.extent.width / maskImage.extent.width
-        let scaleY = originalImage.extent.height / maskImage.extent.height
-        maskImage = maskImage.transformed(by: .init(scaleX: scaleX, y: scaleY))
-        
-        // Define RGB vectors for CIColorMatrix filter.
-        let vectors = [
-            "inputRVector": CIVector(x: 0, y: 0, z: 0, w: 0),
-            "inputGVector": CIVector(x: 0, y: 0, z: 0, w: 0),
-            "inputBVector": CIVector(x: 0, y: 0, z: 0, w: 0)
-        ]
-        
-        // Create a colored background image.
-        let backgroundImage = maskImage.applyingFilter("CIColorMatrix",
-                                                       parameters: vectors)
-        
-        // Blend the original, background, and mask images.
-        let blendFilter = CIFilter.blendWithRedMask()
-        blendFilter.inputImage = originalImage
-        blendFilter.backgroundImage = backgroundImage
-        blendFilter.maskImage = maskImage
-        
-        // Set the new, blended image as current.
-        segmentationImage = blendFilter.outputImage?.oriented(.right)
-    }
- */
-    
     private func shouldAccumulate(frame: ARFrame) -> Bool {
         if self.isInViewSceneMode {
             
@@ -399,16 +260,12 @@ final class Renderer {
         guard let maskPixelBuffer =
                 segmentationRequest.results?.first?.pixelBuffer else { return }
         
-        /**
-            해당 maskPixelBuffer resize -> 1920 * 1440 -> CGImage -> 1d-array 로 만들기 -> makeGridPoints에 전달하기
-         */
-        
-        let debugCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
+        let maskCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
         let originalCIImage = CIImage(cvPixelBuffer: frame.capturedImage)
         let targetSize = CGSize(width: originalCIImage.extent.height, height: originalCIImage.extent.width)
-        let resizeDebugCIImage = resizeCIImage(debugCIImage, targetSize)
-        let resizeDebugCGImage = ciContext.createCGImage(resizeDebugCIImage, from: resizeDebugCIImage.extent)
-        let (segmentation1DArray, segmentationInfo) = convertImageToArray(fromCGImage: resizeDebugCGImage)
+        let resizeMaskCIImage = resizeCIImage(maskCIImage, targetSize)
+        let resizeMaskCGImage = ciContext.createCGImage(resizeMaskCIImage, from: resizeMaskCIImage.extent)
+        let segmentation1DArray = convertImageToArray(fromCGImage: resizeMaskCGImage)
         
         let gridPointsBuffer = MetalBuffer<Float2>(device: device,
                                                    array: makeGridPoints(array: segmentation1DArray!),
@@ -417,9 +274,7 @@ final class Renderer {
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
         
         var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture, confidenceTexture]
-        //var retainingTextures = [depthTexture]
         
-        // 밑에 있는 코드(renderEncoder 작업) command를 모두 수행한 뒤에 호출됨
         commandBuffer.addCompletedHandler { buffer in
             retainingTextures.removeAll()
             // copy gpu point buffer to cpu
@@ -759,27 +614,15 @@ private extension Renderer {
         return flipYZ * matrix_float4x4(simd_quaternion(rotationAngle, Float3(0, 0, 1)))
     }
     
-    func convertImageToArray(fromCGImage imageRef: CGImage?) -> (pixelValues: [UInt8]?, imageInfo : [String : Any])
+    func convertImageToArray(fromCGImage imageRef: CGImage?) -> [UInt8]?
     {
-        var imageInfo : [String : Any] = [:]
-        
         var pixelValues: [UInt8]?
         if let imageRef = imageRef {
             let width = imageRef.width
-            imageInfo["width"] = width
-            
             let height = imageRef.height
-            imageInfo["height"] = height
-            
             let bitsPerComponent = imageRef.bitsPerComponent
-            imageInfo["bitsPerComponent"] = bitsPerComponent
-            
             let bytesPerRow = imageRef.bytesPerRow / 4
-            imageInfo["bytesPerRow"] = bytesPerRow
-            
             let totalBytes = height * bytesPerRow
-            imageInfo["totalBytes"] = totalBytes
-
             let colorSpace = CGColorSpaceCreateDeviceGray()
             var intensities = [UInt8](repeating: 0, count: totalBytes)
             let contextRef = CGContext(data: &intensities, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: 0)
@@ -788,102 +631,7 @@ private extension Renderer {
             pixelValues = intensities
         }
         
-        return (pixelValues, imageInfo)
-    }
-
-    
-    func convertArrayToImage(fromPixelValues pixelValues: [UInt8]?, fromImageInfo imageInfo : [String : Any]) -> CGImage?
-    {
-        var imageRef: CGImage?
-        if var pixelValues = pixelValues {
-            imageRef = withUnsafePointer(to: &pixelValues, {
-                ptr -> CGImage? in
-                var imageRef: CGImage?
-                let colorSpaceRef = CGColorSpaceCreateDeviceGray()
-                let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue).union(CGBitmapInfo())
-                let data = UnsafeRawPointer(ptr.pointee).assumingMemoryBound(to: UInt8.self)
-                let releaseData: CGDataProviderReleaseDataCallback = {
-                    (info: UnsafeMutableRawPointer?, data: UnsafeRawPointer, size: Int) -> () in
-                }
-                
-                if let providerRef = CGDataProvider(dataInfo: nil, data: data, size: imageInfo["totalBytes"] as! Int, releaseData: releaseData) {
-                    imageRef = CGImage(width: imageInfo["width"] as! Int,
-                                       height: imageInfo["height"] as! Int,
-                                       bitsPerComponent: imageInfo["bitsPerComponent"] as! Int,
-                                       bitsPerPixel: imageInfo["bitsPerComponent"] as! Int,
-                                       bytesPerRow: imageInfo["bytesPerRow"] as! Int,
-                                       space: colorSpaceRef,
-                                       bitmapInfo: bitmapInfo,
-                                       provider: providerRef,
-                                       decode: nil,
-                                       shouldInterpolate: false,
-                                       intent: CGColorRenderingIntent.defaultIntent)
-                }
-                return imageRef
-            })
-        }
-
-        return imageRef
-    }
-    
-    func convertArrayToImage(fromPixelValues pixelValues: [Float32]?, fromImageInfo imageInfo : [String : Any]) -> CGImage?
-    {
-        var imageRef: CGImage?
-        if var pixelValues = pixelValues {
-            imageRef = withUnsafePointer(to: &pixelValues, {
-                ptr -> CGImage? in
-                var imageRef: CGImage?
-                let colorSpaceRef = CGColorSpaceCreateDeviceGray()
-                let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue).union(CGBitmapInfo())
-                let data = UnsafeRawPointer(ptr.pointee).assumingMemoryBound(to: UInt8.self)
-                let releaseData: CGDataProviderReleaseDataCallback = {
-                    (info: UnsafeMutableRawPointer?, data: UnsafeRawPointer, size: Int) -> () in
-                }
-                
-                if let providerRef = CGDataProvider(dataInfo: nil, data: data, size: imageInfo["totalBytes"] as! Int, releaseData: releaseData) {
-                    imageRef = CGImage(width: imageInfo["width"] as! Int,
-                                       height: imageInfo["height"] as! Int,
-                                       bitsPerComponent: imageInfo["bitsPerComponent"] as! Int,
-                                       bitsPerPixel: imageInfo["bitsPerComponent"] as! Int,
-                                       bytesPerRow: imageInfo["bytesPerRow"] as! Int,
-                                       space: colorSpaceRef,
-                                       bitmapInfo: bitmapInfo,
-                                       provider: providerRef,
-                                       decode: nil,
-                                       shouldInterpolate: false,
-                                       intent: CGColorRenderingIntent.defaultIntent)
-                }
-                return imageRef
-            })
-        }
-
-        return imageRef
-    }
-    
-    func pixelBufferFromCGImage(image: CGImage) -> CVPixelBuffer {
-        var pxbuffer: CVPixelBuffer? = nil
-        let options: NSDictionary = [:]
-
-        let width =  image.width
-        let height = image.height
-        let bytesPerRow = image.bytesPerRow
-
-        let dataFromImageDataProvider = CFDataCreateMutableCopy(kCFAllocatorDefault, 0, image.dataProvider!.data)
-        let x = CFDataGetMutableBytePtr(dataFromImageDataProvider)
-        
-        CVPixelBufferCreateWithBytes(
-            kCFAllocatorDefault,
-            width,
-            height,
-            kCVPixelFormatType_DepthFloat32,
-            x!,
-            bytesPerRow,
-            nil,
-            nil,
-            options,
-            &pxbuffer
-        )
-        return pxbuffer!;
+        return pixelValues
     }
     
     // Lanczos interpolation
