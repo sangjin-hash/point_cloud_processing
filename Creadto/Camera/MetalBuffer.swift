@@ -42,7 +42,6 @@ struct MetalBuffer<Element>: Resource {
     
     /// Initializes the buffer with the contents of the provided array.
     init(device: MTLDevice, array: [Element], index: UInt32, options: MTLResourceOptions = []) {
-         
         guard let buffer = device.makeBuffer(bytes: array, length: MemoryLayout<Element>.stride * array.count, options: .storageModeShared) else {
             fatalError("Failed to create MTLBuffer")
         }

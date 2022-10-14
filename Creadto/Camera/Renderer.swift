@@ -267,8 +267,13 @@ final class Renderer {
         let resizeMaskCGImage = ciContext.createCGImage(resizeMaskCIImage, from: resizeMaskCIImage.extent)
         let segmentation1DArray = convertImageToArray(fromCGImage: resizeMaskCGImage)
         
+        let gridArray = makeGridPoints(array: segmentation1DArray!)
+        guard gridArray.count > 0 else {
+            return
+        }
+        
         let gridPointsBuffer = MetalBuffer<Float2>(device: device,
-                                                   array: makeGridPoints(array: segmentation1DArray!),
+                                                   array: gridArray,
                                                    index: kGridPoints.rawValue, options: [])
         
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
