@@ -13,7 +13,6 @@ import Vision
 final class Renderer {
     var savedCloudURLs = [URL]()
     private var cpuParticlesBuffer = [CPUParticle]()
-    var showParticles = false
     var isInViewSceneMode = true
     var isSavingFile = false
     var highConfCount = 0
@@ -51,7 +50,6 @@ final class Renderer {
     private lazy var unprojectPipelineState = makeUnprojectionPipelineState()!
     private lazy var rgbPipelineState = makeRGBPipelineState()!
     private lazy var particlePipelineState = makeParticlePipelineState()!
-    private lazy var depthPipelineState = makeDepthPipelineState()!
     // texture cache for captured image
     private lazy var textureCache = makeTextureCache()
     private var capturedImageTextureY: CVMetalTexture?
@@ -159,7 +157,6 @@ final class Renderer {
         }
         
         depthTexture = makeTexture(fromPixelBuffer: depthMap, pixelFormat: .r32Float, planeIndex: 0)
-        //depthTexture = makeTexture(fromPixelBuffer: productCVPixelBuffer!, pixelFormat: .r32Float, planeIndex: 0)
         confidenceTexture = makeTexture(fromPixelBuffer: confidenceMap, pixelFormat: .r8Uint, planeIndex: 0)
         return true
     }
@@ -193,15 +190,13 @@ final class Renderer {
         
         // update frame data
         update(frame: currentFrame)
-        //segmentation(original: currentFrame.capturedImage, mask: segmentationBuffer)
         updateCapturedImageTextures(frame: currentFrame)
-        updateDepthTextures(frame: currentFrame)
         
         // handle buffer rotating
         currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
         pointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
         
-        if shouldAccumulate(frame: currentFrame) {
+        if shouldAccumulate(frame: currentFrame), updateDepthTextures(frame: currentFrame) {
             accumulatePoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
         }
         
@@ -218,17 +213,6 @@ final class Renderer {
             renderEncoder.setFragmentBuffer(rgbUniformsBuffers[currentBufferIndex])
             renderEncoder.setFragmentTexture(CVMetalTextureGetTexture(capturedImageTextureY!), index: Int(kTextureY.rawValue))
             renderEncoder.setFragmentTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
-            renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
-        }
-        
-        if self.showParticles {
-            // filter turn on/off
-            var retainingTextures = [depthTexture]
-            commandBuffer.addCompletedHandler{ buffer in
-                retainingTextures.removeAll()
-            }
-            renderEncoder.setRenderPipelineState(depthPipelineState)
-            renderEncoder.setFragmentTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureCbCr.rawValue))
             renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         }
         
@@ -324,9 +308,6 @@ extension Renderer {
         segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8
     }
     
-    func toggleParticles() {
-        self.showParticles = !self.showParticles
-    }
     func toggleSceneMode() {
         self.isInViewSceneMode = !self.isInViewSceneMode
     }
@@ -491,23 +472,6 @@ private extension Renderer {
         descriptor.fragmentFunction = fragmentFunction
         descriptor.depthAttachmentPixelFormat = renderDestination.depthStencilPixelFormat
         descriptor.colorAttachments[0].pixelFormat = renderDestination.colorPixelFormat
-        
-        return try? device.makeRenderPipelineState(descriptor: descriptor)
-    }
-    
-    func makeDepthPipelineState() -> MTLRenderPipelineState? {
-        guard let vertexFunction = library.makeFunction(name: "rgbVertex"),
-            let fragmentFunction = library.makeFunction(name: "rgbFragment") else {
-                return nil
-        }
-        
-        let descriptor = MTLRenderPipelineDescriptor()
-        descriptor.vertexFunction = vertexFunction
-        descriptor.fragmentFunction = fragmentFunction
-        descriptor.depthAttachmentPixelFormat = .depth32Float
-        descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-        descriptor.vertexDescriptor = createPlaneMetalVertexDescriptor()
-        
         
         return try? device.makeRenderPipelineState(descriptor: descriptor)
     }

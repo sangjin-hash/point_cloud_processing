@@ -10,7 +10,6 @@ final class MainController: UIViewController, ARSessionDelegate {
     private var rgbButton = UIButton(type: .system)
     private var showSceneButton = UIButton(type: .system)
     private var saveButton = UIButton(type: .system)
-    private var toggleParticlesButton = UIButton(type: .system)
     private let session = ARSession()
     var renderer: Renderer!
     private  var isPasued = false
@@ -49,10 +48,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             tintColor: .yellow, hidden: !isUIEnabled)
         view.addSubview(showSceneButton)
         
-        toggleParticlesButton = createButton(mainView: self, iconName: "circle.grid.hex.fill",
-            tintColor: .green, hidden: !isUIEnabled)
-        view.addSubview(toggleParticlesButton)
-        
         rgbButton = createButton(mainView: self, iconName: "eye",
             tintColor: .blue, hidden: !isUIEnabled)
         view.addSubview(rgbButton)
@@ -72,11 +67,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             showSceneButton.heightAnchor.constraint(equalToConstant: 60),
             showSceneButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             showSceneButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            toggleParticlesButton.widthAnchor.constraint(equalToConstant: 50),
-            toggleParticlesButton.heightAnchor.constraint(equalToConstant: 50),
-            toggleParticlesButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50),
-            toggleParticlesButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             
             rgbButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50),
             rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
@@ -129,11 +119,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             } else {
                 self.setShowSceneButtonStyle(isScanning: false)
             }
-            
-        case toggleParticlesButton:
-            renderer.showParticles = !renderer.showParticles
-            let iconName = "circle.grid.hex" + (renderer.showParticles ? ".fill" : "")
-            self.toggleParticlesButton.setBackgroundImage(.init(systemName: iconName), for: .normal)
             
         default:
             break
