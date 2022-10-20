@@ -14,6 +14,9 @@ final class MainController: UIViewController, ARSessionDelegate {
     var renderer: Renderer!
     private  var isPasued = false
     
+    private var swipeUp = UISwipeGestureRecognizer()
+    private var swipeDown = UISwipeGestureRecognizer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         guard let device = MTLCreateSystemDefaultDevice() else {
@@ -35,20 +38,16 @@ final class MainController: UIViewController, ARSessionDelegate {
             renderer.drawRectResized(size: view.bounds.size)
         }
         
-        clearButton = createButton(mainView: self, iconName: "trash.circle.fill",
-            tintColor: .red, hidden: !isUIEnabled)
+        clearButton = createButton(mainView: self, iconName: "delete_button.png", hidden: !isUIEnabled)
         view.addSubview(clearButton)
         
-        saveButton = createButton(mainView: self, iconName: "tray.and.arrow.down.fill",
-            tintColor: .white, hidden: !isUIEnabled)
+        saveButton = createButton(mainView: self, iconName: "save_button.png", hidden: !isUIEnabled)
         view.addSubview(saveButton)
         
-        showSceneButton = createButton(mainView: self, iconName: "livephoto",
-            tintColor: .yellow, hidden: !isUIEnabled)
+        showSceneButton = createButton(mainView: self, iconName: "record_button.png", hidden: !isUIEnabled)
         view.addSubview(showSceneButton)
-        
-        rgbButton = createButton(mainView: self, iconName: "eye",
-            tintColor: .blue, hidden: !isUIEnabled)
+
+        rgbButton = createButton(mainView: self, iconName: "blind_button.png", hidden: !isUIEnabled)
         view.addSubview(rgbButton)
         
         NSLayoutConstraint.activate([
@@ -72,6 +71,38 @@ final class MainController: UIViewController, ARSessionDelegate {
             rgbButton.widthAnchor.constraint(equalToConstant: 60),
             rgbButton.heightAnchor.constraint(equalToConstant: 50)
         ])
+        
+        swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(respondToSwipeGesture(_:)))
+        swipeUp.direction = UISwipeGestureRecognizer.Direction.up
+        self.view.addGestureRecognizer(swipeUp)
+        
+        swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(respondToSwipeGesture(_:)))
+        swipeDown.direction = UISwipeGestureRecognizer.Direction.down
+        self.view.addGestureRecognizer(swipeDown)
+    }
+    
+    func handleSwipeState(isScanning : Bool){
+        if isScanning{
+            self.view.removeGestureRecognizer(swipeUp)
+            self.view.removeGestureRecognizer(swipeDown)
+        }else{
+            self.view.addGestureRecognizer(swipeUp)
+            self.view.addGestureRecognizer(swipeDown)
+        }
+    }
+    
+    @objc func respondToSwipeGesture(_ gesture: UIGestureRecognizer) {
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer{
+            switch swipeGesture.direction {
+                case UISwipeGestureRecognizer.Direction.up :
+                    print("Swipe Up")
+                case UISwipeGestureRecognizer.Direction.down :
+                    print("Swipe down")
+                default:
+                    break
+            }
+        }
+            
     }
     
     
@@ -97,17 +128,15 @@ final class MainController: UIViewController, ARSessionDelegate {
             
         case rgbButton:
             renderer.rgbOn = !renderer.rgbOn
-            let iconName = renderer.rgbOn ? "eye.slash": "eye"
-            rgbButton.setBackgroundImage(.init(systemName: iconName), for: .normal)
+            let iconName = renderer.rgbOn ? "blind_button.png": "eye_button.png"
+            rgbButton.setBackgroundImage(UIImage(named:iconName), for: .normal)
             
         case clearButton:
             renderer.isInViewSceneMode = true
-            setShowSceneButtonStyle(isScanning: false)
             renderer.clearParticles()
             
         case saveButton:
             renderer.isInViewSceneMode = true
-            setShowSceneButtonStyle(isScanning: false)
             goToSaveCurrentScanView()
         
         case showSceneButton:
@@ -177,12 +206,13 @@ extension MainController {
     private func setShowSceneButtonStyle(isScanning: Bool) -> Void {
         if isScanning {
             self.showSceneButton.setBackgroundImage(
-                .init(systemName: "livephoto.slash"), for: .normal)
-            self.showSceneButton.tintColor = .red
+                UIImage(named: "stop_button"), for: .normal)
+            handleSwipeState(isScanning: isScanning)
         } else {
             self.showSceneButton.setBackgroundImage(
-                .init(systemName: "livephoto"), for: .normal)
-            self.showSceneButton.tintColor = .white
+                UIImage(named: "record_button"), for: .normal)
+            handleSwipeState(isScanning: isScanning)
+            
         }
     }
     
@@ -256,12 +286,11 @@ extension SCNNode {
     }
 }
 
-func createButton(mainView: MainController, iconName: String, tintColor: UIColor, hidden: Bool) -> UIButton {
+func createButton(mainView: MainController, iconName: String, hidden: Bool) -> UIButton {
     let button = UIButton(type: .system)
     button.isHidden = hidden
     button.translatesAutoresizingMaskIntoConstraints = false
-    button.setBackgroundImage(.init(systemName: iconName), for: .normal)
-    button.tintColor = tintColor
+    button.setBackgroundImage(UIImage(named: iconName), for: .normal)
     button.addTarget(mainView, action: #selector(mainView.viewValueChanged), for: .touchDown)
     return button
 }
