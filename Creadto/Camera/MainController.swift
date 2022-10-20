@@ -33,7 +33,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             // Configure the renderer to draw to the view
             renderer = Renderer(session: session, metalDevice: device, renderDestination: view)
             renderer.drawRectResized(size: view.bounds.size)
-            //renderer.drawRectResized(size: CGSize(width: 256, height: 192))
         }
         
         clearButton = createButton(mainView: self, iconName: "trash.circle.fill",
@@ -82,7 +81,7 @@ final class MainController: UIViewController, ARSessionDelegate {
         // Create a world-tracking configuration, and
         // enable the scene depth frame-semantic.
         let configuration = ARWorldTrackingConfiguration()
-        configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth, .personSegmentationWithDepth]
+        configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth]
         // Run the view's session
         session.run(configuration)
         
@@ -100,7 +99,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             renderer.rgbOn = !renderer.rgbOn
             let iconName = renderer.rgbOn ? "eye.slash": "eye"
             rgbButton.setBackgroundImage(.init(systemName: iconName), for: .normal)
-            // run the segmentation model
             
         case clearButton:
             renderer.isInViewSceneMode = true
@@ -165,9 +163,7 @@ final class MainController: UIViewController, ARSessionDelegate {
 extension MainController: MTKViewDelegate {
     // Called whenever view changes orientation or layout is changed
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        
         renderer.drawRectResized(size: size)
-        //renderer.drawRectResized(size: CGSize(width: 256, height: 192))
     }
     
     // Called whenever the view needs to render
@@ -219,11 +215,11 @@ extension MainController {
         present(saveContoller, animated: true, completion: nil)
     }
 
-//    func goToExportView() -> Void {
-//        let exportController = ExportController()
-//        exportController.mainController = self
-//        present(exportController, animated: true, completion: nil)
-//    }
+    func goToExportView() -> Void {
+        let exportController = ExportController()
+        exportController.mainController = self
+        present(exportController, animated: true, completion: nil)
+    }
     
     func displayErrorMessage(error: XError) -> Void {
         var title: String

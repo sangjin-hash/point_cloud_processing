@@ -19,10 +19,15 @@ final class Renderer {
     var savingError: XError? = nil
     // Maximum number of points we store in the point cloud inital: 15M
     private let maxPoints = 8_000_000
+    
     // Number of sample points on the grid initial: 3M
-    var numGridPoints = 110592 // spacing : 5
-    // Particle's size in pixels -> 얘 크기를 pixel 크기에 맞춰서 바꾸면 될듯
-    private let particleSize: Float = 1
+    //var numGridPoints = 110592 // spacing : 5
+    //var numGridPoints = 172800 // spacing : 4
+    var numGridPoints = 307200 // spacing : 3
+    
+    // Particle's size in pixels
+    private let particleSize: Float = 5
+    
     // We only use portrait orientation in this app
     private let orientation = UIInterfaceOrientation.portrait
     // Camera's threshold values for detecting when the camera moves so that we can accumulate the points
@@ -527,7 +532,7 @@ private extension Renderer {
             let alternatingOffsetX = Float(gridY % 2) * spacing / 2
             for gridX in 0 ..< deltaX {
                 let cameraPoint = Float2(alternatingOffsetX + (Float(gridX) + 0.5) * spacing, (Float(gridY) + 0.5) * spacing)
-                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] > 250) {
+                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] == 255) {
                     points.append(cameraPoint)
                 }
             }

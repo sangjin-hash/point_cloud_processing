@@ -21,6 +21,7 @@
 import Foundation
 
 final class PLYFile {
+    
     static func write(fileName: String,
                       cpuParticlesBuffer: inout [CPUParticle],
                       highConfCount: Int,
@@ -35,7 +36,6 @@ final class PLYFile {
         var headersString = ""
         let headers = [
             "ply",
-            "comment Created by SceneX (IOS)",
             "format \(format) 1.0",
             "element vertex \(highConfCount)",
             "property float x",
@@ -155,6 +155,14 @@ final class PLYFile {
     
     private static func writeAscii(file: URL, cpuParticlesBuffer: inout [CPUParticle]) throws  -> Void {
         var vertexStrings = ""
+        
+//        var highest_x : Float = Float(-100)
+//        var lowest_x : Float = Float(100)
+//        var highest_y : Float = Float(-100)
+//        var lowest_y : Float = Float(100)
+//        var highest_z : Float = Float(-100)
+//        var lowest_z : Float = Float(100)
+        
         for particle in cpuParticlesBuffer {
             if particle.confidence != 2 { continue }
             let colors = particle.color
@@ -166,7 +174,40 @@ final class PLYFile {
             let z = particle.position.z
             let pValue =  "\(x) \(y) \(z) \(red) \(green) \(blue) 255" + "\r\n"
             vertexStrings += pValue
+//
+//            if(x > highest_x){
+//                highest_x = x
+//            }
+//
+//            if(x < lowest_x){
+//                lowest_x = x
+//            }
+//
+//            if(y > highest_y){
+//                highest_y = y
+//            }
+//
+//            if(y < lowest_y){
+//                lowest_y = y
+//            }
+//
+//            if(z > highest_z){
+//                highest_z = z
+//            }
+//
+//            if(z < lowest_z){
+//                lowest_z = z
+//            }
         }
+        
+//        print("---------------------------")
+//        print("Highest x = \(highest_x)")
+//        print("lowest x = \(lowest_x)")
+//        print("Highest y = \(highest_x)")
+//        print("lowest y = \(lowest_y)")
+//        print("Highest z = \(highest_z)")
+//        print("lowest z = \(lowest_z)")
+//        print("--------------------------")
         
         let fileHandle = try FileHandle(forWritingTo: file)
         fileHandle.seekToEndOfFile()

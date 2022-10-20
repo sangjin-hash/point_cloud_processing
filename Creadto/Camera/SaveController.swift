@@ -7,7 +7,8 @@ import Foundation
 
 class SaveController : UIViewController, UITextFieldDelegate {
     private var exportData = [URL]()
-    private let selectedFormat: String = "Ascii"
+    private let selectedFormat: String = "Binary Little Endian"
+    
     private let mainImage = UIImageView(image: .init(named: "save"))
     private let saveCurrentButton = UIButton(type: .system)
     private let goToExportViewButton = UIButton(type: .system)
@@ -45,6 +46,13 @@ class SaveController : UIViewController, UITextFieldDelegate {
         saveCurrentButton.addTarget(self, action: #selector(executeSave), for: .touchUpInside)
         view.addSubview(saveCurrentButton)
         
+        goToExportViewButton.tintColor = .cyan
+        goToExportViewButton.setTitle("Previously Saved Scans", for: .normal)
+        goToExportViewButton.setImage(.init(systemName: "tray.full"), for: .normal)
+        goToExportViewButton.translatesAutoresizingMaskIntoConstraints = false
+        goToExportViewButton.addTarget(self, action: #selector(goToExportView), for: .touchUpInside)
+        view.addSubview(goToExportViewButton)
+        
         NSLayoutConstraint.activate([
             fileNameInput.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             fileNameInput.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -63,6 +71,9 @@ class SaveController : UIViewController, UITextFieldDelegate {
             saveCurrentButton.heightAnchor.constraint(equalToConstant: 50),
             saveCurrentButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             saveCurrentButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -165),
+            
+            goToExportViewButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            goToExportViewButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
     
@@ -99,8 +110,11 @@ class SaveController : UIViewController, UITextFieldDelegate {
             afterGlobalThread: [dismissModal, mainController.afterSave],
             errorCallback: onSaveError,
             format: format)
-        
     }
     
+    @objc func goToExportView() -> Void {
+            dismissModal()
+            mainController.goToExportView()
+        }
 }
 

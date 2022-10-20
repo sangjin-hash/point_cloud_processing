@@ -31,6 +31,8 @@ static simd_float4 worldPoint(simd_float2 cameraPoint, float depth, matrix_float
     const auto worldPoint = localToWorld * simd_float4(localPoint, 1);
     
     return worldPoint / worldPoint.w;
+    //return simd_float4(localPoint, 1);
+    
 }
 
 ///  Vertex shader that takes in a 2D grid-point and infers its 3D position in world-space, along with RGB and confidence
