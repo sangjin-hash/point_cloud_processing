@@ -122,7 +122,6 @@
 				E65ADF9228D16AD5007C5886 /* XError.swift */,
 				E652401928EB41840064D766 /* PLYFile.swift */,
 				E652401D28EC4F650064D766 /* PointCloudVertex.swift */,
-				E695A3C628FD498E00F50336 /* ExportController.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -131,6 +130,7 @@
 			isa = PBXGroup;
 			children = (
 				E6B515B028D0D216006FCE79 /* ExportView.swift */,
+				E695A3C628FD498E00F50336 /* ExportController.swift */,
 			);
 			path = Export;
 			sourceTree = "<group>";
@@ -365,8 +365,9 @@
 		E6B515A528D09685006FCE79 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon 1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M9WR26927H;
@@ -399,8 +400,9 @@
 		E6B515A628D09685006FCE79 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon 1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M9WR26927H;

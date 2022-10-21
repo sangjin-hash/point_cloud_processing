@@ -17,6 +17,8 @@ final class MainController: UIViewController, ARSessionDelegate {
     private var swipeUp = UISwipeGestureRecognizer()
     private var swipeDown = UISwipeGestureRecognizer()
     
+    private var isSwipeUp = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         guard let device = MTLCreateSystemDefaultDevice() else {
@@ -38,10 +40,10 @@ final class MainController: UIViewController, ARSessionDelegate {
             renderer.drawRectResized(size: view.bounds.size)
         }
         
-        clearButton = createButton(mainView: self, iconName: "delete_button.png", hidden: !isUIEnabled)
+        clearButton = createButton(mainView: self, iconName: "delete_button.png", hidden: isUIEnabled)
         view.addSubview(clearButton)
         
-        saveButton = createButton(mainView: self, iconName: "save_button.png", hidden: !isUIEnabled)
+        saveButton = createButton(mainView: self, iconName: "save_button.png", hidden: isUIEnabled)
         view.addSubview(saveButton)
         
         showSceneButton = createButton(mainView: self, iconName: "record_button.png", hidden: !isUIEnabled)
@@ -51,24 +53,24 @@ final class MainController: UIViewController, ARSessionDelegate {
         view.addSubview(rgbButton)
         
         NSLayoutConstraint.activate([
-            clearButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50),
-            clearButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            clearButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
+            clearButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -110),
             clearButton.widthAnchor.constraint(equalToConstant: 50),
             clearButton.heightAnchor.constraint(equalToConstant: 50),
             
             saveButton.widthAnchor.constraint(equalToConstant: 50),
             saveButton.heightAnchor.constraint(equalToConstant: 50),
-            saveButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50),
-            saveButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            saveButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
+            saveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -110),
             
-            showSceneButton.widthAnchor.constraint(equalToConstant: 60),
-            showSceneButton.heightAnchor.constraint(equalToConstant: 60),
-            showSceneButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            showSceneButton.widthAnchor.constraint(equalToConstant: 80),
+            showSceneButton.heightAnchor.constraint(equalToConstant: 80),
+            showSceneButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30),
             showSceneButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            rgbButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50),
-            rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
-            rgbButton.widthAnchor.constraint(equalToConstant: 60),
+            rgbButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
+            rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
+            rgbButton.widthAnchor.constraint(equalToConstant: 50),
             rgbButton.heightAnchor.constraint(equalToConstant: 50)
         ])
         
@@ -85,24 +87,29 @@ final class MainController: UIViewController, ARSessionDelegate {
         if isScanning{
             self.view.removeGestureRecognizer(swipeUp)
             self.view.removeGestureRecognizer(swipeDown)
+            clearButton.isHidden = true
+            saveButton.isHidden = true
         }else{
             self.view.addGestureRecognizer(swipeUp)
             self.view.addGestureRecognizer(swipeDown)
+            clearButton.isHidden = false
+            saveButton.isHidden = false
         }
     }
     
     @objc func respondToSwipeGesture(_ gesture: UIGestureRecognizer) {
         if let swipeGesture = gesture as? UISwipeGestureRecognizer{
             switch swipeGesture.direction {
-                case UISwipeGestureRecognizer.Direction.up :
-                    print("Swipe Up")
-                case UISwipeGestureRecognizer.Direction.down :
-                    print("Swipe down")
-                default:
-                    break
+            case UISwipeGestureRecognizer.Direction.up :
+                saveButton.isHidden = false
+                clearButton.isHidden = false
+            case UISwipeGestureRecognizer.Direction.down :
+                saveButton.isHidden = true
+                clearButton.isHidden = true
+            default:
+                break
             }
         }
-            
     }
     
     
@@ -232,7 +239,8 @@ extension MainController {
     func afterSave() -> Void {
         let err = renderer.savingError
         if err == nil {
-            return export(url: renderer.savedCloudURLs.last!)
+            //return export(url: renderer.savedCloudURLs.last!)
+            return
         }
         try? FileManager.default.removeItem(at: renderer.savedCloudURLs.last!)
         renderer.savedCloudURLs.removeLast()

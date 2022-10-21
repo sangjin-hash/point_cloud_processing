@@ -12,7 +12,9 @@ struct GalleryView: View {
     @State private var scnItems = [URL]()
     @State private var scnFileName = [String]()
     @State private var selectedSCN = 0
-    @State private var isPath : Bool = false
+    private let columns = [GridItem(.adaptive(minimum: 150))]
+    @State private var  isTapped = false
+    @State private var isPath = false
     
     init() {
         refresh()
@@ -34,41 +36,45 @@ struct GalleryView: View {
         if scnItems.count > 0 {
             isPath = true
         }
+        
     }
     
     
     var body: some View {
         NavigationView(content: {
-            VStack {
-                Spacer()
-                
-                Picker("Choose a .scn file", selection: $selectedSCN){
-                    ForEach(0..<scnFileName.count, id: \.self){
-                        Text(self.scnFileName[$0]).tag($0)
+            ScrollView{
+                VStack{
+                    Text("Select the file to render").font(.headline).padding(40)
+                    
+                    Spacer()
+                    
+                    LazyVGrid(columns: columns, spacing: 30) {
+                        ForEach(Array(scnFileName.enumerated()), id:\.element){ index, element in
+                            ZStack{
+                                Capsule()
+                                    .fill(Color.indigo)
+                                    .frame(height: 50)
+                                Text(element)
+                                    .foregroundColor(.white)
+                            }.onTapGesture {
+                                self.selectedSCN = index
+                                isTapped.toggle()
+                            }
+                        }
                     }
+                    .padding(.horizontal)
+                    
+                    if isPath{
+                        NavigationLink("", destination: SceneRenderView(scnPath: scnItems[selectedSCN]),isActive: $isTapped)
+                    }
+                    
                 }
-                .pickerStyle(.wheel)
-                .background(.yellow)
-                .cornerRadius(15)
-                .padding()
                 .onAppear{
                     refresh()
                 }
-                
-                Spacer()
-                
-                if isPath {
-                    NavigationLink(
-                        destination: SceneRenderView(scnPath: scnItems[selectedSCN]),
-                        label: {
-                            Text("Render")
-                        })
-                    
-                    
-                    Spacer()
-                }
+                .navigationBarHidden(true)
+                .padding(20)
             }
-            
         })
     }
 }

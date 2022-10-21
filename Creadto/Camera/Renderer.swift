@@ -340,23 +340,26 @@ extension Renderer {
             }
 
             do { self.savedCloudURLs.append(try PLYFile.write(
-                    fileName: fileName,
-                    cpuParticlesBuffer: &self.cpuParticlesBuffer,
-                    highConfCount: self.highConfCount,
-                    format: format))
-                let cloud = self.convertCloud()
-                cloud.name = "cloud"
-                self.convertedScene.rootNode.addChildNode(cloud)
-                
-                let output = self.savedCloudURLs.last!.deletingPathExtension().appendingPathExtension("scn")
-                self.savedCloudURLs.append(output)
-                //let usdzOutput = self.savedCloudURLs.last!.deletingPathExtension().appendingPathExtension("usdz")
-                self.saveConvertedScene(path: output.path)
-                // /var/mobile/Containers/Data/Application/5F7E7D6F-D59A-4047-BF09-6A24C0EC32A2/Documents/Mn.scn
-            
-            } catch {
-                self.savingError = XError.savingFailed
+                fileName: fileName,
+                cpuParticlesBuffer: &self.cpuParticlesBuffer,
+                highConfCount: self.highConfCount,
+                format: format))} catch {
+                    self.savingError = XError.savingFailed
             }
+            
+            let cloud = self.convertCloud()
+            cloud.name = "cloud"
+                
+            self.convertedScene.rootNode.enumerateChildNodes{ (node, stop) in
+                node.removeFromParentNode()
+            }
+            self.convertedScene.rootNode.addChildNode(cloud)
+                
+            let output = self.savedCloudURLs.last!.deletingPathExtension().appendingPathExtension("scn")
+            self.savedCloudURLs.append(output)
+            //let usdzOutput = self.savedCloudURLs.last!.deletingPathExtension().appendingPathExtension("usdz")
+            self.saveConvertedScene(path: output.path)
+            // /var/mobile/Containers/Data/Application/5F7E7D6F-D59A-4047-BF09-6A24C0EC32A2/Documents/Mn.scn
 
             DispatchQueue.main.async {
                 for task in afterGlobalThread { task() }

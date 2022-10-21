@@ -11,7 +11,6 @@ class SaveController : UIViewController, UITextFieldDelegate {
     
     private let mainImage = UIImageView(image: .init(named: "save"))
     private let saveCurrentButton = UIButton(type: .system)
-    private let goToExportViewButton = UIButton(type: .system)
     private let saveCurrentScanLabel = UILabel()
     private let fileTypeWarning = UILabel()
     private let fileNameInput = UITextField()
@@ -41,39 +40,30 @@ class SaveController : UIViewController, UITextFieldDelegate {
         
         saveCurrentButton.tintColor = .green
         saveCurrentButton.setTitle("Save current scan", for: .normal)
+        saveCurrentButton.titleLabel?.font = UIFont.systemFont(ofSize: 20)
         saveCurrentButton.setImage(.init(systemName: "arrow.down.doc"), for: .normal)
         saveCurrentButton.translatesAutoresizingMaskIntoConstraints = false
         saveCurrentButton.addTarget(self, action: #selector(executeSave), for: .touchUpInside)
         view.addSubview(saveCurrentButton)
         
-        goToExportViewButton.tintColor = .cyan
-        goToExportViewButton.setTitle("Previously Saved Scans", for: .normal)
-        goToExportViewButton.setImage(.init(systemName: "tray.full"), for: .normal)
-        goToExportViewButton.translatesAutoresizingMaskIntoConstraints = false
-        goToExportViewButton.addTarget(self, action: #selector(goToExportView), for: .touchUpInside)
-        view.addSubview(goToExportViewButton)
-        
         NSLayoutConstraint.activate([
-            fileNameInput.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            fileNameInput.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            fileNameInput.widthAnchor.constraint(equalToConstant: 250),
-            fileNameInput.heightAnchor.constraint(equalToConstant: 45),
+            saveCurrentScanLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            saveCurrentScanLabel.bottomAnchor.constraint(equalTo: view.topAnchor, constant: 100),
             
-            mainImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -185),
+            mainImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -100),
             mainImage.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 20),
             mainImage.widthAnchor.constraint(equalToConstant: 300),
             mainImage.heightAnchor.constraint(equalToConstant: 300),
             
-            saveCurrentScanLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            saveCurrentScanLabel.bottomAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            fileNameInput.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            fileNameInput.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -300),
+            fileNameInput.widthAnchor.constraint(equalToConstant: 250),
+            fileNameInput.heightAnchor.constraint(equalToConstant: 45),
             
-            saveCurrentButton.widthAnchor.constraint(equalToConstant: 150),
-            saveCurrentButton.heightAnchor.constraint(equalToConstant: 50),
+            saveCurrentButton.widthAnchor.constraint(equalToConstant: 250),
+            saveCurrentButton.heightAnchor.constraint(equalToConstant: 100),
             saveCurrentButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            saveCurrentButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -165),
-            
-            goToExportViewButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
-            goToExportViewButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            saveCurrentButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
         ])
     }
     
@@ -92,7 +82,6 @@ class SaveController : UIViewController, UITextFieldDelegate {
     func dismissModal() { self.dismiss(animated: true, completion: nil) }
     
     private func beforeSave() {
-        goToExportViewButton.isEnabled = false
         saveCurrentButton.isEnabled = false
         isModalInPresentation = true
     }
@@ -111,10 +100,5 @@ class SaveController : UIViewController, UITextFieldDelegate {
             errorCallback: onSaveError,
             format: format)
     }
-    
-    @objc func goToExportView() -> Void {
-            dismissModal()
-            mainController.goToExportView()
-        }
 }
 
