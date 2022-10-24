@@ -18,11 +18,8 @@ struct ExportView: View {
     @State private var isPresented = false
     @State private var isDeleteClicked = false
     
-    init() {
-        refresh()
-    }
-    
     func refresh() {
+        print("refresh 호출")
         let docs = FileManager.default.urls(
             for: .documentDirectory, in: .userDomainMask)[0]
         
@@ -40,73 +37,45 @@ struct ExportView: View {
         }
     }
     
+    func delete(at offsets: IndexSet) {
+        if let first = offsets.first {
+            try! FileManager.default.removeItem(at: scnItems[first])
+            scnItems.remove(at: first)
+            refresh()
+        }
+      }
+    
     var body: some View {
-        ScrollView{
+        NavigationView{
             VStack{
-                HStack{
-                    Spacer()
-                    
-                    Text("Select the file to export").font(.headline)
-                    
-                    Spacer()
-                    
-                    if isPath, !isDeleteClicked {
-                        Button(action:{
-                            self.isDeleteClicked.toggle()
-                        }){
-                            Image(systemName: "trash")
-                                .imageScale(.large)
-                        }
-                    }
-                    
-                    if isDeleteClicked {
-                        Button(action: {
-//                            try! FileManager.default.removeItem(at: scnItems[selectedSCN])
-//                            scnItems.remove(at: selectedSCN)
-//                            refresh()
-                            
-                        }){
-                            Text("확인")
-                        }
-                        
-                        Button(action: {
-                            self.isDeleteClicked.toggle()
-                        }){
-                            Text("취소")
-                        }
-                    }
-                }.padding(20)
-                
-                
-                Spacer()
-                
-                LazyVGrid(columns: columns, spacing: 30) {
-                    ForEach(Array(scnFileName.enumerated()), id:\.element){ index, element in
-                        ZStack{
-                            Capsule()
-                                .fill(Color.yellow)
-                                .frame(height: 50)
+                Text("")
+                    .navigationBarTitle(Text("Select the file to export"), displayMode: .inline)
+                List{
+                    ForEach(Array(scnFileName.enumerated()), id: \.offset){ index, element in
+                        HStack{
                             Text(element)
-                                .foregroundColor(.white)
-                        }.onTapGesture {
+                            Spacer()
+                        }.frame(height: 50)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
                             self.selectedSCN = index
                             isPresented.toggle()
                         }
                     }
+                    .onDelete(perform: delete)
                 }
-                .padding(.horizontal)
-                .sheet(isPresented: $isPresented, content: {
-                    ModalView(activityItems: [scnItems[selectedSCN]])
-                })
-                
-                
             }
             .onAppear{
                 refresh()
             }
-            .navigationBarHidden(true)
-            .padding(20)
+            .sheet(isPresented: $isPresented, content: {
+                ModalView(activityItems: [scnItems[selectedSCN]])
+            })
+            .toolbar{
+                EditButton()
+            }
         }
+        
     }
 }
 

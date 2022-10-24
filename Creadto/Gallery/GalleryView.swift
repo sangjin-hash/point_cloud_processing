@@ -15,11 +15,7 @@ struct GalleryView: View {
     private let columns = [GridItem(.adaptive(minimum: 150))]
     @State private var  isTapped = false
     @State private var isPath = false
-    
-    init() {
-        refresh()
-    }
-    
+        
     func refresh() {
         let docs = FileManager.default.urls(
             for: .documentDirectory, in: .userDomainMask)[0]
@@ -44,7 +40,8 @@ struct GalleryView: View {
         NavigationView(content: {
             ScrollView{
                 VStack{
-                    Text("Select the file to render").font(.headline).padding(40)
+                    
+                    Text("Select the file to render").font(.headline).padding(20)
                     
                     Spacer()
                     
@@ -73,7 +70,6 @@ struct GalleryView: View {
                     refresh()
                 }
                 .navigationBarHidden(true)
-                .padding(20)
             }
         })
     }
