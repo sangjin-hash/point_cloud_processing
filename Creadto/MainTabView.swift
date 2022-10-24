@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainTabView: View {
     
-    @State private var selectedIndex = 0
+    @State private var selectedIndex = 1
     
     var body: some View {
             TabView(selection: $selectedIndex) {
