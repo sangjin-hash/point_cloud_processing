@@ -249,6 +249,8 @@ final class Renderer {
         guard let maskPixelBuffer =
                 segmentationRequest.results?.first?.pixelBuffer else { return }
         
+        
+        
         let maskCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
         let originalCIImage = CIImage(cvPixelBuffer: frame.capturedImage)
         let targetSize = CGSize(width: originalCIImage.extent.height, height: originalCIImage.extent.width)
@@ -260,7 +262,6 @@ final class Renderer {
         guard gridArray.count > 0 else {
             return
         }
-        
         let gridPointsBuffer = MetalBuffer<Float2>(device: device,
                                                    array: gridArray,
                                                    index: kGridPoints.rawValue, options: [])
@@ -274,7 +275,6 @@ final class Renderer {
             // copy gpu point buffer to cpu
             var i = self.cpuParticlesBuffer.count
             while (i < self.maxPoints && self.particlesBuffer[i].position != simd_float3(0.0,0.0,0.0)) {
-                
                 let position = self.particlesBuffer[i].position
                 let color = self.particlesBuffer[i].color
                 let confidence = self.particlesBuffer[i].confidence
@@ -301,6 +301,8 @@ final class Renderer {
         currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % maxPoints
         currentPointCount = min(currentPointCount + gridPointsBuffer.count, maxPoints)
         lastCameraTransform = frame.camera.transform
+//        print("---------------------------------------------")
+//        print(lastCameraTransform)
     }
 }
 

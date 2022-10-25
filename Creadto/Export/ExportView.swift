@@ -13,13 +13,10 @@ struct ExportView: View {
     @State private var scnFileName = [String]()
     
     @State private var selectedSCN = 0
-    private let columns = [GridItem(.adaptive(minimum: 150))]
     @State private var isPath : Bool = false
     @State private var isPresented = false
-    @State private var isDeleteClicked = false
     
     func refresh() {
-        print("refresh 호출")
         let docs = FileManager.default.urls(
             for: .documentDirectory, in: .userDomainMask)[0]
         
