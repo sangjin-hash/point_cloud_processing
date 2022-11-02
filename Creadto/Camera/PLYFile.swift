@@ -23,6 +23,7 @@ import Foundation
 final class PLYFile {
     
     static func write(fileName: String,
+                      lastCameraTransform : simd_float4x4,
                       cpuParticlesBuffer: inout [CPUParticle],
                       highConfCount: Int,
                       format: String) throws -> URL {
@@ -37,6 +38,7 @@ final class PLYFile {
         let headers = [
             "ply",
             "format \(format) 1.0",
+            "comment lastCameraTransform \(lastCameraTransform)",
             "element vertex \(highConfCount)",
             "property float x",
             "property float y",
@@ -57,7 +59,6 @@ final class PLYFile {
         } else {
             try writeBinary(file: plyFile, format: format, cpuParticlesBuffer: &cpuParticlesBuffer)
         }
-        print("plyFile = \(plyFile.path)")
         return plyFile
     }
     

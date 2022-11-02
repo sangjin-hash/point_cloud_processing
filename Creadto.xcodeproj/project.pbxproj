@@ -27,6 +27,8 @@
 		E6B515AF28D0D178006FCE79 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B515AE28D0D178006FCE79 /* MainTabView.swift */; };
 		E6B515B128D0D216006FCE79 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B515B028D0D216006FCE79 /* ExportView.swift */; };
 		E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E05AB228EDB08E0075732A /* CustomSceneView.swift */; };
+		E6F0F9A3291200200082741A /* UIActivity+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F0F9A2291200200082741A /* UIActivity+extensions.swift */; };
+		E6F0F9A8291229420082741A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E6F0F9A7291229420082741A /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +55,7 @@
 		E6B515AE28D0D178006FCE79 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		E6B515B028D0D216006FCE79 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		E6E05AB228EDB08E0075732A /* CustomSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSceneView.swift; sourceTree = "<group>"; };
+		E6F0F9A2291200200082741A /* UIActivity+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIActivity+extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E6F0F9A8291229420082741A /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +135,7 @@
 			children = (
 				E6B515B028D0D216006FCE79 /* ExportView.swift */,
 				E695A3C628FD498E00F50336 /* ExportController.swift */,
+				E6F0F9A2291200200082741A /* UIActivity+extensions.swift */,
 			);
 			path = Export;
 			sourceTree = "<group>";
@@ -151,6 +156,9 @@
 			dependencies = (
 			);
 			name = Creadto;
+			packageProductDependencies = (
+				E6F0F9A7291229420082741A /* Alamofire */,
+			);
 			productName = Creadto;
 			productReference = E6B5158D28D09685006FCE79 /* Creadto.app */;
 			productType = "com.apple.product-type.application";
@@ -179,6 +187,9 @@
 				Base,
 			);
 			mainGroup = E6B5158428D09685006FCE79;
+			packageReferences = (
+				E6F0F9A6291229420082741A /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = E6B5158E28D09685006FCE79 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -214,6 +225,7 @@
 				E6B5159328D09685006FCE79 /* Shaders.metal in Sources */,
 				E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */,
 				E6B515A828D0A3D6006FCE79 /* GalleryView.swift in Sources */,
+				E6F0F9A3291200200082741A /* UIActivity+extensions.swift in Sources */,
 				E6B5159628D09685006FCE79 /* Renderer.swift in Sources */,
 				E65ADF8D28D169DF007C5886 /* MetalBuffer.swift in Sources */,
 				E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */,
@@ -454,6 +466,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E6F0F9A6291229420082741A /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E6F0F9A7291229420082741A /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E6F0F9A6291229420082741A /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E6B5158528D09685006FCE79 /* Project object */;
 }
