@@ -11,7 +11,8 @@ import Alamofire
 import UniformTypeIdentifiers
 
 final class ExportActivity : UIActivity {
-    private let apiURL : String = "http://192.168.219.140:3000"
+    private let apiURL : String = "http://192.168.219.102:3000"
+    var mainController = MainController()
     
     override class var activityCategory: UIActivity.Category { return .share }
     
@@ -56,7 +57,11 @@ final class ExportActivity : UIActivity {
         .response{
             response in
             if let data = response.data{
-                print(String(data: data, encoding: .utf8))
+                let path = FileManager.default.urls(for: .documentDirectory,
+                                                    in: .userDomainMask)[0].appendingPathComponent("myFile.ply")
+                try! data.write(to: path)
+                print("저장 성공")
+                
             } else{
                 print("Network Something went wrong")
             }

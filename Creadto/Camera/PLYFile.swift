@@ -167,9 +167,9 @@ final class PLYFile {
         for particle in cpuParticlesBuffer {
             if particle.confidence != 2 { continue }
             let colors = particle.color
-            let red = Int(colors.x)
-            let green = Int(colors.y)
-            let blue = Int(colors.z)
+            let red = arrangeColorByte(color: colors.x)
+            let green = arrangeColorByte(color: colors.y)
+            let blue = arrangeColorByte(color: colors.z)
             let x = particle.position.x
             let y = particle.position.y
             let z = particle.position.z
