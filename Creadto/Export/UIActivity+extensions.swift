@@ -31,16 +31,19 @@ final class ExportActivity : UIActivity {
         
         do{
             let fileData = try? Data(contentsOf: filePath!)
-            fileUpload(
-                fileData: fileData ?? Data(),
-                fileName: fileName,
-                mimeType: mimeType ?? "")
+            Task {
+                await fileUpload(
+                    fileData: fileData ?? Data(),
+                    fileName: fileName,
+                    mimeType: mimeType ?? "")
+            }
+            
         } catch {
             print("Data 생성 오류")
         }
     }
     
-    private func fileUpload(fileData : Data, fileName: String, mimeType: String){
+    private func fileUpload(fileData : Data, fileName: String, mimeType: String) async {
         
         guard let url = URL(string: apiURL) else { return }
         
@@ -57,31 +60,29 @@ final class ExportActivity : UIActivity {
             response in
             switch response.result {
             case .success(let value) :
-                do {
-                    let data = try JSONSerialization.data(withJSONObject: value, options: .prettyPrinted)
-                    let userData = try JSONDecoder().decode(userData.self, from: data)
-                    print("userData = \(userData)")
-                    
-                    switch(userData.Status){
-                    case "Idle", "Received", "Loaded":
-                        sleep(5)
-                        self.observeStatus()
-                    case "Meshed" :
-                        if let _data = userData.Data {
-                            let path = FileManager.default.urls(for: .documentDirectory,
-                                                                in: .userDomainMask)[0].appendingPathComponent("myFile.ply")
-                            try! _data.write(to: path)
-                            print("Save the file")
-                        } else{
-                            print("Not save the file")
-                        }
+                Task{
+                    do {
+                        let data = try JSONSerialization.data(withJSONObject: value, options: .prettyPrinted)
+                        let userData = try JSONDecoder().decode(userData.self, from: data)
+                        print("userData = \(userData)")
                         
-                    default :
-                        print("default")
+                        if(userData.Status == "Meshed"){
+                            self.fileDownload()
+                        }else{
+                            while(true) {
+                                let res = try await self.observeStatus()
+                                if(res.Status == "Meshed"){
+                                    self.fileDownload()
+                                    break
+                                } else {
+                                    sleep(5)
+                                    print("status = \(res.Status)")
+                                }
+                            }
+                        }
+                    } catch {
+                        print("response error")
                     }
-                    
-                } catch {
-                    print("response error")
                 }
             case .failure(let error) :
                 print(error)
@@ -89,9 +90,9 @@ final class ExportActivity : UIActivity {
         }
     }
     
-    private func observeStatus(){
-        guard let url = URL(string: apiURL) else { return }
-        AF.request(url,
+    private func observeStatus() async throws -> userData {
+        let url = URL(string: apiURL)
+        return try await AF.request(url!,
                    method: .post,
                    parameters: ["Status" : "check"],
                    encoding: URLEncoding.default,
@@ -102,19 +103,8 @@ final class ExportActivity : UIActivity {
             case .success(let value) :
                 do {
                     let data = try JSONSerialization.data(withJSONObject: value, options: .prettyPrinted)
-                    let userData = try JSONDecoder().decode(userData.self, from: data)
-                    print("userData2 = \(userData)")
-                    
-                    while(true) {
-                        if(userData.Status == "Meshed"){
-                            self.fileDownload()
-                            break
-                        }
-                        else{
-                            sleep(5)
-                            self.fileDownload()
-                        }
-                    }
+                    let _userData = try JSONDecoder().decode(userData.self, from: data)
+                    print("userData2 = \(_userData)")
                 } catch {
                     print("response error")
                 }
@@ -122,6 +112,8 @@ final class ExportActivity : UIActivity {
                 print(error)
             }
         }
+        .serializingDecodable()
+        .value
     }
     
     private func fileDownload(){
