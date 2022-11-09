@@ -99,7 +99,7 @@ final class Renderer {
     private var sampleFrame: ARFrame { session.currentFrame! }
     private lazy var cameraResolution = Float2(Float(sampleFrame.camera.imageResolution.width), Float(sampleFrame.camera.imageResolution.height))
     private lazy var viewToCamera = sampleFrame.displayTransform(for: orientation, viewportSize: viewportSize).inverted()
-    private lazy var lastCameraTransform = sampleFrame.camera.transform
+    lazy var lastCameraTransform = sampleFrame.camera.transform
     
     // interfaces
     var confidenceThreshold = 2
@@ -323,6 +323,7 @@ extension Renderer {
     }
     
     func saveAsPlyFile(fileName: String,
+                       lastCameraTransform : simd_float4x4,
                        beforeGlobalThread: [() -> Void],
                        afterGlobalThread: [() -> Void],
                        errorCallback: (XError) -> Void,
@@ -343,6 +344,7 @@ extension Renderer {
 
             do { self.savedCloudURLs.append(try PLYFile.write(
                 fileName: fileName,
+                lastCameraTransform: lastCameraTransform,
                 cpuParticlesBuffer: &self.cpuParticlesBuffer,
                 highConfCount: self.highConfCount,
                 format: format))} catch {

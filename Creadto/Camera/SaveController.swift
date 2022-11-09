@@ -7,7 +7,7 @@ import Foundation
 
 class SaveController : UIViewController, UITextFieldDelegate {
     private var exportData = [URL]()
-    private let selectedFormat: String = "Binary Little Endian"
+    private let selectedFormat: String = "Ascii"
     
     private let mainImage = UIImageView(image: .init(named: "save"))
     private let saveCurrentButton = UIButton(type: .system)
@@ -95,6 +95,7 @@ class SaveController : UIViewController, UITextFieldDelegate {
         
         mainController.renderer.saveAsPlyFile(
             fileName: fileName!,
+            lastCameraTransform: mainController.renderer.lastCameraTransform,
             beforeGlobalThread: [beforeSave],
             afterGlobalThread: [dismissModal, mainController.afterSave],
             errorCallback: onSaveError,

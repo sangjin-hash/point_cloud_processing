@@ -77,11 +77,10 @@ struct ExportView: View {
 }
 
 struct ModalView: UIViewControllerRepresentable{
-    var activityItems: [Any]
-    var applicationActivities: [UIActivity]? = nil
-    
+    var activityItems: [URL]
+
     func makeUIViewController(context: UIViewControllerRepresentableContext<ModalView>) -> UIActivityViewController {
-        let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+        let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: [ExportActivity()])
         return controller
     }
     
@@ -93,4 +92,5 @@ struct ExportView_Previews: PreviewProvider {
         ExportView()
     }
 }
+
 
