@@ -20,7 +20,7 @@ class ExportController : UIViewController, UIPickerViewDelegate, UIPickerViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        mainController.renderer.loadSavedClouds()
+        //mainController.renderer.loadSavedClouds()
         exportData = mainController.renderer.savedCloudURLs
         
         goToSaveCurrentViewButton.setTitle("Go To Current Scan", for: .normal)

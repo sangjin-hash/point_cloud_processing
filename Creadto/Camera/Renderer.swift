@@ -17,9 +17,8 @@ final class Renderer {
     var isSavingFile = false
     var highConfCount = 0
     var savingError: XError? = nil
-    // Maximum number of points we store in the point cloud inital: 15M
-    private let maxPoints = 8_000_000
-    
+
+    private let maxPoints = 1_000_000
     // Number of sample points on the grid initial: 3M
     //var numGridPoints = 110592 // spacing : 5
     //var numGridPoints = 172800 // spacing : 4
@@ -111,6 +110,10 @@ final class Renderer {
         }
     }
     
+    // File & Directory Path
+    private let fileManager = FileManager.default
+    lazy var directoryURL : URL? = nil
+    
     init(session: ARSession, metalDevice device: MTLDevice, renderDestination: RenderDestinationProvider) {
         self.session = session
         self.device = device
@@ -136,7 +139,6 @@ final class Renderer {
         depthStencilState = device.makeDepthStencilState(descriptor: depthStateDescriptor)!
         
         inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
-        self.loadSavedClouds()
         self.initializeRequests()
     }
     
@@ -301,8 +303,6 @@ final class Renderer {
         currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % maxPoints
         currentPointCount = min(currentPointCount + gridPointsBuffer.count, maxPoints)
         lastCameraTransform = frame.camera.transform
-//        print("---------------------------------------------")
-//        print(lastCameraTransform)
     }
 }
 
@@ -322,9 +322,34 @@ extension Renderer {
         return self.cpuParticlesBuffer
     }
     
+    func getDate() -> String {
+        let now = Date()
+        let date = DateFormatter()
+        date.locale = Locale(identifier: "ko_kr")
+        date.timeZone = TimeZone(abbreviation: "KST")
+        date.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let directoryName = date.string(from: now)
+        return directoryName
+    }
+    
+    func createDirectory() {
+        let directoryName = getDate()
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        self.directoryURL = documentsURL.appendingPathComponent(directoryName)
+
+        do {
+            try fileManager.createDirectory(atPath: directoryURL!.path,
+                                            withIntermediateDirectories: false)
+        } catch let e as NSError {
+            print(e.localizedDescription)
+        }
+        
+//        self.savedCloudURLs = try! fileManager.contentsOfDirectory(
+//            at: directoryURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+    }
+    
     func saveAsPlyFile(fileName: String,
                        lastCameraTransform : simd_float4x4,
-                       beforeGlobalThread: [() -> Void],
                        afterGlobalThread: [() -> Void],
                        errorCallback: (XError) -> Void,
                        format: String) {
@@ -338,13 +363,11 @@ extension Renderer {
         
         DispatchQueue.global().async {
             self.isSavingFile = true
-            DispatchQueue.main.async {
-                for task in beforeGlobalThread { task() }
-            }
-
+            
             do { self.savedCloudURLs.append(try PLYFile.write(
                 fileName: fileName,
                 lastCameraTransform: lastCameraTransform,
+                directoryURL : self.directoryURL!,
                 cpuParticlesBuffer: &self.cpuParticlesBuffer,
                 highConfCount: self.highConfCount,
                 format: format))} catch {
@@ -448,12 +471,6 @@ extension Renderer {
         particlesBuffer = .init(device: device, count: maxPoints, index: kParticleUniforms.rawValue)
     }
     
-    func loadSavedClouds() {
-        let docs = FileManager.default.urls(
-            for: .documentDirectory, in: .userDomainMask)[0]
-        savedCloudURLs = try! FileManager.default.contentsOfDirectory(
-            at: docs, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-    }
 }
 
 // MARK: - Metal Renderer Helpers

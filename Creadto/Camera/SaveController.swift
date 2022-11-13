@@ -96,7 +96,6 @@ class SaveController : UIViewController, UITextFieldDelegate {
         mainController.renderer.saveAsPlyFile(
             fileName: fileName!,
             lastCameraTransform: mainController.renderer.lastCameraTransform,
-            beforeGlobalThread: [beforeSave],
             afterGlobalThread: [dismissModal, mainController.afterSave],
             errorCallback: onSaveError,
             format: format)

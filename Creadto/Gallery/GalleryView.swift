@@ -1,109 +1,119 @@
 //
-//  GalleryView.swift
+//  GalleryView2.swift
 //  Creadto
 //
-//  Created by 이상진 on 2022/09/13.
+//  Created by 이상진 on 2022/11/13.
 //
 
 import SwiftUI
 import SceneKit
 
 struct GalleryView: View {
-    @State private var scnItems = [URL]()
-    @State private var scnFileName = [String]()
-    @State private var selectedSCN = 0
-    private let columns = [GridItem(.adaptive(minimum: 150))]
-    @State private var  isTapped = false
-    @State private var isPath = false
-        
-    func refresh() {
-        let docs = FileManager.default.urls(
-            for: .documentDirectory, in: .userDomainMask)[0]
-        
-        scnItems.removeAll()
-        scnFileName.removeAll()
-        
-        scnItems = try! FileManager.default.contentsOfDirectory(
-            at: docs, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-        scnItems.map{ scnFileName.append(
-            $0.path.components(separatedBy: "/").last!
-        ) }
-        
-        if scnItems.count > 0 {
-            isPath = true
-        }
-        
-    }
-    
+    var url: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    @State var urls : [URL] = []
+    @EnvironmentObject var fileController : FileController
     
     var body: some View {
-        NavigationView(content: {
-            ScrollView{
-                VStack{
-                    
-                    Text("Select the file to render").font(.headline).padding(20)
-                    
-                    Spacer()
-                    
-                    LazyVGrid(columns: columns, spacing: 30) {
-                        ForEach(Array(scnFileName.enumerated()), id:\.element){ index, element in
-                            ZStack{
-                                Capsule()
-                                    .fill(Color.indigo)
-                                    .frame(height: 50)
-                                Text(element)
-                                    .foregroundColor(.white)
-                            }.onTapGesture {
-                                self.selectedSCN = index
-                                isTapped.toggle()
+        NavigationView{
+            List{
+                Section{
+                    ForEach(urls, id: \.self){ selectedUrl in
+                        NavigationLink(destination: RenderView(selectedUrl: selectedUrl, fileList: fileController.getContentsOfDirectory(url: selectedUrl)), label: {
+                            HStack{
+                                Text(selectedUrl.lastPathComponent)
+                                Spacer()
                             }
-                        }
+                            .frame(height: 50)
+                            .contentShape(Rectangle())
+                        })
                     }
-                    .padding(.horizontal)
-                    
-                    if isPath{
-                        NavigationLink("", destination: SceneRenderView(scnPath: scnItems[selectedSCN]),isActive: $isTapped)
-                    }
-                    
+                    .onDelete(perform: delete)
                 }
-                .onAppear{
-                    refresh()
-                }
-                .navigationBarHidden(true)
+            }.onAppear{
+                urls = fileController.getContentsOfDirectory(url: url)
             }
-        })
+            .navigationTitle("Gallery")
+            .listStyle(InsetGroupedListStyle())
+        }
+    }
+    
+    func delete(at offsets: IndexSet) {
+        if let first = offsets.first {
+            try! FileManager.default.removeItem(at: urls[first])
+            urls.remove(at: first)
+        }
     }
 }
 
-struct SceneRenderView : View {
+struct RenderView : View {
+    @State var selectedUrl : URL
+    @State var fileList : [URL]
+    @State var isTapped = false
+    @EnvironmentObject var fileController : FileController
     
+    var body : some View {
+        NavigationView{
+            List{
+                Section{
+                    ForEach(fileList, id: \.self){ file in
+                        HStack{
+                            Text(file.lastPathComponent)
+                            Spacer()
+                        }
+                        .frame(height: 50)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            print(file)
+                            self.selectedUrl = file
+                            isTapped.toggle()
+                        }
+                    }
+                }
+            }
+            
+        }.navigationBarHidden(true)
+        
+        if isTapped{
+            NavigationLink("", destination: SceneRenderingView(scnPath: selectedUrl), isActive: $isTapped)
+        }
+    }
+}
+
+struct SceneRenderingView : View {
+
     @State private var scene : SCNScene?
     private var scnFile : URL
-    
+
     init(scnPath : URL) {
         self.scnFile = scnPath
         _scene = State(initialValue: SCNSceneSource(url: scnFile)?.scene()!)
     }
-    
+
     var body : some View {
-        ZStack{
-            Color.white.ignoresSafeArea()
-            VStack{
-                NavigationLink(
-                    destination: GalleryView(),
-                    label: {}
-                )
-                
-                CustomSceneView(scene: $scene)
+        NavigationView{
+            ZStack{
+                Color.white.ignoresSafeArea()
+
+                CustomScene2View(scene: $scene)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
             }
         }
+
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        GalleryView()
+struct CustomScene2View: UIViewRepresentable {
+    @Binding var scene: SCNScene?
+    
+    func makeUIView(context: Context) -> SCNView {
+        let view = SCNView()
+        view.allowsCameraControl = true
+        view.autoenablesDefaultLighting = true
+        view.antialiasingMode = .multisampling2X
+        view.scene = scene
+        return view
     }
+    
+    func updateUIView(_ uiView: SCNView, context: Context) {}
+    
 }

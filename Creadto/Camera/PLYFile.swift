@@ -24,14 +24,12 @@ final class PLYFile {
     
     static func write(fileName: String,
                       lastCameraTransform : simd_float4x4,
+                      directoryURL : URL,
                       cpuParticlesBuffer: inout [CPUParticle],
                       highConfCount: Int,
                       format: String) throws -> URL {
         
-        let documentsDirectory = FileManager.default.urls(
-            for: .documentDirectory, in: .userDomainMask)[0]
-        let plyFile = documentsDirectory.appendingPathComponent(
-            "\(fileName).ply", isDirectory: false)
+        let plyFile = directoryURL.appendingPathComponent("\(fileName).ply")
         FileManager.default.createFile(atPath: plyFile.path, contents: nil, attributes: nil)
         
         var headersString = ""
