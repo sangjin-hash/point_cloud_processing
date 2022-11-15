@@ -26,8 +26,7 @@ struct GalleryView: View {
                             .frame(height: 50)
                             .contentShape(Rectangle())
                         })
-                    }
-                    .onDelete(perform: delete)
+                    }.onDelete(perform: delete)
                 }
             }.onAppear{
                 urls = fileController.getContentsOfDirectory(url: url)
@@ -52,68 +51,63 @@ struct RenderView : View {
     @EnvironmentObject var fileController : FileController
     
     var body : some View {
-        NavigationView{
-            List{
-                Section{
-                    ForEach(fileList, id: \.self){ file in
-                        HStack{
-                            Text(file.lastPathComponent)
-                            Spacer()
-                        }
-                        .frame(height: 50)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            print(file)
-                            self.selectedUrl = file
-                            isTapped.toggle()
-                        }
+        List{
+            Section{
+                ForEach(fileList, id: \.self){ file in
+                    HStack{
+                        Text(file.lastPathComponent)
+                        Spacer()
+                    }
+                    .frame(height: 50)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        print(file)
+                        self.selectedUrl = file
+                        isTapped.toggle()
                     }
                 }
             }
-            
-        }.navigationBarHidden(true)
+        }
         
         if isTapped{
             NavigationLink("", destination: SceneRenderingView(scnPath: selectedUrl), isActive: $isTapped)
         }
     }
+    
+    func checkSCNFile(fileURL : URL) -> Bool {
+        if(fileURL.pathExtension == "scn"){
+            return true
+        }else{
+            return false
+        }
+    }
+    
+    func getFileName(url : URL) -> String {
+        let deletedComponent = url.deletingPathExtension()
+        let result = deletedComponent.lastPathComponent
+        return result
+    }
 }
 
 struct SceneRenderingView : View {
-
+    
     @State private var scene : SCNScene?
     private var scnFile : URL
-
+    
     init(scnPath : URL) {
         self.scnFile = scnPath
         _scene = State(initialValue: SCNSceneSource(url: scnFile)?.scene()!)
     }
-
+    
     var body : some View {
         NavigationView{
             ZStack{
                 Color.white.ignoresSafeArea()
-
-                CustomScene2View(scene: $scene)
+                
+                CustomSceneView(scene: $scene)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-
+        
     }
-}
-
-struct CustomScene2View: UIViewRepresentable {
-    @Binding var scene: SCNScene?
-    
-    func makeUIView(context: Context) -> SCNView {
-        let view = SCNView()
-        view.allowsCameraControl = true
-        view.autoenablesDefaultLighting = true
-        view.antialiasingMode = .multisampling2X
-        view.scene = scene
-        return view
-    }
-    
-    func updateUIView(_ uiView: SCNView, context: Context) {}
-    
 }

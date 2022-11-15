@@ -37,7 +37,7 @@ struct MainTabView: View {
                         }
                     }.tag(1)
                 
-                DetailView()
+                ExportView()
                     .environmentObject(fileController)
                     .onTapGesture {
                         self.selectedIndex = 2

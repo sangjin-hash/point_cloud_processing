@@ -199,14 +199,6 @@ extension MainController {
         renderer.savingError = nil
     }
     
-    func export(url: URL) -> Void {
-        present(
-            UIActivityViewController(
-                activityItems: [url as Any],
-                applicationActivities: .none),
-            animated: true)
-    }
-    
     func afterSave() -> Void {
         let err = renderer.savingError
         if err == nil {
@@ -215,18 +207,6 @@ extension MainController {
         try? FileManager.default.removeItem(at: renderer.savedCloudURLs.last!)
         renderer.savedCloudURLs.removeLast()
         onSaveError(error: err!)
-    }
-    
-    func goToSaveCurrentScanView() {
-        let saveContoller = SaveController()
-        saveContoller.mainController = self
-        present(saveContoller, animated: true, completion: nil)
-    }
-
-    func goToExportView() -> Void {
-        let exportController = ExportController()
-        exportController.mainController = self
-        present(exportController, animated: true, completion: nil)
     }
     
     func displayErrorMessage(error: XError) -> Void {
