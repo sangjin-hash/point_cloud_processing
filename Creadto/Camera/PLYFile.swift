@@ -24,21 +24,39 @@ final class PLYFile {
     
     static func write(fileName: String,
                       lastCameraTransform : simd_float4x4,
+                      plyCounter : Int,
+                      directoryURL : URL,
                       cpuParticlesBuffer: inout [CPUParticle],
                       highConfCount: Int,
                       format: String) throws -> URL {
         
-        let documentsDirectory = FileManager.default.urls(
-            for: .documentDirectory, in: .userDomainMask)[0]
-        let plyFile = documentsDirectory.appendingPathComponent(
-            "\(fileName).ply", isDirectory: false)
+        let plyFile = directoryURL.appendingPathComponent("\(fileName).ply")
         FileManager.default.createFile(atPath: plyFile.path, contents: nil, attributes: nil)
+        
+        var direction : String?
+        switch(plyCounter){
+        case 1 :
+            direction = "Front"
+            break
+        case 2:
+            direction = "Left"
+            break
+        case 3:
+            direction = "Back"
+            break
+        case 4:
+            direction = "Right"
+            break
+        default :
+            break
+        }
         
         var headersString = ""
         let headers = [
             "ply",
             "format \(format) 1.0",
             "comment lastCameraTransform \(lastCameraTransform)",
+            "comment direction \(direction!)",
             "element vertex \(highConfCount)",
             "property float x",
             "property float y",

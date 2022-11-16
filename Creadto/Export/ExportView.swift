@@ -1,96 +1,101 @@
 //
-//  ExportView.swift
+//  DetailView.swift
 //  Creadto
 //
-//  Created by 이상진 on 2022/09/13.
+//  Created by 이상진 on 2022/11/11.
 //
 
 import SwiftUI
-import UIKit
+import Alamofire
+import UniformTypeIdentifiers
 
 struct ExportView: View {
-    @State private var scnItems = [URL]()
-    @State private var scnFileName = [String]()
-    
-    @State private var selectedSCN = 0
-    @State private var isPath : Bool = false
-    @State private var isPresented = false
-    
-    func refresh() {
-        let docs = FileManager.default.urls(
-            for: .documentDirectory, in: .userDomainMask)[0]
-        
-        scnItems.removeAll()
-        scnFileName.removeAll()
-        
-        scnItems = try! FileManager.default.contentsOfDirectory(
-            at: docs, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-        scnItems.map{ scnFileName.append(
-            $0.path.components(separatedBy: "/").last!)
-        }
-        
-        if scnItems.count > 0 {
-            isPath = true
-        }
-    }
-    
-    func delete(at offsets: IndexSet) {
-        if let first = offsets.first {
-            try! FileManager.default.removeItem(at: scnItems[first])
-            scnItems.remove(at: first)
-            refresh()
-        }
-      }
+    private let url: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    @State private var urls : [URL] = []
+    @EnvironmentObject var fileController : FileController
+    @StateObject private var viewModel = ExportViewModel()
     
     var body: some View {
         NavigationView{
-            VStack{
-                Text("")
-                    .navigationBarTitle(Text("Select the file to export"), displayMode: .inline)
-                List{
-                    ForEach(Array(scnFileName.enumerated()), id: \.offset){ index, element in
-                        HStack{
-                            Text(element)
-                            Spacer()
-                        }.frame(height: 50)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            self.selectedSCN = index
-                            isPresented.toggle()
-                        }
+            List{
+                Section{
+                    ForEach(urls, id: \.self){ selectedUrl in
+                        NavigationLink(destination: FileView(fileList: fileController.getContentsOfDirectory(url: selectedUrl)), label: {
+                            HStack{
+                                Text(selectedUrl.lastPathComponent)
+                                Spacer()
+                            }
+                            .frame(height: 50)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                Task {
+                                    viewModel.sendToServer(url: selectedUrl)
+                                }
+                            }
+                        })
                     }
                     .onDelete(perform: delete)
                 }
             }
             .onAppear{
-                refresh()
-            }
-            .sheet(isPresented: $isPresented, content: {
-                ModalView(activityItems: [scnItems[selectedSCN]])
-            })
-            .toolbar{
-                EditButton()
-            }
+                urls = fileController.getContentsOfDirectory(url: url)
+            } 
+            .navigationTitle("Export")
+            .listStyle(InsetGroupedListStyle())
         }
-        
+    }
+    
+    private func delete(at offsets: IndexSet) {
+        if let first = offsets.first {
+            try! FileManager.default.removeItem(at: urls[first])
+            urls.remove(at: first)
+        }
+    }
+    
+}
+
+struct FileView : View {
+    @State var fileList : [URL]
+    @State private var isPresented = false
+    @EnvironmentObject var fileController : FileController
+    @State var selectedIndex = 0
+    
+    var body : some View {
+        List{
+            Section{
+                ForEach(Array(fileList.enumerated()), id: \.offset){ index, file in
+                    HStack{
+                        Text(file.lastPathComponent)
+                        Spacer()
+                    }.frame(height: 50)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        self.selectedIndex = index
+                        isPresented.toggle()
+                    }
+                }.onDelete(perform: delete)
+            }
+        }.sheet(isPresented: $isPresented, content: {
+            ModalView(activityItems: [fileList[selectedIndex]])
+        })
+    }
+    
+    func delete(at offsets: IndexSet) {
+        if let first = offsets.first {
+            try! FileManager.default.removeItem(at: fileList[first])
+            fileList.remove(at: first)
+        }
     }
 }
 
 struct ModalView: UIViewControllerRepresentable{
     var activityItems: [URL]
+    var applicationActivities: [UIActivity]? = nil
 
     func makeUIViewController(context: UIViewControllerRepresentableContext<ModalView>) -> UIActivityViewController {
-        let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: [ExportActivity()])
+        let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
         return controller
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: UIViewControllerRepresentableContext<ModalView>) {}
 }
-
-struct ExportView_Previews: PreviewProvider {
-    static var previews: some View {
-        ExportView()
-    }
-}
-
-

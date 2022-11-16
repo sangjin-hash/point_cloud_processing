@@ -12,12 +12,10 @@ final class MainController: UIViewController, ARSessionDelegate {
     private var saveButton = UIButton(type: .system)
     private let session = ARSession()
     var renderer: Renderer!
-    private  var isPasued = false
     
-    private var swipeUp = UISwipeGestureRecognizer()
-    private var swipeDown = UISwipeGestureRecognizer()
-    
-    private var isSwipeUp = false
+    private var plyCounter = 0
+    private let selectedFormat: String = "Ascii"
+    private let fileNameList = ["Front_", "Left_", "Back_", "Right_"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,11 +38,8 @@ final class MainController: UIViewController, ARSessionDelegate {
             renderer.drawRectResized(size: view.bounds.size)
         }
         
-        clearButton = createButton(mainView: self, iconName: "delete_button.png", hidden: isUIEnabled)
+        clearButton = createButton(mainView: self, iconName: "delete_button.png", hidden: !isUIEnabled)
         view.addSubview(clearButton)
-        
-        saveButton = createButton(mainView: self, iconName: "save_button.png", hidden: isUIEnabled)
-        view.addSubview(saveButton)
         
         showSceneButton = createButton(mainView: self, iconName: "record_button.png", hidden: !isUIEnabled)
         view.addSubview(showSceneButton)
@@ -54,14 +49,9 @@ final class MainController: UIViewController, ARSessionDelegate {
         
         NSLayoutConstraint.activate([
             clearButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
-            clearButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -110),
+            clearButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
             clearButton.widthAnchor.constraint(equalToConstant: 50),
             clearButton.heightAnchor.constraint(equalToConstant: 50),
-            
-            saveButton.widthAnchor.constraint(equalToConstant: 50),
-            saveButton.heightAnchor.constraint(equalToConstant: 50),
-            saveButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
-            saveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -110),
             
             showSceneButton.widthAnchor.constraint(equalToConstant: 80),
             showSceneButton.heightAnchor.constraint(equalToConstant: 80),
@@ -73,45 +63,7 @@ final class MainController: UIViewController, ARSessionDelegate {
             rgbButton.widthAnchor.constraint(equalToConstant: 50),
             rgbButton.heightAnchor.constraint(equalToConstant: 50)
         ])
-        
-        swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(respondToSwipeGesture(_:)))
-        swipeUp.direction = UISwipeGestureRecognizer.Direction.up
-        self.view.addGestureRecognizer(swipeUp)
-        
-        swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(respondToSwipeGesture(_:)))
-        swipeDown.direction = UISwipeGestureRecognizer.Direction.down
-        self.view.addGestureRecognizer(swipeDown)
     }
-    
-    func handleSwipeState(isScanning : Bool){
-        if isScanning{
-            self.view.removeGestureRecognizer(swipeUp)
-            self.view.removeGestureRecognizer(swipeDown)
-            clearButton.isHidden = true
-            saveButton.isHidden = true
-        }else{
-            self.view.addGestureRecognizer(swipeUp)
-            self.view.addGestureRecognizer(swipeDown)
-            clearButton.isHidden = false
-            saveButton.isHidden = false
-        }
-    }
-    
-    @objc func respondToSwipeGesture(_ gesture: UIGestureRecognizer) {
-        if let swipeGesture = gesture as? UISwipeGestureRecognizer{
-            switch swipeGesture.direction {
-            case UISwipeGestureRecognizer.Direction.up :
-                saveButton.isHidden = false
-                clearButton.isHidden = false
-            case UISwipeGestureRecognizer.Direction.down :
-                saveButton.isHidden = true
-                clearButton.isHidden = true
-            default:
-                break
-            }
-        }
-    }
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -141,17 +93,39 @@ final class MainController: UIViewController, ARSessionDelegate {
         case clearButton:
             renderer.isInViewSceneMode = true
             renderer.clearParticles()
-            
-        case saveButton:
-            renderer.isInViewSceneMode = true
-            goToSaveCurrentScanView()
+            if(plyCounter > 0){
+                // remove scn file
+                try? FileManager.default.removeItem(at: renderer.savedCloudURLs.last!)
+                renderer.savedCloudURLs.removeLast()
+                
+                // remove ply file
+                try? FileManager.default.removeItem(at: renderer.savedCloudURLs.last!)
+                renderer.savedCloudURLs.removeLast()
+                plyCounter -= 1
+            }
         
         case showSceneButton:
             renderer.isInViewSceneMode = !renderer.isInViewSceneMode
             if !renderer.isInViewSceneMode {
+                if plyCounter % 4 == 0 {
+                    renderer.createDirectory()
+                }
+                renderer.clearParticles()
                 self.setShowSceneButtonStyle(isScanning: true)
             } else {
                 self.setShowSceneButtonStyle(isScanning: false)
+                let format = selectedFormat
+                    .lowercased(with: .none)
+                    .split(separator: " ")
+                    .joined(separator: "_")
+                let fileName = fileNameList[plyCounter-1] + renderer.getDate()
+                self.renderer.saveAsPlyFile(
+                    fileName: fileName,
+                    lastCameraTransform: renderer.lastCameraTransform,
+                    plyCounter: plyCounter,
+                    afterGlobalThread: [afterSave],
+                    errorCallback: onSaveError,
+                    format: format)
             }
             
         default:
@@ -212,14 +186,12 @@ extension MainController: MTKViewDelegate {
 extension MainController {
     private func setShowSceneButtonStyle(isScanning: Bool) -> Void {
         if isScanning {
+            plyCounter += 1
             self.showSceneButton.setBackgroundImage(
                 UIImage(named: "stop_button"), for: .normal)
-            handleSwipeState(isScanning: isScanning)
         } else {
             self.showSceneButton.setBackgroundImage(
                 UIImage(named: "record_button"), for: .normal)
-            handleSwipeState(isScanning: isScanning)
-            
         }
     }
     
@@ -228,35 +200,14 @@ extension MainController {
         renderer.savingError = nil
     }
     
-    func export(url: URL) -> Void {
-        present(
-            UIActivityViewController(
-                activityItems: [url as Any],
-                applicationActivities: .none),
-            animated: true)
-    }
-    
     func afterSave() -> Void {
         let err = renderer.savingError
         if err == nil {
-            //return export(url: renderer.savedCloudURLs.last!)
             return
         }
         try? FileManager.default.removeItem(at: renderer.savedCloudURLs.last!)
         renderer.savedCloudURLs.removeLast()
         onSaveError(error: err!)
-    }
-    
-    func goToSaveCurrentScanView() {
-        let saveContoller = SaveController()
-        saveContoller.mainController = self
-        present(saveContoller, animated: true, completion: nil)
-    }
-
-    func goToExportView() -> Void {
-        let exportController = ExportController()
-        exportController.mainController = self
-        present(exportController, animated: true, completion: nil)
     }
     
     func displayErrorMessage(error: XError) -> Void {

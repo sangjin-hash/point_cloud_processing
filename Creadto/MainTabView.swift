@@ -10,10 +10,12 @@ import SwiftUI
 struct MainTabView: View {
     
     @State private var selectedIndex = 1
+    @StateObject var fileController = FileController()
     
     var body: some View {
             TabView(selection: $selectedIndex) {
                 GalleryView()
+                    .environmentObject(fileController)
                     .onTapGesture {
                         self.selectedIndex = 0
                     }
@@ -36,6 +38,7 @@ struct MainTabView: View {
                     }.tag(1)
                 
                 ExportView()
+                    .environmentObject(fileController)
                     .onTapGesture {
                         self.selectedIndex = 2
                     }
