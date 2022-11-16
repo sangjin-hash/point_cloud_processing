@@ -122,6 +122,7 @@ final class MainController: UIViewController, ARSessionDelegate {
                 self.renderer.saveAsPlyFile(
                     fileName: fileName,
                     lastCameraTransform: renderer.lastCameraTransform,
+                    plyCounter: plyCounter,
                     afterGlobalThread: [afterSave],
                     errorCallback: onSaveError,
                     format: format)

@@ -350,6 +350,7 @@ extension Renderer {
     
     func saveAsPlyFile(fileName: String,
                        lastCameraTransform : simd_float4x4,
+                       plyCounter : Int,
                        afterGlobalThread: [() -> Void],
                        errorCallback: (XError) -> Void,
                        format: String) {
@@ -367,6 +368,7 @@ extension Renderer {
             do { self.savedCloudURLs.append(try PLYFile.write(
                 fileName: fileName,
                 lastCameraTransform: lastCameraTransform,
+                plyCounter : plyCounter,
                 directoryURL : self.directoryURL!,
                 cpuParticlesBuffer: &self.cpuParticlesBuffer,
                 highConfCount: self.highConfCount,
