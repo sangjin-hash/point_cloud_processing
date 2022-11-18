@@ -37,17 +37,28 @@ struct MainTabView: View {
                         }
                     }.tag(1)
                 
+                FrontCameraController()
+                    .onTapGesture {
+                        self.selectedIndex = 2
+                    }
+                    .tabItem{
+                        VStack(spacing: 4){
+                            Image(systemName: "camera.fill")
+                            Text("StandardCyborg")
+                        }
+                    }.tag(2)
+                
                 ExportView()
                     .environmentObject(fileController)
                     .onTapGesture {
-                        self.selectedIndex = 2
+                        self.selectedIndex = 3
                     }
                     .tabItem{
                         VStack(spacing: 4){
                             Image(systemName: "square.and.arrow.up")
                             Text("Export")
                         }
-                    }.tag(2)
+                    }.tag(3)
             }
         }
     
@@ -71,3 +82,17 @@ struct CameraController : UIViewControllerRepresentable {
         
     }
 }
+
+struct FrontCameraController : UIViewControllerRepresentable {
+    func makeUIViewController(context: UIViewControllerRepresentableContext<FrontCameraController>) -> UIViewControllerType {
+        let storyBoard = UIStoryboard(name: "Main", bundle: Bundle.main)
+        let controller = storyBoard.instantiateViewController(identifier: "TrueDepthCamera")
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: UIViewController, context:
+                                UIViewControllerRepresentableContext<FrontCameraController>){
+        
+    }
+}
+

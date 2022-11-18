@@ -10,7 +10,7 @@ import Alamofire
 import UniformTypeIdentifiers
 
 class ExportViewModel : ObservableObject {
-    private let apiURL = URL(string: "http://192.168.219.108:3000")
+    private let apiURL = URL(string: "http://192.168.219.104:3000")
     var fileController = FileController()
     
     private func checkPLYFile(fileURL : URL) -> Bool {
