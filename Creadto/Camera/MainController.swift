@@ -10,6 +10,7 @@ final class MainController: UIViewController, ARSessionDelegate {
     private var rgbButton = UIButton(type: .system)
     private var showSceneButton = UIButton(type: .system)
     private var saveButton = UIButton(type: .system)
+    private var flipButton = UIButton(type: .system)
     private let session = ARSession()
     var renderer: Renderer!
     
@@ -41,11 +42,14 @@ final class MainController: UIViewController, ARSessionDelegate {
         clearButton = createButton(mainView: self, iconName: "delete_button.png", hidden: !isUIEnabled)
         view.addSubview(clearButton)
         
-        showSceneButton = createButton(mainView: self, iconName: "record_button.png", hidden: !isUIEnabled)
+        showSceneButton = createButton(mainView: self, iconName: "ShutterButton-Recording.png", hidden: !isUIEnabled)
         view.addSubview(showSceneButton)
 
         rgbButton = createButton(mainView: self, iconName: "blind_button.png", hidden: !isUIEnabled)
         view.addSubview(rgbButton)
+        
+        flipButton = createButton(mainView: self, iconName: "flip.png", hidden: !isUIEnabled)
+        view.addSubview(flipButton)
         
         NSLayoutConstraint.activate([
             clearButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
@@ -59,15 +63,19 @@ final class MainController: UIViewController, ARSessionDelegate {
             showSceneButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             rgbButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
-            rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
+            rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -120),
             rgbButton.widthAnchor.constraint(equalToConstant: 50),
-            rgbButton.heightAnchor.constraint(equalToConstant: 50)
+            rgbButton.heightAnchor.constraint(equalToConstant: 50),
+            
+            flipButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
+            flipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
+            flipButton.widthAnchor.constraint(equalToConstant: 50),
+            flipButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         // Create a world-tracking configuration, and
         // enable the scene depth frame-semantic.
         let configuration = ARWorldTrackingConfiguration()
@@ -127,6 +135,9 @@ final class MainController: UIViewController, ARSessionDelegate {
                     errorCallback: onSaveError,
                     format: format)
             }
+            
+        case flipButton:
+            goToFrontTrueDepthCameraView()
             
         default:
             break
@@ -188,10 +199,10 @@ extension MainController {
         if isScanning {
             plyCounter += 1
             self.showSceneButton.setBackgroundImage(
-                UIImage(named: "stop_button"), for: .normal)
+                UIImage(named: "ShutterButton-Selected"), for: .normal)
         } else {
             self.showSceneButton.setBackgroundImage(
-                UIImage(named: "record_button"), for: .normal)
+                UIImage(named: "ShutterButton-Recording"), for: .normal)
         }
     }
     
@@ -224,6 +235,12 @@ extension MainController {
         DispatchQueue.main.asyncAfter(deadline: when) {
             alert.dismiss(animated: true, completion: nil)
         }
+    }
+    
+    func goToFrontTrueDepthCameraView() {
+        let trueDepthCameraController = TrueDepthCameraController()
+        present(trueDepthCameraController, animated: true, completion: nil)
+        dismiss(animated: true)
     }
 }
 

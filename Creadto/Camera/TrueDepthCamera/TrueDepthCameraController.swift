@@ -16,8 +16,10 @@ class TrueDepthCameraController : UIViewController {
     private var scenePreviewVC: ScenePreviewViewController?
     
     private lazy var documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    private lazy var sceneGltfURL = documentsURL.appendingPathComponent("scene.gltf")
-    private lazy var sceneThumbnailURL = documentsURL.appendingPathComponent("scene.png")
+    private lazy var directoryURL = documentsURL.appendingPathComponent("TrueDepthCamera")
+    private lazy var sceneGltfURL = directoryURL.appendingPathComponent("scene.gltf")
+    private lazy var sceneThumbnailURL = directoryURL.appendingPathComponent("scene.png")
+    private lazy var scenePlyURL = directoryURL.appendingPathComponent("scene.ply")
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     
@@ -48,7 +50,8 @@ class TrueDepthCameraController : UIViewController {
         let scanningVC = ScanningViewController()
         scanningVC.delegate = self
         scanningVC.generatesTexturedMeshes = true
-        scanningVC.modalPresentationStyle = .automatic
+        scanningVC.modalPresentationStyle = .fullScreen
+        scanningVC.modalTransitionStyle = .flipHorizontal
         present(scanningVC, animated: true)
         #endif
     }
@@ -70,6 +73,16 @@ class TrueDepthCameraController : UIViewController {
     // MARK: - Scene I/O
     
     private func loadScene() {
+        var isDir:ObjCBool = true
+        if !FileManager.default.fileExists(atPath: directoryURL.path, isDirectory: &isDir) {
+            do {
+                try FileManager.default.createDirectory(atPath: directoryURL.path,
+                                                        withIntermediateDirectories: false)
+            } catch let e as NSError {
+                print(e.localizedDescription)
+            }
+        }
+        
         if
             FileManager.default.fileExists(atPath: sceneGltfURL.path),
             let gltfAttributes = try? FileManager.default.attributesOfItem(atPath: sceneGltfURL.path),
@@ -82,7 +95,8 @@ class TrueDepthCameraController : UIViewController {
     }
     
     private func saveScene(scene: SCScene, thumbnail: UIImage?) {
-        scene.writeToGLTF(atPath: sceneGltfURL.path)
+        scene.pointCloud!.writeToPLY(atPath: scenePlyURL.path)
+        //scene.writeToGLTF(atPath: sceneGltfURL.path)
         
         if let thumbnail = thumbnail, let pngData = thumbnail.pngData() {
             try? pngData.write(to: sceneThumbnailURL)
