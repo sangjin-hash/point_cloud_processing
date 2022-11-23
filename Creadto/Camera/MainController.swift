@@ -14,12 +14,16 @@ final class MainController: UIViewController, ARSessionDelegate {
     private let session = ARSession()
     var renderer: Renderer!
     
-    private var plyCounter = 0
+    private var plyCounter: Int = 0
+    private var directoryURL: URL? = nil
+    
     private let selectedFormat: String = "Ascii"
     private let fileNameList = ["Front_", "Left_", "Back_", "Right_"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: .sendDirectoryData, object: nil)
+        
         guard let device = MTLCreateSystemDefaultDevice() else {
             print("Metal is not supported on this device")
             return
@@ -85,6 +89,13 @@ final class MainController: UIViewController, ARSessionDelegate {
         
         // The screen shouldn't dim during AR experiences.
         UIApplication.shared.isIdleTimerDisabled = true
+    }
+    
+    @objc private func dataReceived(_ notification : Notification){
+        self.plyCounter = notification.userInfo?[NotificationKey.plyCounter] as! Int
+        renderer.directoryURL = notification.userInfo?[NotificationKey.directoryURL] as? URL
+        print("[MainController] dataReceived")
+        print("plyCounter = \(self.plyCounter) url = \(renderer.directoryURL)")
     }
     
     @objc
@@ -237,9 +248,12 @@ extension MainController {
         }
     }
     
-    func goToFrontTrueDepthCameraView() {
+    private func goToFrontTrueDepthCameraView() {
         let trueDepthCameraController = TrueDepthCameraController()
         present(trueDepthCameraController, animated: true, completion: nil)
+        NotificationCenter.default.post(name: .sendDirectoryData,
+                                        object: nil,
+                                        userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : renderer.directoryURL])
         dismiss(animated: true)
     }
 }
@@ -273,4 +287,13 @@ func createButton(mainView: MainController, iconName: String, hidden: Bool) -> U
 
 extension MTKView: RenderDestinationProvider {
     
+}
+
+extension Notification.Name {
+    static let sendDirectoryData = Notification.Name("sendDirectoryData")
+}
+
+enum NotificationKey {
+    case plyCounter
+    case directoryURL
 }

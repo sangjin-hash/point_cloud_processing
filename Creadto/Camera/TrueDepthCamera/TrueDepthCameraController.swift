@@ -16,10 +16,11 @@ class TrueDepthCameraController : UIViewController {
     private var scenePreviewVC: ScenePreviewViewController?
     
     private lazy var documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    private lazy var directoryURL = documentsURL.appendingPathComponent("TrueDepthCamera")
-    private lazy var sceneGltfURL = directoryURL.appendingPathComponent("scene.gltf")
-    private lazy var sceneThumbnailURL = directoryURL.appendingPathComponent("scene.png")
-    private lazy var scenePlyURL = directoryURL.appendingPathComponent("scene.ply")
+    private var plyCounter: Int = 0
+    private var directoryURL: URL? = nil
+    
+    private var sceneThumbnailURL: URL? = nil
+    private var scenePlyURL: URL? = nil
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     
@@ -34,7 +35,8 @@ class TrueDepthCameraController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadScene()
+        NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: .sendDirectoryData, object: nil)
+        // loadScene()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -55,6 +57,13 @@ class TrueDepthCameraController : UIViewController {
         present(scanningVC, animated: true)
         #endif
     }
+    
+    @objc private func dataReceived(_ notification : Notification){
+        self.plyCounter = notification.userInfo?[NotificationKey.plyCounter] as! Int
+        self.directoryURL = notification.userInfo?[NotificationKey.directoryURL] as? URL
+        print("[TrueDepthCameraController] dataReceived")
+        print("plyCounter = \(self.plyCounter) url = \(self.directoryURL)")
+    }
         
     @objc private func deletePreviewedSceneTapped() {
         deleteScene()
@@ -72,60 +81,101 @@ class TrueDepthCameraController : UIViewController {
     
     // MARK: - Scene I/O
     
-    private func loadScene() {
-        var isDir:ObjCBool = true
-        if !FileManager.default.fileExists(atPath: directoryURL.path, isDirectory: &isDir) {
-            do {
-                try FileManager.default.createDirectory(atPath: directoryURL.path,
-                                                        withIntermediateDirectories: false)
-            } catch let e as NSError {
-                print(e.localizedDescription)
-            }
-        }
-        
-        if
-            FileManager.default.fileExists(atPath: sceneGltfURL.path),
-            let gltfAttributes = try? FileManager.default.attributesOfItem(atPath: sceneGltfURL.path),
-            let dateCreated = gltfAttributes[FileAttributeKey.creationDate] as? Date
-        {
-            lastScene = SCScene(gltfAtPath: sceneGltfURL.path)
-            lastSceneDate = dateCreated
-            lastSceneThumbnail = UIImage(contentsOfFile: sceneThumbnailURL.path)
-        }
-    }
+//    private func loadScene() {
+//        var isDir:ObjCBool = true
+//        if !FileManager.default.fileExists(atPath: directoryURL.path, isDirectory: &isDir) {
+//            do {
+//                try FileManager.default.createDirectory(atPath: directoryURL.path,
+//                                                        withIntermediateDirectories: false)
+//            } catch let e as NSError {
+//                print(e.localizedDescription)
+//            }
+//        }
+//
+//        if
+//            FileManager.default.fileExists(atPath: sceneGltfURL.path),
+//            let gltfAttributes = try? FileManager.default.attributesOfItem(atPath: sceneGltfURL.path),
+//            let dateCreated = gltfAttributes[FileAttributeKey.creationDate] as? Date
+//        {
+//            lastScene = SCScene(gltfAtPath: sceneGltfURL.path)
+//            lastSceneDate = dateCreated
+//            lastSceneThumbnail = UIImage(contentsOfFile: sceneThumbnailURL.path)
+//        }
+//    }
     
     private func saveScene(scene: SCScene, thumbnail: UIImage?) {
-        scene.pointCloud!.writeToPLY(atPath: scenePlyURL.path)
-        //scene.writeToGLTF(atPath: sceneGltfURL.path)
+        if plyCounter == 0 { createDirectory() }
+        let fileName = "Face_" + getDate()
+        self.scenePlyURL = directoryURL!.appendingPathComponent("\(fileName).ply")
+        self.sceneThumbnailURL = directoryURL!.appendingPathComponent("\(fileName).png")
+        scene.pointCloud!.writeToPLY(atPath: scenePlyURL!.path)
         
         if let thumbnail = thumbnail, let pngData = thumbnail.pngData() {
-            try? pngData.write(to: sceneThumbnailURL)
+            try? pngData.write(to: sceneThumbnailURL!)
         }
         
-        lastScene = scene
-        lastSceneThumbnail = thumbnail
-        lastSceneDate = Date()
+        plyCounter += 1
+        NotificationCenter.default.post(name: .sendDirectoryData,
+                                        object: nil,
+                                        userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : directoryURL])
+        
+        print("[TrueDepthCameraController] saveScene")
+        print("plyCounter = \(self.plyCounter) url = \(self.directoryURL)")
     }
     
     private func deleteScene() {
-        let fileManager = FileManager.default
+//        let fileManager = FileManager.default
+//
+//        if fileManager.fileExists(atPath: scenePlyURL!.path) {
+//            try? fileManager.removeItem(at: scenePlyURL!)
+//        }
+//
+//        if fileManager.fileExists(atPath: sceneThumbnailURL!.path) {
+//            try? fileManager.removeItem(at: sceneThumbnailURL!)
+//        }
+//
+//        plyCounter -= 1
+//        if plyCounter == 0 {
+//            if fileManager.fileExists(atPath: directoryURL!.path) {
+//                try? fileManager.removeItem(at: directoryURL!)
+//            }
+//            directoryURL = nil
+//        }
+//
+//        NotificationCenter.default.post(name: .sendDirectoryData,
+//                                        object: nil,
+//                                        userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : directoryURL])
+    }
+    
+    func getDate() -> String {
+        let now = Date()
+        let date = DateFormatter()
+        date.locale = Locale(identifier: "ko_kr")
+        date.timeZone = TimeZone(abbreviation: "KST")
+        date.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let directoryName = date.string(from: now)
+        return directoryName
+    }
+    
+    func createDirectory() {
+        let directoryName = getDate()
+        self.directoryURL = documentsURL.appendingPathComponent(directoryName)
         
-        if fileManager.fileExists(atPath: sceneGltfURL.path) {
-            try? fileManager.removeItem(at: sceneGltfURL)
+        do {
+            try FileManager.default.createDirectory(atPath: directoryURL!.path,
+                                            withIntermediateDirectories: false)
+        } catch let e as NSError {
+            print(e.localizedDescription)
         }
-        
-        if fileManager.fileExists(atPath: sceneThumbnailURL.path) {
-            try? fileManager.removeItem(at: sceneThumbnailURL)
-        }
-        
-        lastScene = nil
-        lastSceneThumbnail = nil
-        lastSceneDate = nil
     }
 }
 
 extension TrueDepthCameraController: ScanningViewControllerDelegate {
     func scanningViewControllerDidCancel(_ controller: ScanningViewController) {
+        NotificationCenter.default.post(name: .sendDirectoryData,
+                                        object: nil,
+                                        userInfo: [NotificationKey.plyCounter : plyCounter,
+                                                   NotificationKey.directoryURL : directoryURL])
         dismiss(animated: true)
     }
     
