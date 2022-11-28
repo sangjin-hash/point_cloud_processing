@@ -53,9 +53,9 @@ struct RenderView : View {
     var body : some View {
         List{
             Section{
-                ForEach(fileList, id: \.self){ file in
+                ForEach(fileList.filter { self.checkSCNFile(fileURL: $0)}, id: \.self){ file in
                     HStack{
-                        Text(file.lastPathComponent)
+                        Text(file.deletingPathExtension().lastPathComponent)
                         Spacer()
                     }
                     .frame(height: 50)
