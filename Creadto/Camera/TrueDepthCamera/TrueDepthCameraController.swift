@@ -105,7 +105,7 @@ class TrueDepthCameraController : UIViewController {
     
     private func saveScene(scene: SCScene, thumbnail: UIImage?) {
         if plyCounter == 0 { createDirectory() }
-        let fileName = "Face_" + getDate()
+        let fileName = "Face"
         self.scenePlyURL = directoryURL!.appendingPathComponent("\(fileName).ply")
         self.sceneThumbnailURL = directoryURL!.appendingPathComponent("\(fileName).png")
         scene.pointCloud!.writeToPLY(atPath: scenePlyURL!.path)

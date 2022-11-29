@@ -1,6 +1,8 @@
 import AVFoundation
 import StandardCyborgFusion
 import UIKit
+import CoreImage
+import Vision
 
 @objc public protocol ScanningViewControllerDelegate: AnyObject {
     func scanningViewControllerDidCancel(_ controller: ScanningViewController)
@@ -48,13 +50,25 @@ import UIKit
     /** You may customize the dismiss button by setting its public properties, or by hiding it and adding your own */
     @objc public let dismissButton = UIButton()
     
+    private var flipButton = UIButton(type: .system)
+    private var rgbButton = UIButton(type: .system)
+    
     /** You may customize the shutter button by setting ShutterButton's public properties, or by hiding it and adding your own */
     @objc public let shutterButton = ShutterButton()
+    
+    private let requestHandler = VNSequenceRequestHandler()
+    private var segmentationRequest = VNGeneratePersonSegmentationRequest()
     
     /** A convenience initializer that simply calls init() and sets the delegate */
     @objc public convenience init(delegate: ScanningViewControllerDelegate) {
         self.init()
         self.delegate = delegate
+        self.initializeRequests()
+    }
+    
+    private func initializeRequests(){
+        segmentationRequest.qualityLevel = .accurate
+        segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8
     }
     
     @objc public func shutterTapped(_ sender: UIButton?) {
@@ -175,6 +189,39 @@ import UIKit
         _reconstructionManager.delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(_thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
+        
+        rgbButton.translatesAutoresizingMaskIntoConstraints = false
+        rgbButton.setBackgroundImage(UIImage(named: "blind_button"), for: .normal)
+        // touch event 처리 넣기
+        rgbButton.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        rgbButton.layer.cornerRadius = 25
+        rgbButton.layer.masksToBounds = true
+        view.addSubview(rgbButton)
+        
+        flipButton.translatesAutoresizingMaskIntoConstraints = false
+        flipButton.setBackgroundImage(UIImage(named: "refresh"), for: .normal)
+        flipButton.addTarget(self, action: #selector(dismissTapped(_:)), for: UIControl.Event.touchUpInside)
+        flipButton.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        flipButton.layer.cornerRadius = 25
+        flipButton.layer.masksToBounds = true
+        view.addSubview(flipButton)
+        
+        dismissButton.isHidden = true
+        _mirrorModeLabel.isHidden = true
+        _mirrorModeButton.isHidden = true
+        _mirrorModeBackground.isHidden = true
+        
+        NSLayoutConstraint.activate([
+            rgbButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
+            rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            rgbButton.widthAnchor.constraint(equalToConstant: 50),
+            rgbButton.heightAnchor.constraint(equalToConstant: 50),
+            
+            flipButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
+            flipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            flipButton.widthAnchor.constraint(equalToConstant: 50),
+            flipButton.heightAnchor.constraint(equalToConstant: 50),
+        ])
     }
     
     override open func viewDidAppear(_ animated: Bool) {
@@ -223,7 +270,7 @@ import UIKit
         
         shutterButton.sizeToFit()
         shutterButton.center = CGPoint(x: view.bounds.midX,
-                                       y: view.bounds.maxY - 5 - 0.5 * shutterButton.frame.size.height - view.safeAreaInsets.bottom)
+                                       y: view.bounds.maxY - 50 - 0.5 * shutterButton.frame.size.height - view.safeAreaInsets.bottom)
     }
     
     override open func didReceiveMemoryWarning() {
@@ -272,6 +319,19 @@ import UIKit
                                                                              with: depthCalibrationData,
                                                                              smoothingPoints: true)
         }
+        
+//        try? requestHandler.perform([segmentationRequest], on: colorBuffer)
+//        guard let maskPixelBuffer = segmentationRequest.results?.first?.pixelBuffer else { return }
+//
+//        /** maskPixelBuffer 로 바꿀경우 해상도가 맞지 않아서 터짐 -> scaling 필요
+//         maskPixelBuffer = 2016 * 1512
+//         colorBuffer = 1280 * 720
+//         */
+//
+//        let originalImage = CIImage(cvPixelBuffer: colorBuffer)
+//        let maskImage = CIImage(cvPixelBuffer: maskPixelBuffer)
+//        let targetSize = CGSize(width: originalImage.extent.height, height: originalImage.extent.width)
+//        let resizeMaskImage = resizeCIImage(maskImage, targetSize)
         
         scanningViewRenderer.draw(colorBuffer: colorBuffer,
                                   pointCloud: pointCloud,
@@ -402,9 +462,9 @@ import UIKit
         _scanFailedLabel.backgroundColor = UIColor(white: 1.0, alpha: 0.8)
         _scanFailedLabel.isHidden = true
         
-//        dismissButton.setImage(UIImage(named: "Dismiss", in: Bundle.scuiResourcesBundle, compatibleWith: nil), for: UIControl.State.normal)
+//        flipButton.setImage(UIImage(named: "Dismiss", in: Bundle.scuiResourcesBundle, compatibleWith: nil), for: UIControl.State.normal)
         dismissButton.setImage(UIImage(named: "Dismiss"), for: UIControl.State.normal)
-        dismissButton.addTarget(self, action: #selector(dismissTapped(_:)), for: UIControl.Event.touchUpInside)
+//        dismissButton.addTarget(self, action: #selector(dismissTapped(_:)), for: UIControl.Event.touchUpInside)
         shutterButton.addTarget(self, action: #selector(shutterTapped(_:)), for: UIControl.Event.touchUpInside)
         
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(_focusOnTap)))
@@ -538,6 +598,19 @@ import UIKit
     
     @objc private func dismissTapped(_ sender: UIButton?) {
         delegate?.scanningViewControllerDidCancel(self)
+    }
+    
+    private func resizeCIImage(_ inputImage : CIImage, _ size : CGSize) -> CIImage {
+        let resizeFilter = CIFilter(name: "CILanczosScaleTransform")!
+        let scale = size.width / (inputImage.extent.height)
+        let aspectRatio = size.height / ((inputImage.extent.width) * scale)
+        
+        resizeFilter.setValue(inputImage, forKey: kCIInputImageKey)
+        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
+        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+        
+        let outputImage = resizeFilter.outputImage!
+        return outputImage
     }
     
 }

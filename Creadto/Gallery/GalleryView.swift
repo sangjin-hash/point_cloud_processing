@@ -50,18 +50,26 @@ struct RenderView : View {
     @State var isTapped = false
     @EnvironmentObject var fileController : FileController
     
+    private let adaptiveColumns = [
+        GridItem(.adaptive(minimum: 170))
+    ]
+    
     var body : some View {
-        List{
-            Section{
+        ScrollView{
+            LazyVGrid(columns: adaptiveColumns, spacing: 20){
                 ForEach(fileList.filter { self.checkSCNFile(fileURL: $0)}, id: \.self){ file in
-                    HStack{
+                    VStack{
+                        ZStack{
+                            Rectangle()
+                                .cornerRadius(30)
+                            Image(uiImage: "\(thumbnailImage(file: file))".load()).resizable().scaledToFit()
+                        }.frame(width: 170, height: 170)
+                        
                         Text(file.deletingPathExtension().lastPathComponent)
-                        Spacer()
+                            .font(.system(size: 20, weight: .medium, design: .rounded))
+                            .minimumScaleFactor(0.5)
                     }
-                    .frame(height: 50)
-                    .contentShape(Rectangle())
                     .onTapGesture {
-                        print(file)
                         self.selectedUrl = file
                         isTapped.toggle()
                     }
@@ -72,6 +80,13 @@ struct RenderView : View {
         if isTapped{
             NavigationLink("", destination: SceneRenderingView(scnPath: selectedUrl), isActive: $isTapped)
         }
+    }
+    
+    func thumbnailImage(file : URL) -> URL {
+        let fileName = file.deletingPathExtension().lastPathComponent
+        let direction = fileName.components(separatedBy: "_").first!
+        let result = file.deletingLastPathComponent().appendingPathComponent("\(direction).png")
+        return result
     }
     
     func checkSCNFile(fileURL : URL) -> Bool {
@@ -109,5 +124,18 @@ struct SceneRenderingView : View {
             }
         }
         
+    }
+}
+
+extension String {
+    func load() -> UIImage {
+        do {
+            guard let url = URL(string: self) else { return UIImage()}
+            let data: Data = try Data(contentsOf: url)
+            return UIImage(data: data) ?? UIImage()
+        } catch {
+            fatalError("Error to load thumbnail Image")
+        }
+        return UIImage()
     }
 }

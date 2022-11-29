@@ -9,7 +9,6 @@ import ARKit
 import AVFoundation
 import Foundation
 import UIKit
-import Vision
 
 @objc public protocol CameraManagerDelegate: AnyObject {
     func cameraDidOutput(colorBuffer: CVPixelBuffer, depthBuffer: CVPixelBuffer, depthCalibrationData: AVCameraCalibrationData)
@@ -114,12 +113,6 @@ public extension Notification.Name {
                         self._dataOutputQueue_renderingEnabled = true
                     }
                     
-//                    self.detectSegmentationRequest.qualityLevel = .accurate
-//
-//                    try? self.sequenceHandler.perform(
-//                        [self.detectSegmentationRequest],
-//                        on: <#T##CGImage#>)
-//
                     self._captureSession.startRunning()
                     self._sessionQueue_isSessionRunning = self._captureSession.isRunning
                     self.delegate?.cameraManagerDidStartSession?(self)
@@ -205,9 +198,6 @@ public extension Notification.Name {
     private var _outputSynchronizer: AVCaptureDataOutputSynchronizer?
     private var _dataOutputQueue_renderingEnabled = true
     
-//    private let sequenceHandler = VNSequenceRequestHandler()
-//    private var detectSegmentationRequest = VNGeneratePersonSegmentationRequest()
-//
     // MARK: - KVO and Notifications
     
     private var _sessionRunningContext = 0
