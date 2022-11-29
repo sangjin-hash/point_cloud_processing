@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		86274780E103A2503EA94DD4 /* Pods_Creadto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFA7FBA5A18266FE5C49462 /* Pods_Creadto.framework */; };
 		E652401A28EB41840064D766 /* PLYFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401928EB41840064D766 /* PLYFile.swift */; };
 		E652401E28EC4F650064D766 /* PointCloudVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401D28EC4F650064D766 /* PointCloudVertex.swift */; };
+		E654149A293343AB001F0107 /* PreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6541499293343AB001F0107 /* PreviewController.swift */; };
 		E656A3AF29210D2F00875675 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E656A3AE29210D2F00875675 /* GalleryView.swift */; };
 		E65ADF8D28D169DF007C5886 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */; };
 		E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8E28D16A2E007C5886 /* Helpers.swift */; };
@@ -26,13 +28,18 @@
 		E6B515A028D09685006FCE79 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E6B5159E28D09685006FCE79 /* LaunchScreen.storyboard */; };
 		E6B515AA28D0C1CF006FCE79 /* CreadtoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B515A928D0C1CF006FCE79 /* CreadtoApp.swift */; };
 		E6B515AF28D0D178006FCE79 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B515AE28D0D178006FCE79 /* MainTabView.swift */; };
+		E6B9944B29251AE800DCEDBE /* TrueDepthCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B9944A29251AE800DCEDBE /* TrueDepthCameraController.swift */; };
 		E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E05AB228EDB08E0075732A /* CustomSceneView.swift */; };
 		E6F0F9A8291229420082741A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E6F0F9A7291229420082741A /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0D18D79955828FAD557C3C10 /* Pods-Creadto.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Creadto.debug.xcconfig"; path = "Target Support Files/Pods-Creadto/Pods-Creadto.debug.xcconfig"; sourceTree = "<group>"; };
+		7CFA7FBA5A18266FE5C49462 /* Pods_Creadto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Creadto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE50B9EC64A6A10CAABB7E92 /* Pods-Creadto.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Creadto.release.xcconfig"; path = "Target Support Files/Pods-Creadto/Pods-Creadto.release.xcconfig"; sourceTree = "<group>"; };
 		E652401928EB41840064D766 /* PLYFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLYFile.swift; sourceTree = "<group>"; };
 		E652401D28EC4F650064D766 /* PointCloudVertex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloudVertex.swift; sourceTree = "<group>"; };
+		E6541499293343AB001F0107 /* PreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewController.swift; sourceTree = "<group>"; };
 		E656A3AE29210D2F00875675 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalBuffer.swift; sourceTree = "<group>"; };
 		E65ADF8E28D16A2E007C5886 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -40,6 +47,10 @@
 		E65ADF9228D16AD5007C5886 /* XError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XError.swift; sourceTree = "<group>"; };
 		E68A2D3029232795006F3DD4 /* ExportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewModel.swift; sourceTree = "<group>"; };
 		E68A64FF291E6C34000E4A77 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };
+		E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = ScenePreviewViewController.scn; sourceTree = "<group>"; };
+		E6AD14C12926175000E9F4AF /* StandardCyborgFusion.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = StandardCyborgFusion.xcframework; path = Pods/StandardCyborgFusion/StandardCyborgFusion.xcframework; sourceTree = "<group>"; };
+		E6AD14C22926175000E9F4AF /* StandardCyborgUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StandardCyborgUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E6AD14C32926175000E9F4AF /* StandardCyborgUI.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = StandardCyborgUI.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6AE0079291E4B910087DA91 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		E6B5158D28D09685006FCE79 /* Creadto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Creadto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6B5159028D09685006FCE79 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -53,6 +64,7 @@
 		E6B515A128D09685006FCE79 /* Creadto-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Creadto-Bridging-Header.h"; sourceTree = "<group>"; };
 		E6B515A928D0C1CF006FCE79 /* CreadtoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreadtoApp.swift; sourceTree = "<group>"; };
 		E6B515AE28D0D178006FCE79 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		E6B9944A29251AE800DCEDBE /* TrueDepthCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrueDepthCameraController.swift; sourceTree = "<group>"; };
 		E6E05AB228EDB08E0075732A /* CustomSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSceneView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -62,17 +74,48 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6F0F9A8291229420082741A /* Alamofire in Frameworks */,
+				86274780E103A2503EA94DD4 /* Pods_Creadto.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		07BC747D88E314775817C8B2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E6AD14C12926175000E9F4AF /* StandardCyborgFusion.xcframework */,
+				E6AD14C22926175000E9F4AF /* StandardCyborgUI.framework */,
+				E6AD14C32926175000E9F4AF /* StandardCyborgUI.bundle */,
+				7CFA7FBA5A18266FE5C49462 /* Pods_Creadto.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D624936132ADBB9D28FC2408 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0D18D79955828FAD557C3C10 /* Pods-Creadto.debug.xcconfig */,
+				BE50B9EC64A6A10CAABB7E92 /* Pods-Creadto.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		E654149829334386001F0107 /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				E6541499293343AB001F0107 /* PreviewController.swift */,
+			);
+			path = Preview;
+			sourceTree = "<group>";
+		};
 		E6B5158428D09685006FCE79 = {
 			isa = PBXGroup;
 			children = (
 				E6B5158F28D09685006FCE79 /* Creadto */,
 				E6B5158E28D09685006FCE79 /* Products */,
+				D624936132ADBB9D28FC2408 /* Pods */,
+				07BC747D88E314775817C8B2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -112,9 +155,12 @@
 		E6B515AC28D0D0EB006FCE79 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
+				E654149829334386001F0107 /* Preview */,
+				E6B9944929251AC800DCEDBE /* TrueDepthCamera */,
 				E6B5159528D09685006FCE79 /* Renderer.swift */,
 				E6B5159728D09685006FCE79 /* MainController.swift */,
 				E6B5159C28D09685006FCE79 /* Assets.xcassets */,
+				E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */,
 				E6B5159928D09685006FCE79 /* Main.storyboard */,
 				E6B5159E28D09685006FCE79 /* LaunchScreen.storyboard */,
 				E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */,
@@ -137,6 +183,14 @@
 			path = Export;
 			sourceTree = "<group>";
 		};
+		E6B9944929251AC800DCEDBE /* TrueDepthCamera */ = {
+			isa = PBXGroup;
+			children = (
+				E6B9944A29251AE800DCEDBE /* TrueDepthCameraController.swift */,
+			);
+			path = TrueDepthCamera;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -144,9 +198,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E6B515A428D09685006FCE79 /* Build configuration list for PBXNativeTarget "Creadto" */;
 			buildPhases = (
+				56DE8366A9AA7E15516DCD91 /* [CP] Check Pods Manifest.lock */,
 				E6B5158928D09685006FCE79 /* Sources */,
 				E6B5158A28D09685006FCE79 /* Frameworks */,
 				E6B5158B28D09685006FCE79 /* Resources */,
+				0A0A0381202695745AE24F7B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -209,6 +265,48 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0A0A0381202695745AE24F7B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Creadto/Pods-Creadto-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Creadto/Pods-Creadto-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Creadto/Pods-Creadto-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		56DE8366A9AA7E15516DCD91 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Creadto-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		E6B5158928D09685006FCE79 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -218,6 +316,7 @@
 				E65ADF9328D16AD5007C5886 /* XError.swift in Sources */,
 				E68A6500291E6C34000E4A77 /* FileController.swift in Sources */,
 				E6B515AA28D0C1CF006FCE79 /* CreadtoApp.swift in Sources */,
+				E6B9944B29251AE800DCEDBE /* TrueDepthCameraController.swift in Sources */,
 				E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */,
 				E6B5159328D09685006FCE79 /* Shaders.metal in Sources */,
 				E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */,
@@ -226,6 +325,7 @@
 				E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */,
 				E652401A28EB41840064D766 /* PLYFile.swift in Sources */,
 				E6B515AF28D0D178006FCE79 /* MainTabView.swift in Sources */,
+				E654149A293343AB001F0107 /* PreviewController.swift in Sources */,
 				E6AE007A291E4B910087DA91 /* ExportView.swift in Sources */,
 				E656A3AF29210D2F00875675 /* GalleryView.swift in Sources */,
 				E6B5159828D09685006FCE79 /* MainController.swift in Sources */,
@@ -372,12 +472,14 @@
 		};
 		E6B515A528D09685006FCE79 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0D18D79955828FAD557C3C10 /* Pods-Creadto.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon 1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = M9WR26927H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Re:verse";
@@ -407,12 +509,14 @@
 		};
 		E6B515A628D09685006FCE79 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BE50B9EC64A6A10CAABB7E92 /* Pods-Creadto.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon 1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = M9WR26927H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Re:verse";

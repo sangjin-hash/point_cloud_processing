@@ -5,20 +5,24 @@ import ARKit
 
 final class MainController: UIViewController, ARSessionDelegate {
     private let isUIEnabled = true
-    private var clearButton = UIButton(type: .system)
     private let confidenceControl = UISegmentedControl(items: ["Low", "Medium", "High"])
     private var rgbButton = UIButton(type: .system)
     private var showSceneButton = UIButton(type: .system)
     private var saveButton = UIButton(type: .system)
+    private var flipButton = UIButton(type: .system)
     private let session = ARSession()
     var renderer: Renderer!
     
-    private var plyCounter = 0
+    var plyCounter: Int = 0
+    private var directoryURL: URL? = nil
+    
     private let selectedFormat: String = "Ascii"
-    private let fileNameList = ["Front_", "Left_", "Back_", "Right_"]
-
+    let fileNameList = ["Front_", "Left_", "Back_", "Right_"]
+        
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: .sendDirectoryData, object: nil)
+        
         guard let device = MTLCreateSystemDefaultDevice() else {
             print("Metal is not supported on this device")
             return
@@ -38,36 +42,41 @@ final class MainController: UIViewController, ARSessionDelegate {
             renderer.drawRectResized(size: view.bounds.size)
         }
         
-        clearButton = createButton(mainView: self, iconName: "delete_button.png", hidden: !isUIEnabled)
-        view.addSubview(clearButton)
-        
-        showSceneButton = createButton(mainView: self, iconName: "record_button.png", hidden: !isUIEnabled)
+        showSceneButton = createButton(mainView: self, iconName: "ShutterButton-Recording.png", hidden: !isUIEnabled)
         view.addSubview(showSceneButton)
 
         rgbButton = createButton(mainView: self, iconName: "blind_button.png", hidden: !isUIEnabled)
+        rgbButton.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        rgbButton.layer.cornerRadius = 25
+        rgbButton.layer.masksToBounds = true
         view.addSubview(rgbButton)
         
+        flipButton = createButton(mainView: self, iconName: "refresh.png", hidden: !isUIEnabled)
+        flipButton.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        flipButton.layer.cornerRadius = 25
+        flipButton.layer.masksToBounds = true
+        view.addSubview(flipButton)
+        
         NSLayoutConstraint.activate([
-            clearButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
-            clearButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
-            clearButton.widthAnchor.constraint(equalToConstant: 50),
-            clearButton.heightAnchor.constraint(equalToConstant: 50),
+            rgbButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
+            rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
+            rgbButton.widthAnchor.constraint(equalToConstant: 50),
+            rgbButton.heightAnchor.constraint(equalToConstant: 50),
             
             showSceneButton.widthAnchor.constraint(equalToConstant: 80),
             showSceneButton.heightAnchor.constraint(equalToConstant: 80),
             showSceneButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30),
             showSceneButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            rgbButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
-            rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
-            rgbButton.widthAnchor.constraint(equalToConstant: 50),
-            rgbButton.heightAnchor.constraint(equalToConstant: 50)
+            flipButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
+            flipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
+            flipButton.widthAnchor.constraint(equalToConstant: 50),
+            flipButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         // Create a world-tracking configuration, and
         // enable the scene depth frame-semantic.
         let configuration = ARWorldTrackingConfiguration()
@@ -77,6 +86,13 @@ final class MainController: UIViewController, ARSessionDelegate {
         
         // The screen shouldn't dim during AR experiences.
         UIApplication.shared.isIdleTimerDisabled = true
+    }
+    
+    @objc private func dataReceived(_ notification : Notification){
+        self.plyCounter = notification.userInfo?[NotificationKey.plyCounter] as! Int
+        renderer.directoryURL = notification.userInfo?[NotificationKey.directoryURL] as? URL
+        print("[MainController] dataReceived")
+        print("plyCounter = \(self.plyCounter) url = \(renderer.directoryURL)")
     }
     
     @objc
@@ -90,20 +106,6 @@ final class MainController: UIViewController, ARSessionDelegate {
             let iconName = renderer.rgbOn ? "blind_button.png": "eye_button.png"
             rgbButton.setBackgroundImage(UIImage(named:iconName), for: .normal)
             
-        case clearButton:
-            renderer.isInViewSceneMode = true
-            renderer.clearParticles()
-            if(plyCounter > 0){
-                // remove scn file
-                try? FileManager.default.removeItem(at: renderer.savedCloudURLs.last!)
-                renderer.savedCloudURLs.removeLast()
-                
-                // remove ply file
-                try? FileManager.default.removeItem(at: renderer.savedCloudURLs.last!)
-                renderer.savedCloudURLs.removeLast()
-                plyCounter -= 1
-            }
-        
         case showSceneButton:
             renderer.isInViewSceneMode = !renderer.isInViewSceneMode
             if !renderer.isInViewSceneMode {
@@ -123,10 +125,13 @@ final class MainController: UIViewController, ARSessionDelegate {
                     fileName: fileName,
                     lastCameraTransform: renderer.lastCameraTransform,
                     plyCounter: plyCounter,
-                    afterGlobalThread: [afterSave],
+                    afterGlobalThread: [afterSave, renderer.clearParticles],
                     errorCallback: onSaveError,
                     format: format)
             }
+            
+        case flipButton:
+            goToFrontTrueDepthCameraView()
             
         default:
             break
@@ -188,10 +193,10 @@ extension MainController {
         if isScanning {
             plyCounter += 1
             self.showSceneButton.setBackgroundImage(
-                UIImage(named: "stop_button"), for: .normal)
+                UIImage(named: "ShutterButton-Selected"), for: .normal)
         } else {
             self.showSceneButton.setBackgroundImage(
-                UIImage(named: "record_button"), for: .normal)
+                UIImage(named: "ShutterButton-Recording"), for: .normal)
         }
     }
     
@@ -203,6 +208,10 @@ extension MainController {
     func afterSave() -> Void {
         let err = renderer.savingError
         if err == nil {
+            let previewVC = PreviewController(scnURL: renderer.savedCloudURLs.last!)
+            previewVC.mainController = self
+            previewVC.modalPresentationStyle = .overFullScreen
+            present(previewVC, animated:true, completion: nil)
             return
         }
         try? FileManager.default.removeItem(at: renderer.savedCloudURLs.last!)
@@ -224,6 +233,15 @@ extension MainController {
         DispatchQueue.main.asyncAfter(deadline: when) {
             alert.dismiss(animated: true, completion: nil)
         }
+    }
+    
+    private func goToFrontTrueDepthCameraView() {
+        let trueDepthCameraController = TrueDepthCameraController()
+        present(trueDepthCameraController, animated: true, completion: nil)
+        NotificationCenter.default.post(name: .sendDirectoryData,
+                                        object: nil,
+                                        userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : renderer.directoryURL])
+        dismiss(animated: true)
     }
 }
 
@@ -256,4 +274,13 @@ func createButton(mainView: MainController, iconName: String, hidden: Bool) -> U
 
 extension MTKView: RenderDestinationProvider {
     
+}
+
+extension Notification.Name {
+    static let sendDirectoryData = Notification.Name("sendDirectoryData")
+}
+
+enum NotificationKey {
+    case plyCounter
+    case directoryURL
 }

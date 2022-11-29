@@ -37,6 +37,7 @@ struct MainTabView: View {
                         }
                     }.tag(1)
                 
+                
                 ExportView()
                     .environmentObject(fileController)
                     .onTapGesture {
