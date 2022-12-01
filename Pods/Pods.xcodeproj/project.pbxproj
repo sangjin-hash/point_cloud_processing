@@ -21,59 +21,61 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		192B13D92AFE4E71AEA0166514ECDA80 /* DrawColorTexture.metal in Resources */ = {isa = PBXBuildFile; fileRef = 09795D1B813B2437496D715001C3E2B0 /* DrawColorTexture.metal */; };
-		273B5003216B6FEAD7BCA470F5AC2C25 /* PointCloudCommandEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C560D596846C02539E21050D32F8D14C /* PointCloudCommandEncoder.swift */; };
-		36AE00B759B17EAA4ADFEDE1570586FC /* SCMeshingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F16D4C3105B0199133E0DAC842319AF8 /* SCMeshingHelper.swift */; };
-		421DF239B815DE3D000C37234D4A9125 /* AspectFillTextureCommandEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278FEDCC4AE29481D789ACA6A8D90162 /* AspectFillTextureCommandEncoder.swift */; };
-		4CC0937A7D2BEB48ECE9DE2D04A67AAF /* ScanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697B599CB646D7E2BB7470D51FFB6C10 /* ScanningViewController.swift */; };
-		5647F00BB858AE625379B4DF2BFFF448 /* StandardCyborgUI-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D13A4A6774240DA4CAF4ADF96CDC2A2 /* StandardCyborgUI-dummy.m */; };
-		5FB096944038C6C839C92B8C0D0EF79F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75F4238F34E87AFED6A5E7076DBBFE95 /* Assets.xcassets */; };
-		754BB2116E30C1F62A9FF1397493FDF2 /* DrawColorTexture.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09795D1B813B2437496D715001C3E2B0 /* DrawColorTexture.metal */; };
-		7EA6792FC68AF093C997020BD5DF1F6B /* SCMetalSimulatorStubs.m in Sources */ = {isa = PBXBuildFile; fileRef = ED48DA0F45CB6EBB9D1F4D0F9A5A12DB /* SCMetalSimulatorStubs.m */; };
+		273B5003216B6FEAD7BCA470F5AC2C25 /* PointCloudCommandEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC0D2EB63EC11D242F2DF743A2F44A8 /* PointCloudCommandEncoder.swift */; };
+		36AE00B759B17EAA4ADFEDE1570586FC /* SCMeshingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EB762B3E66B5064AF7D10E78F30F6EE /* SCMeshingHelper.swift */; };
+		421DF239B815DE3D000C37234D4A9125 /* AspectFillTextureCommandEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16477D011AC2D58CEC86A5B9616B70F1 /* AspectFillTextureCommandEncoder.swift */; };
+		4CC0937A7D2BEB48ECE9DE2D04A67AAF /* ScanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C64DE1C4E2268B6E04879D623A545C87 /* ScanningViewController.swift */; };
+		5647F00BB858AE625379B4DF2BFFF448 /* StandardCyborgUI-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 67323BA12DBBCF402477134A018E717B /* StandardCyborgUI-dummy.m */; };
+		754BB2116E30C1F62A9FF1397493FDF2 /* DrawColorTexture.metal in Sources */ = {isa = PBXBuildFile; fileRef = 4533A4BEE2F7DB3D8939F7EBF0A34744 /* DrawColorTexture.metal */; };
+		7EA6792FC68AF093C997020BD5DF1F6B /* SCMetalSimulatorStubs.m in Sources */ = {isa = PBXBuildFile; fileRef = B74805D831F6DB4FAAEED593D49193ED /* SCMetalSimulatorStubs.m */; };
 		83A6879549C50CC9804DEDAB94335423 /* StandardCyborgUI.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 10FC470D901780EFF007C776590FC137 /* StandardCyborgUI.bundle */; };
 		84EF96254A3790F2F0DCF9E416FAC6EA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		8823B16033DC62D9994BE8E8489120B5 /* Pods-Creadto-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F367E646953012E91E3FD87BF3E42400 /* Pods-Creadto-dummy.m */; };
-		895509452D931066ABE9C4BE34F2B440 /* Bundle+SCUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D02AC09ED928A8D2DDEB38A560746E /* Bundle+SCUI.swift */; };
-		8BCA001785FA1897B0EF41198B8A5A3B /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CC60A4349B3AB555AA678F12091E69 /* CameraManager.swift */; };
-		9212F19E485FEFEA9B09DE930197B824 /* PointCloudCommandEncoder.metal in Sources */ = {isa = PBXBuildFile; fileRef = 57BF7EA945A5DC44D62A05174B181C5E /* PointCloudCommandEncoder.metal */; };
-		935BD1735A0E21A318372A4BB8CC7704 /* StandardCyborgUI-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E96F922D1A948F012E66CD592CF0C6 /* StandardCyborgUI-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		958B5E7D60D34BC5585FD01A897958E4 /* ScanningHapticFeedbackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABDFE7A9693D6445D269CAA74B807137 /* ScanningHapticFeedbackEngine.swift */; };
-		AA4AE2F5B22880A3324F21F6D8E9C201 /* ShutterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B932C2F189B290D62DEE30E0771A835D /* ShutterButton.swift */; };
-		B64B0B361CAA8BD8271BD4508A4E647D /* DefaultScanningViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC60661FDC3FB13B06F1A86DDABB4595 /* DefaultScanningViewRenderer.swift */; };
-		BD2EEBCCD0FDCE8DA034DB1991501F9E /* ScenePreviewViewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = 9AAC2838DFE71153D3C20FD87140ADAC /* ScenePreviewViewController.scn */; };
-		D2998F6289FE0F29511EEC802E8C6603 /* ScanningViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F3160D24DE3BC9A296AA59A9FF9976 /* ScanningViewRenderer.swift */; };
-		DB20D74C2AD0ACDFCADF09971CFA00DB /* StandardCyborgUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B77DF7F220CACD20270138B3E2932F2 /* StandardCyborgUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E5B5FE0A22A66A5B2F3FB49E1B1A7C29 /* NodeToNodeLineNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADC9E29DCBEC17C82E38838BA7C6A29D /* NodeToNodeLineNode.swift */; };
-		EA94FAA348AC43FC695CE71451AF004B /* SCMetalSimulatorStubs.h in Headers */ = {isa = PBXBuildFile; fileRef = 8DF0961A59A932990EF31D0B46ADB182 /* SCMetalSimulatorStubs.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		895509452D931066ABE9C4BE34F2B440 /* Bundle+SCUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B8E0A2116188F306129198FD110055 /* Bundle+SCUI.swift */; };
+		8BCA001785FA1897B0EF41198B8A5A3B /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAFC875B06A149D8B70ADA8DBA86DD7 /* CameraManager.swift */; };
+		9212F19E485FEFEA9B09DE930197B824 /* PointCloudCommandEncoder.metal in Sources */ = {isa = PBXBuildFile; fileRef = E4B6305B0973E477D557A6A2027BE43E /* PointCloudCommandEncoder.metal */; };
+		935BD1735A0E21A318372A4BB8CC7704 /* StandardCyborgUI-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 51E0FA857075DEA3B57D37BBEA590D53 /* StandardCyborgUI-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		958B5E7D60D34BC5585FD01A897958E4 /* ScanningHapticFeedbackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A5D62CA0AE34A5B379921BAB17302B /* ScanningHapticFeedbackEngine.swift */; };
+		9735C1660D4FBC202C1B96F199AC2461 /* PointCloudCommandEncoder.metal in Resources */ = {isa = PBXBuildFile; fileRef = E4B6305B0973E477D557A6A2027BE43E /* PointCloudCommandEncoder.metal */; };
+		AA4AE2F5B22880A3324F21F6D8E9C201 /* ShutterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E45D798781DF9FF3AC7085EAC93703 /* ShutterButton.swift */; };
+		B64B0B361CAA8BD8271BD4508A4E647D /* DefaultScanningViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C8E571F8A156830749FE64DD1FABFC /* DefaultScanningViewRenderer.swift */; };
+		C7FF4097C0C302BB4BBBA4C934E8C410 /* DrawColorTexture.metal in Resources */ = {isa = PBXBuildFile; fileRef = 4533A4BEE2F7DB3D8939F7EBF0A34744 /* DrawColorTexture.metal */; };
+		D2998F6289FE0F29511EEC802E8C6603 /* ScanningViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8109C04782F63BF780765CD132CB6B0E /* ScanningViewRenderer.swift */; };
+		DB20D74C2AD0ACDFCADF09971CFA00DB /* StandardCyborgUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 91E094DDF23810F0E05E8073E5AC542F /* StandardCyborgUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E5B5FE0A22A66A5B2F3FB49E1B1A7C29 /* NodeToNodeLineNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9065C2F458A49DEF36E790B925C71F19 /* NodeToNodeLineNode.swift */; };
+		E637468E2937C2F100DE64D6 /* ScenePreviewViewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */; };
+		E637468F2937C2F300DE64D6 /* ScenePreviewViewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */; };
+		E6FE7A5F2937A38C0026CD07 /* ScenePreviewViewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */; };
+		EA94FAA348AC43FC695CE71451AF004B /* SCMetalSimulatorStubs.h in Headers */ = {isa = PBXBuildFile; fileRef = 0864539026AFC66E2D73B5685CA204A8 /* SCMetalSimulatorStubs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F068724E9E49A368A65971D2341E3510 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		F3B46C4F927AA520EDFDBA38EED33B2B /* Pods-Creadto-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A2B1FDBD7F0E5285F9CC3392B2020CB4 /* Pods-Creadto-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F6C0178AEE1060E2F2CF3D1BF1F14764 /* PointCloudCommandEncoder.metal in Resources */ = {isa = PBXBuildFile; fileRef = 57BF7EA945A5DC44D62A05174B181C5E /* PointCloudCommandEncoder.metal */; };
-		FF18A8BF86512AD8EDD6F4D3C550DAFA /* ScenePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F1FB26CB69285DB50AA6D85A5775A6E /* ScenePreviewViewController.swift */; };
+		F9F78218C68F5F8EC2B9B36FA9C6EACB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2077F5BBEDD9229C1CA97CBD44ACF9A /* Assets.xcassets */; };
+		FF18A8BF86512AD8EDD6F4D3C550DAFA /* ScenePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF243938DD9330D5016AFF356AA8D85 /* ScenePreviewViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1F215F260F0F146DC5467B0776E7C510 /* PBXContainerItemProxy */ = {
+		14785A9DC64B3542D7B542F02DD490F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = ED62BF4BD19D6CF455B84F70CE59DFD4;
 			remoteInfo = StandardCyborgFusion;
 		};
-		4A8106D686DAEC7C6A9B20A11F1B8FB5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = ED62BF4BD19D6CF455B84F70CE59DFD4;
-			remoteInfo = StandardCyborgFusion;
-		};
-		A877FC02B971E49AF8639A8629326397 /* PBXContainerItemProxy */ = {
+		29D5104CFCB80969130CE9000C4AF187 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 4036019A23A22D86395C32A65B71D1CA;
 			remoteInfo = StandardCyborgUI;
 		};
-		C7F519C3445740DDAF7C340C6F3ABB06 /* PBXContainerItemProxy */ = {
+		709069A9B227153D8406E1A0B37F3342 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED62BF4BD19D6CF455B84F70CE59DFD4;
+			remoteInfo = StandardCyborgFusion;
+		};
+		C53FF72875B83AAEF1935D613F24F251 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
@@ -83,49 +85,49 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		04A7CA0C907FD40ECBFC3E02B62E24BB /* StandardCyborgUI-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "StandardCyborgUI-Info.plist"; sourceTree = "<group>"; };
-		08F3160D24DE3BC9A296AA59A9FF9976 /* ScanningViewRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScanningViewRenderer.swift; path = StandardCyborgUI/StandardCyborgUI/ScanningViewRenderer.swift; sourceTree = "<group>"; };
-		09795D1B813B2437496D715001C3E2B0 /* DrawColorTexture.metal */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.metal; name = DrawColorTexture.metal; path = StandardCyborgUI/StandardCyborgUI/DrawColorTexture.metal; sourceTree = "<group>"; };
-		0A2CDE0ADF847976F6B5E48391DB00D9 /* StandardCyborgUI.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = StandardCyborgUI.modulemap; sourceTree = "<group>"; };
+		03C8E571F8A156830749FE64DD1FABFC /* DefaultScanningViewRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DefaultScanningViewRenderer.swift; path = StandardCyborgUI/StandardCyborgUI/DefaultScanningViewRenderer.swift; sourceTree = "<group>"; };
+		06E45D798781DF9FF3AC7085EAC93703 /* ShutterButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ShutterButton.swift; path = StandardCyborgUI/StandardCyborgUI/ShutterButton.swift; sourceTree = "<group>"; };
+		0864539026AFC66E2D73B5685CA204A8 /* SCMetalSimulatorStubs.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SCMetalSimulatorStubs.h; path = StandardCyborgUI/StandardCyborgUI/SCMetalSimulatorStubs.h; sourceTree = "<group>"; };
 		10FC470D901780EFF007C776590FC137 /* StandardCyborgUI.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StandardCyborgUI.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		18D7B9F92BC9240062669EADF4D8514B /* ResourceBundle-StandardCyborgUI-StandardCyborgUI-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-StandardCyborgUI-StandardCyborgUI-Info.plist"; sourceTree = "<group>"; };
-		278FEDCC4AE29481D789ACA6A8D90162 /* AspectFillTextureCommandEncoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AspectFillTextureCommandEncoder.swift; path = StandardCyborgUI/StandardCyborgUI/AspectFillTextureCommandEncoder.swift; sourceTree = "<group>"; };
+		16477D011AC2D58CEC86A5B9616B70F1 /* AspectFillTextureCommandEncoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AspectFillTextureCommandEncoder.swift; path = StandardCyborgUI/StandardCyborgUI/AspectFillTextureCommandEncoder.swift; sourceTree = "<group>"; };
+		1A836525EAE40663A022141FEB6B8A0A /* StandardCyborgUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = StandardCyborgUI.debug.xcconfig; sourceTree = "<group>"; };
+		1FC0D2EB63EC11D242F2DF743A2F44A8 /* PointCloudCommandEncoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PointCloudCommandEncoder.swift; path = StandardCyborgUI/StandardCyborgUI/PointCloudCommandEncoder.swift; sourceTree = "<group>"; };
+		27A5D62CA0AE34A5B379921BAB17302B /* ScanningHapticFeedbackEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScanningHapticFeedbackEngine.swift; path = StandardCyborgUI/StandardCyborgUI/ScanningHapticFeedbackEngine.swift; sourceTree = "<group>"; };
 		2D80DEB00504AC64531168D0D3013786 /* StandardCyborgFusion.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = StandardCyborgFusion.debug.xcconfig; sourceTree = "<group>"; };
-		2F1FB26CB69285DB50AA6D85A5775A6E /* ScenePreviewViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScenePreviewViewController.swift; path = StandardCyborgUI/StandardCyborgUI/ScenePreviewViewController.swift; sourceTree = "<group>"; };
 		391BAE8FFBA5EEC50B0184635332ED62 /* StandardCyborgFusion.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = StandardCyborgFusion.release.xcconfig; sourceTree = "<group>"; };
-		47E96F922D1A948F012E66CD592CF0C6 /* StandardCyborgUI-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "StandardCyborgUI-umbrella.h"; sourceTree = "<group>"; };
-		4B77DF7F220CACD20270138B3E2932F2 /* StandardCyborgUI.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = StandardCyborgUI.h; path = StandardCyborgUI/StandardCyborgUI/StandardCyborgUI.h; sourceTree = "<group>"; };
-		578F3A60739DA43CAAFB984ED1E9ADAC /* StandardCyborgUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = StandardCyborgUI.release.xcconfig; sourceTree = "<group>"; };
-		57BF7EA945A5DC44D62A05174B181C5E /* PointCloudCommandEncoder.metal */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.metal; name = PointCloudCommandEncoder.metal; path = StandardCyborgUI/StandardCyborgUI/PointCloudCommandEncoder.metal; sourceTree = "<group>"; };
+		3EB762B3E66B5064AF7D10E78F30F6EE /* SCMeshingHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SCMeshingHelper.swift; path = StandardCyborgUI/StandardCyborgUI/SCMeshingHelper.swift; sourceTree = "<group>"; };
+		4533A4BEE2F7DB3D8939F7EBF0A34744 /* DrawColorTexture.metal */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.metal; name = DrawColorTexture.metal; path = StandardCyborgUI/StandardCyborgUI/DrawColorTexture.metal; sourceTree = "<group>"; };
+		4CF243938DD9330D5016AFF356AA8D85 /* ScenePreviewViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScenePreviewViewController.swift; path = StandardCyborgUI/StandardCyborgUI/ScenePreviewViewController.swift; sourceTree = "<group>"; };
+		51E0FA857075DEA3B57D37BBEA590D53 /* StandardCyborgUI-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "StandardCyborgUI-umbrella.h"; sourceTree = "<group>"; };
+		633BE4FEF8561A604431AFD5FADF74CE /* StandardCyborgUI-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "StandardCyborgUI-prefix.pch"; sourceTree = "<group>"; };
 		65A8AA5909D36BF0C74A6A08205934C9 /* Pods-Creadto.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-Creadto.modulemap"; sourceTree = "<group>"; };
-		697B599CB646D7E2BB7470D51FFB6C10 /* ScanningViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScanningViewController.swift; path = StandardCyborgUI/StandardCyborgUI/ScanningViewController.swift; sourceTree = "<group>"; };
+		67323BA12DBBCF402477134A018E717B /* StandardCyborgUI-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "StandardCyborgUI-dummy.m"; sourceTree = "<group>"; };
 		6F8E461A962C5DBDFF7256C47870F28B /* Pods-Creadto-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Creadto-frameworks.sh"; sourceTree = "<group>"; };
 		73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		73D02AC09ED928A8D2DDEB38A560746E /* Bundle+SCUI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Bundle+SCUI.swift"; path = "StandardCyborgUI/StandardCyborgUI/Bundle+SCUI.swift"; sourceTree = "<group>"; };
 		744CE716FFD98A224BEB9E98AEECB798 /* Pods-Creadto-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Creadto-acknowledgements.markdown"; sourceTree = "<group>"; };
-		75F4238F34E87AFED6A5E7076DBBFE95 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = StandardCyborgUI/StandardCyborgUI/Assets.xcassets; sourceTree = "<group>"; };
 		7A6EF47E4A94A3C1C012017550B50CDF /* StandardCyborgUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StandardCyborgUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8DF0961A59A932990EF31D0B46ADB182 /* SCMetalSimulatorStubs.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SCMetalSimulatorStubs.h; path = StandardCyborgUI/StandardCyborgUI/SCMetalSimulatorStubs.h; sourceTree = "<group>"; };
-		9AAC2838DFE71153D3C20FD87140ADAC /* ScenePreviewViewController.scn */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.bplist; name = ScenePreviewViewController.scn; path = ../../Creadto/Camera/ScenePreviewViewController.scn; sourceTree = "<group>"; };
-		9D13A4A6774240DA4CAF4ADF96CDC2A2 /* StandardCyborgUI-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "StandardCyborgUI-dummy.m"; sourceTree = "<group>"; };
+		8109C04782F63BF780765CD132CB6B0E /* ScanningViewRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScanningViewRenderer.swift; path = StandardCyborgUI/StandardCyborgUI/ScanningViewRenderer.swift; sourceTree = "<group>"; };
+		9065C2F458A49DEF36E790B925C71F19 /* NodeToNodeLineNode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NodeToNodeLineNode.swift; path = StandardCyborgUI/StandardCyborgUI/NodeToNodeLineNode.swift; sourceTree = "<group>"; };
+		91E094DDF23810F0E05E8073E5AC542F /* StandardCyborgUI.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = StandardCyborgUI.h; path = StandardCyborgUI/StandardCyborgUI/StandardCyborgUI.h; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A2077F5BBEDD9229C1CA97CBD44ACF9A /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = StandardCyborgUI/StandardCyborgUI/Assets.xcassets; sourceTree = "<group>"; };
 		A2B1FDBD7F0E5285F9CC3392B2020CB4 /* Pods-Creadto-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-Creadto-umbrella.h"; sourceTree = "<group>"; };
 		A2F7694ACBDBC28AC545894B617C80EA /* Pods-Creadto.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Creadto.release.xcconfig"; sourceTree = "<group>"; };
-		ABDFE7A9693D6445D269CAA74B807137 /* ScanningHapticFeedbackEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScanningHapticFeedbackEngine.swift; path = StandardCyborgUI/StandardCyborgUI/ScanningHapticFeedbackEngine.swift; sourceTree = "<group>"; };
-		ADC9E29DCBEC17C82E38838BA7C6A29D /* NodeToNodeLineNode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NodeToNodeLineNode.swift; path = StandardCyborgUI/StandardCyborgUI/NodeToNodeLineNode.swift; sourceTree = "<group>"; };
+		ACAFC875B06A149D8B70ADA8DBA86DD7 /* CameraManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CameraManager.swift; path = StandardCyborgUI/StandardCyborgUI/CameraManager.swift; sourceTree = "<group>"; };
 		B44E334AF55D1313669ACD3D9CEA94FF /* StandardCyborgFusion.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcframework; path = StandardCyborgFusion.xcframework; sourceTree = "<group>"; };
-		B932C2F189B290D62DEE30E0771A835D /* ShutterButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ShutterButton.swift; path = StandardCyborgUI/StandardCyborgUI/ShutterButton.swift; sourceTree = "<group>"; };
-		C560D596846C02539E21050D32F8D14C /* PointCloudCommandEncoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PointCloudCommandEncoder.swift; path = StandardCyborgUI/StandardCyborgUI/PointCloudCommandEncoder.swift; sourceTree = "<group>"; };
+		B4CB16B679A474C2E43D6FD6544E4F32 /* ResourceBundle-StandardCyborgUI-StandardCyborgUI-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-StandardCyborgUI-StandardCyborgUI-Info.plist"; sourceTree = "<group>"; };
+		B74805D831F6DB4FAAEED593D49193ED /* SCMetalSimulatorStubs.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SCMetalSimulatorStubs.m; path = StandardCyborgUI/StandardCyborgUI/SCMetalSimulatorStubs.m; sourceTree = "<group>"; };
+		BAB11EEC8AE2BD0EABB29802579F340D /* StandardCyborgUI.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = StandardCyborgUI.modulemap; sourceTree = "<group>"; };
+		C5251FD1CE30CF51BFA3C86C8C7F91AF /* StandardCyborgUI-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "StandardCyborgUI-Info.plist"; sourceTree = "<group>"; };
 		C571E92B4B324F82D0DFE4291AF3D118 /* Pods-Creadto-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Creadto-acknowledgements.plist"; sourceTree = "<group>"; };
-		CC60661FDC3FB13B06F1A86DDABB4595 /* DefaultScanningViewRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DefaultScanningViewRenderer.swift; path = StandardCyborgUI/StandardCyborgUI/DefaultScanningViewRenderer.swift; sourceTree = "<group>"; };
-		CD0F4C786FF231713DC6988F84ED3143 /* StandardCyborgUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = StandardCyborgUI.debug.xcconfig; sourceTree = "<group>"; };
-		D7CC60A4349B3AB555AA678F12091E69 /* CameraManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CameraManager.swift; path = StandardCyborgUI/StandardCyborgUI/CameraManager.swift; sourceTree = "<group>"; };
+		C5B8E0A2116188F306129198FD110055 /* Bundle+SCUI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Bundle+SCUI.swift"; path = "StandardCyborgUI/StandardCyborgUI/Bundle+SCUI.swift"; sourceTree = "<group>"; };
+		C64DE1C4E2268B6E04879D623A545C87 /* ScanningViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScanningViewController.swift; path = StandardCyborgUI/StandardCyborgUI/ScanningViewController.swift; sourceTree = "<group>"; };
 		E327BA8192DCD93A3C16EA7453025767 /* Pods-Creadto-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Creadto-Info.plist"; sourceTree = "<group>"; };
-		E6E50E8FD23C4ADE658F76645EBC337B /* StandardCyborgUI-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "StandardCyborgUI-prefix.pch"; sourceTree = "<group>"; };
+		E4B6305B0973E477D557A6A2027BE43E /* PointCloudCommandEncoder.metal */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.metal; name = PointCloudCommandEncoder.metal; path = StandardCyborgUI/StandardCyborgUI/PointCloudCommandEncoder.metal; sourceTree = "<group>"; };
+		E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = ScenePreviewViewController.scn; path = /Users/sangjin/Creadto/Pods/StandardCyborgUI/StandardCyborgUI/StandardCyborgUI/ScenePreviewViewController.scn; sourceTree = "<absolute>"; };
 		E8E73C64B4A54DF8E7B781AADD36E8E4 /* StandardCyborgFusion-xcframeworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "StandardCyborgFusion-xcframeworks.sh"; sourceTree = "<group>"; };
 		ED42D4EE6E8CB1F153C1CB77AB4DF4ED /* Pods-Creadto.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Creadto.debug.xcconfig"; sourceTree = "<group>"; };
-		ED48DA0F45CB6EBB9D1F4D0F9A5A12DB /* SCMetalSimulatorStubs.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SCMetalSimulatorStubs.m; path = StandardCyborgUI/StandardCyborgUI/SCMetalSimulatorStubs.m; sourceTree = "<group>"; };
-		F16D4C3105B0199133E0DAC842319AF8 /* SCMeshingHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SCMeshingHelper.swift; path = StandardCyborgUI/StandardCyborgUI/SCMeshingHelper.swift; sourceTree = "<group>"; };
+		ED8A9B9AC22F52320A2B642C93E1CD4A /* StandardCyborgUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = StandardCyborgUI.release.xcconfig; sourceTree = "<group>"; };
 		F367E646953012E91E3FD87BF3E42400 /* Pods-Creadto-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Creadto-dummy.m"; sourceTree = "<group>"; };
 		F3BFD74F9E7D85E737F5A442EEA20711 /* Pods_Creadto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Creadto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -139,7 +141,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CCD9210714B364C7480A75571F2ADDEB /* Frameworks */ = {
+		CF6113FD3157529C89A1593E76BAEDAF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -157,28 +159,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		094E6A921D3084D845F2D426F84BEE13 /* StandardCyborgUI */ = {
+		1E8BEFFC3DFC3BB60F97182C58FB6231 /* StandardCyborgUI */ = {
 			isa = PBXGroup;
 			children = (
-				278FEDCC4AE29481D789ACA6A8D90162 /* AspectFillTextureCommandEncoder.swift */,
-				73D02AC09ED928A8D2DDEB38A560746E /* Bundle+SCUI.swift */,
-				D7CC60A4349B3AB555AA678F12091E69 /* CameraManager.swift */,
-				CC60661FDC3FB13B06F1A86DDABB4595 /* DefaultScanningViewRenderer.swift */,
-				09795D1B813B2437496D715001C3E2B0 /* DrawColorTexture.metal */,
-				ADC9E29DCBEC17C82E38838BA7C6A29D /* NodeToNodeLineNode.swift */,
-				57BF7EA945A5DC44D62A05174B181C5E /* PointCloudCommandEncoder.metal */,
-				C560D596846C02539E21050D32F8D14C /* PointCloudCommandEncoder.swift */,
-				ABDFE7A9693D6445D269CAA74B807137 /* ScanningHapticFeedbackEngine.swift */,
-				697B599CB646D7E2BB7470D51FFB6C10 /* ScanningViewController.swift */,
-				08F3160D24DE3BC9A296AA59A9FF9976 /* ScanningViewRenderer.swift */,
-				2F1FB26CB69285DB50AA6D85A5775A6E /* ScenePreviewViewController.swift */,
-				F16D4C3105B0199133E0DAC842319AF8 /* SCMeshingHelper.swift */,
-				8DF0961A59A932990EF31D0B46ADB182 /* SCMetalSimulatorStubs.h */,
-				ED48DA0F45CB6EBB9D1F4D0F9A5A12DB /* SCMetalSimulatorStubs.m */,
-				B932C2F189B290D62DEE30E0771A835D /* ShutterButton.swift */,
-				4B77DF7F220CACD20270138B3E2932F2 /* StandardCyborgUI.h */,
-				82F723AB1C0B35F7E2A49E43CA8A7687 /* Resources */,
-				53901CDD7DE745B79A2101EBA4227768 /* Support Files */,
+				E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */,
+				16477D011AC2D58CEC86A5B9616B70F1 /* AspectFillTextureCommandEncoder.swift */,
+				C5B8E0A2116188F306129198FD110055 /* Bundle+SCUI.swift */,
+				ACAFC875B06A149D8B70ADA8DBA86DD7 /* CameraManager.swift */,
+				03C8E571F8A156830749FE64DD1FABFC /* DefaultScanningViewRenderer.swift */,
+				4533A4BEE2F7DB3D8939F7EBF0A34744 /* DrawColorTexture.metal */,
+				9065C2F458A49DEF36E790B925C71F19 /* NodeToNodeLineNode.swift */,
+				E4B6305B0973E477D557A6A2027BE43E /* PointCloudCommandEncoder.metal */,
+				1FC0D2EB63EC11D242F2DF743A2F44A8 /* PointCloudCommandEncoder.swift */,
+				27A5D62CA0AE34A5B379921BAB17302B /* ScanningHapticFeedbackEngine.swift */,
+				C64DE1C4E2268B6E04879D623A545C87 /* ScanningViewController.swift */,
+				8109C04782F63BF780765CD132CB6B0E /* ScanningViewRenderer.swift */,
+				4CF243938DD9330D5016AFF356AA8D85 /* ScenePreviewViewController.swift */,
+				3EB762B3E66B5064AF7D10E78F30F6EE /* SCMeshingHelper.swift */,
+				0864539026AFC66E2D73B5685CA204A8 /* SCMetalSimulatorStubs.h */,
+				B74805D831F6DB4FAAEED593D49193ED /* SCMetalSimulatorStubs.m */,
+				06E45D798781DF9FF3AC7085EAC93703 /* ShutterButton.swift */,
+				91E094DDF23810F0E05E8073E5AC542F /* StandardCyborgUI.h */,
+				86F50132D6BA9BB94B57027DD9D8401E /* Resources */,
+				74793FA435DB4C822F49BAF1977803B3 /* Support Files */,
 			);
 			path = StandardCyborgUI;
 			sourceTree = "<group>";
@@ -190,22 +193,6 @@
 				A2AA39C757733F4D8DCE9C9A673C9FB7 /* Support Files */,
 			);
 			path = StandardCyborgFusion;
-			sourceTree = "<group>";
-		};
-		53901CDD7DE745B79A2101EBA4227768 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				18D7B9F92BC9240062669EADF4D8514B /* ResourceBundle-StandardCyborgUI-StandardCyborgUI-Info.plist */,
-				0A2CDE0ADF847976F6B5E48391DB00D9 /* StandardCyborgUI.modulemap */,
-				9D13A4A6774240DA4CAF4ADF96CDC2A2 /* StandardCyborgUI-dummy.m */,
-				04A7CA0C907FD40ECBFC3E02B62E24BB /* StandardCyborgUI-Info.plist */,
-				E6E50E8FD23C4ADE658F76645EBC337B /* StandardCyborgUI-prefix.pch */,
-				47E96F922D1A948F012E66CD592CF0C6 /* StandardCyborgUI-umbrella.h */,
-				CD0F4C786FF231713DC6988F84ED3143 /* StandardCyborgUI.debug.xcconfig */,
-				578F3A60739DA43CAAFB984ED1E9ADAC /* StandardCyborgUI.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/StandardCyborgUI";
 			sourceTree = "<group>";
 		};
 		578452D2E740E91742655AC8F1636D1F /* iOS */ = {
@@ -226,6 +213,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		74793FA435DB4C822F49BAF1977803B3 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B4CB16B679A474C2E43D6FD6544E4F32 /* ResourceBundle-StandardCyborgUI-StandardCyborgUI-Info.plist */,
+				BAB11EEC8AE2BD0EABB29802579F340D /* StandardCyborgUI.modulemap */,
+				67323BA12DBBCF402477134A018E717B /* StandardCyborgUI-dummy.m */,
+				C5251FD1CE30CF51BFA3C86C8C7F91AF /* StandardCyborgUI-Info.plist */,
+				633BE4FEF8561A604431AFD5FADF74CE /* StandardCyborgUI-prefix.pch */,
+				51E0FA857075DEA3B57D37BBEA590D53 /* StandardCyborgUI-umbrella.h */,
+				1A836525EAE40663A022141FEB6B8A0A /* StandardCyborgUI.debug.xcconfig */,
+				ED8A9B9AC22F52320A2B642C93E1CD4A /* StandardCyborgUI.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/StandardCyborgUI";
+			sourceTree = "<group>";
+		};
 		7EE97002D09852A9F38BE8B26D3F5F62 /* Targets Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -234,11 +237,10 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
-		82F723AB1C0B35F7E2A49E43CA8A7687 /* Resources */ = {
+		86F50132D6BA9BB94B57027DD9D8401E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				75F4238F34E87AFED6A5E7076DBBFE95 /* Assets.xcassets */,
-				9AAC2838DFE71153D3C20FD87140ADAC /* ScenePreviewViewController.scn */,
+				A2077F5BBEDD9229C1CA97CBD44ACF9A /* Assets.xcassets */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -258,7 +260,7 @@
 			isa = PBXGroup;
 			children = (
 				24688518761A054566F3DDD4CE44CE52 /* StandardCyborgFusion */,
-				094E6A921D3084D845F2D426F84BEE13 /* StandardCyborgUI */,
+				1E8BEFFC3DFC3BB60F97182C58FB6231 /* StandardCyborgUI */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -343,8 +345,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				6CA5BF98C29ED3397E644BF0F6840C99 /* PBXTargetDependency */,
-				024B8ACD8D0B418C080CDAAFA9E88444 /* PBXTargetDependency */,
+				44643CBFAC5B9770976F50896E74C41E /* PBXTargetDependency */,
+				F7B4642B7FED4B78F3A1448427B04119 /* PBXTargetDependency */,
 			);
 			name = StandardCyborgUI;
 			productName = StandardCyborgUI;
@@ -363,8 +365,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				B102A8D792EBFEACEA9B429098E48163 /* PBXTargetDependency */,
-				226E2ADDC962CC8D7D9D6F3E41D472C9 /* PBXTargetDependency */,
+				98103D74DB3FCEB9A1CCBFD05B37783A /* PBXTargetDependency */,
+				DB1D9E5895F534A88E54BDDFCA595EE6 /* PBXTargetDependency */,
 			);
 			name = "Pods-Creadto";
 			productName = Pods_Creadto;
@@ -373,11 +375,11 @@
 		};
 		48EBE92C07CCE4C8E7F5660A33574FAA /* StandardCyborgUI-StandardCyborgUI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AE572B6FC08DFE34DB214EF619EA452F /* Build configuration list for PBXNativeTarget "StandardCyborgUI-StandardCyborgUI" */;
+			buildConfigurationList = AA9D28DC2CF51A1A50CA79EB799C7447 /* Build configuration list for PBXNativeTarget "StandardCyborgUI-StandardCyborgUI" */;
 			buildPhases = (
-				56CFC597D45E42BBA89A0FB8367BE94C /* Sources */,
-				CCD9210714B364C7480A75571F2ADDEB /* Frameworks */,
-				8724C61D5302D26D8AC03B9F2500A88A /* Resources */,
+				3AEA0CC5B4625DD71E4BB5282A438BD8 /* Sources */,
+				CF6113FD3157529C89A1593E76BAEDAF /* Frameworks */,
+				C9E0D51B6464246FA242AB553F185BA0 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -419,21 +421,22 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8724C61D5302D26D8AC03B9F2500A88A /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5FB096944038C6C839C92B8C0D0EF79F /* Assets.xcassets in Resources */,
-				192B13D92AFE4E71AEA0166514ECDA80 /* DrawColorTexture.metal in Resources */,
-				F6C0178AEE1060E2F2CF3D1BF1F14764 /* PointCloudCommandEncoder.metal in Resources */,
-				BD2EEBCCD0FDCE8DA034DB1991501F9E /* ScenePreviewViewController.scn in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		ABB440D4F6A79970E17CEC3231E6BC7D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E637468F2937C2F300DE64D6 /* ScenePreviewViewController.scn in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9E0D51B6464246FA242AB553F185BA0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9F78218C68F5F8EC2B9B36FA9C6EACB /* Assets.xcassets in Resources */,
+				C7FF4097C0C302BB4BBBA4C934E8C410 /* DrawColorTexture.metal in Resources */,
+				9735C1660D4FBC202C1B96F199AC2461 /* PointCloudCommandEncoder.metal in Resources */,
+				E637468E2937C2F100DE64D6 /* ScenePreviewViewController.scn in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,6 +445,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				83A6879549C50CC9804DEDAB94335423 /* StandardCyborgUI.bundle in Resources */,
+				E6FE7A5F2937A38C0026CD07 /* ScenePreviewViewController.scn in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,7 +472,7 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		56CFC597D45E42BBA89A0FB8367BE94C /* Sources */ = {
+		3AEA0CC5B4625DD71E4BB5282A438BD8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -509,36 +513,36 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		024B8ACD8D0B418C080CDAAFA9E88444 /* PBXTargetDependency */ = {
+		44643CBFAC5B9770976F50896E74C41E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "StandardCyborgUI-StandardCyborgUI";
-			target = 48EBE92C07CCE4C8E7F5660A33574FAA /* StandardCyborgUI-StandardCyborgUI */;
-			targetProxy = C7F519C3445740DDAF7C340C6F3ABB06 /* PBXContainerItemProxy */;
+			name = StandardCyborgFusion;
+			target = ED62BF4BD19D6CF455B84F70CE59DFD4 /* StandardCyborgFusion */;
+			targetProxy = 709069A9B227153D8406E1A0B37F3342 /* PBXContainerItemProxy */;
 		};
-		226E2ADDC962CC8D7D9D6F3E41D472C9 /* PBXTargetDependency */ = {
+		98103D74DB3FCEB9A1CCBFD05B37783A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = StandardCyborgFusion;
+			target = ED62BF4BD19D6CF455B84F70CE59DFD4 /* StandardCyborgFusion */;
+			targetProxy = 14785A9DC64B3542D7B542F02DD490F6 /* PBXContainerItemProxy */;
+		};
+		DB1D9E5895F534A88E54BDDFCA595EE6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = StandardCyborgUI;
 			target = 4036019A23A22D86395C32A65B71D1CA /* StandardCyborgUI */;
-			targetProxy = A877FC02B971E49AF8639A8629326397 /* PBXContainerItemProxy */;
+			targetProxy = 29D5104CFCB80969130CE9000C4AF187 /* PBXContainerItemProxy */;
 		};
-		6CA5BF98C29ED3397E644BF0F6840C99 /* PBXTargetDependency */ = {
+		F7B4642B7FED4B78F3A1448427B04119 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = StandardCyborgFusion;
-			target = ED62BF4BD19D6CF455B84F70CE59DFD4 /* StandardCyborgFusion */;
-			targetProxy = 1F215F260F0F146DC5467B0776E7C510 /* PBXContainerItemProxy */;
-		};
-		B102A8D792EBFEACEA9B429098E48163 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = StandardCyborgFusion;
-			target = ED62BF4BD19D6CF455B84F70CE59DFD4 /* StandardCyborgFusion */;
-			targetProxy = 4A8106D686DAEC7C6A9B20A11F1B8FB5 /* PBXContainerItemProxy */;
+			name = "StandardCyborgUI-StandardCyborgUI";
+			target = 48EBE92C07CCE4C8E7F5660A33574FAA /* StandardCyborgUI-StandardCyborgUI */;
+			targetProxy = C53FF72875B83AAEF1935D613F24F251 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		02AF552205CDA81EA45EAAC9F0080DD3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CD0F4C786FF231713DC6988F84ED3143 /* StandardCyborgUI.debug.xcconfig */;
+			baseConfigurationReference = 1A836525EAE40663A022141FEB6B8A0A /* StandardCyborgUI.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -625,23 +629,6 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
-		};
-		2B525A4B28205E4476C0D4441FE2AE5C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 578F3A60739DA43CAAFB984ED1E9ADAC /* StandardCyborgUI.release.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/StandardCyborgUI";
-				DEVELOPMENT_TEAM = M9WR26927H;
-				IBSC_MODULE = StandardCyborgUI;
-				INFOPLIST_FILE = "Target Support Files/StandardCyborgUI/ResourceBundle-StandardCyborgUI-StandardCyborgUI-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_NAME = StandardCyborgUI;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Release;
 		};
 		71116CEEA24D13617EF0A950285C5DE3 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -734,7 +721,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -749,7 +736,7 @@
 		};
 		8E151FCB144743C71F25AB55093B28C5 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 578F3A60739DA43CAAFB984ED1E9ADAC /* StandardCyborgUI.release.xcconfig */;
+			baseConfigurationReference = ED8A9B9AC22F52320A2B642C93E1CD4A /* StandardCyborgUI.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -833,7 +820,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -845,9 +832,26 @@
 			};
 			name = Release;
 		};
-		B0E7A65E00103D894DE16CCAECC8FEE0 /* Debug */ = {
+		C28D623619302E9ED2AC3BC3FB5823E7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CD0F4C786FF231713DC6988F84ED3143 /* StandardCyborgUI.debug.xcconfig */;
+			baseConfigurationReference = ED8A9B9AC22F52320A2B642C93E1CD4A /* StandardCyborgUI.release.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/StandardCyborgUI";
+				DEVELOPMENT_TEAM = M9WR26927H;
+				IBSC_MODULE = StandardCyborgUI;
+				INFOPLIST_FILE = "Target Support Files/StandardCyborgUI/ResourceBundle-StandardCyborgUI-StandardCyborgUI-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = StandardCyborgUI;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		D1F4D9AB2EF264C8A091B4BC153E6D45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A836525EAE40663A022141FEB6B8A0A /* StandardCyborgUI.debug.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/StandardCyborgUI";
 				DEVELOPMENT_TEAM = M9WR26927H;
@@ -918,11 +922,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AE572B6FC08DFE34DB214EF619EA452F /* Build configuration list for PBXNativeTarget "StandardCyborgUI-StandardCyborgUI" */ = {
+		AA9D28DC2CF51A1A50CA79EB799C7447 /* Build configuration list for PBXNativeTarget "StandardCyborgUI-StandardCyborgUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B0E7A65E00103D894DE16CCAECC8FEE0 /* Debug */,
-				2B525A4B28205E4476C0D4441FE2AE5C /* Release */,
+				D1F4D9AB2EF264C8A091B4BC153E6D45 /* Debug */,
+				C28D623619302E9ED2AC3BC3FB5823E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

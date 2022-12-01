@@ -56,20 +56,20 @@ import Vision
     /** You may customize the shutter button by setting ShutterButton's public properties, or by hiding it and adding your own */
     @objc public let shutterButton = ShutterButton()
     
-    private let requestHandler = VNSequenceRequestHandler()
-    private var segmentationRequest = VNGeneratePersonSegmentationRequest()
+//    private let requestHandler = VNSequenceRequestHandler()
+//    private var segmentationRequest = VNGeneratePersonSegmentationRequest()
     
     /** A convenience initializer that simply calls init() and sets the delegate */
     @objc public convenience init(delegate: ScanningViewControllerDelegate) {
         self.init()
         self.delegate = delegate
-        self.initializeRequests()
+//        self.initializeRequests()
     }
     
-    private func initializeRequests(){
-        segmentationRequest.qualityLevel = .accurate
-        segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8
-    }
+//    private func initializeRequests(){
+//        segmentationRequest.qualityLevel = .accurate
+//        segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8
+//    }
     
     @objc public func shutterTapped(_ sender: UIButton?) {
         guard
@@ -308,6 +308,13 @@ import Vision
         let pointCloud: SCPointCloud
         
         if isScanning {
+//            try? requestHandler.perform([segmentationRequest], on: colorBuffer)
+//            guard let maskPixelBuffer = segmentationRequest.results?.first?.pixelBuffer else { return }
+//            let originalImage = CIImage(cvPixelBuffer: colorBuffer)
+//            let maskImage = CIImage(cvPixelBuffer: maskPixelBuffer)
+//            let targetSize = CGSize(width: originalImage.extent.height, height: originalImage.extent.width)
+//            let resizeMaskImage = resizeCIImage(maskImage, targetSize)
+            
             pointCloud = _reconstructionManager.buildPointCloud()
         } else {
             // When the user is not scanning, render a preview by reconstructing the most recent depth buffer
@@ -319,19 +326,6 @@ import Vision
                                                                              with: depthCalibrationData,
                                                                              smoothingPoints: true)
         }
-        
-//        try? requestHandler.perform([segmentationRequest], on: colorBuffer)
-//        guard let maskPixelBuffer = segmentationRequest.results?.first?.pixelBuffer else { return }
-//
-//        /** maskPixelBuffer 로 바꿀경우 해상도가 맞지 않아서 터짐 -> scaling 필요
-//         maskPixelBuffer = 2016 * 1512
-//         colorBuffer = 1280 * 720
-//         */
-//
-//        let originalImage = CIImage(cvPixelBuffer: colorBuffer)
-//        let maskImage = CIImage(cvPixelBuffer: maskPixelBuffer)
-//        let targetSize = CGSize(width: originalImage.extent.height, height: originalImage.extent.width)
-//        let resizeMaskImage = resizeCIImage(maskImage, targetSize)
         
         scanningViewRenderer.draw(colorBuffer: colorBuffer,
                                   pointCloud: pointCloud,
