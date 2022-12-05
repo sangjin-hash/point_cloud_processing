@@ -8,9 +8,10 @@
 import Foundation
 import Alamofire
 import UniformTypeIdentifiers
+import SceneKit
 
 class ExportViewModel : ObservableObject {
-    private let apiURL = URL(string: "http://192.168.219.104:3000")
+    private let apiURL = URL(string: "http://192.168.219.149:3000")
     var fileController = FileController()
     
     private func checkPLYFile(fileURL : URL) -> Bool {
@@ -167,6 +168,7 @@ class ExportViewModel : ObservableObject {
                 let path = saveURL.appendingPathComponent("Mesh.ply")
                 if let _data = response.data{
                     try! _data.write(to: path)
+                    self.convertToPNG(path: path)
                     print("fileDownload Save file 성공")
                 }else{
                     print("fileDownload Data is nil")
@@ -176,6 +178,25 @@ class ExportViewModel : ObservableObject {
             }
             
         }
+    }
+    
+    private func convertToPNG(path : URL){
+        let scene = try! SCNScene(url: path, options: nil)
+        let scnView = SCNView()
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        cameraNode.position = SCNVector3(x: 0 , y: 5, z:10)
+        scene.rootNode.addChildNode(cameraNode)
+        
+        scnView.scene = scene
+        scnView.autoenablesDefaultLighting = true
+        scnView.antialiasingMode = .multisampling2X
+        scnView.backgroundColor = UIColor.clear
+        
+        let previewImage = scnView.snapshot()
+        let pngData = previewImage.pngData()
+        let previewImageURL = path.deletingLastPathComponent().appendingPathComponent("Mesh.png")
+        try? pngData!.write(to: previewImageURL)
     }
 }
 

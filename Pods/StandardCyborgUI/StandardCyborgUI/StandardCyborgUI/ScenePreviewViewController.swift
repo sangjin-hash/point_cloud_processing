@@ -188,6 +188,7 @@ import UIKit
         
         _containerNode.addChildNode(scScene.rootNode)
         
+        // MARK: if you want to turn off the mesh function, comment out the below code
         if let pointCloud = scScene.pointCloud, let meshTexturing = meshTexturing, _containerNode.childNode(withName: "SCMesh", recursively: true) == nil {
             _processMeshTexturingIntoMesh(withPointCloud: pointCloud, meshTexturing: meshTexturing) { result in
                 switch result {
@@ -195,7 +196,7 @@ import UIKit
                     self.scScene = SCScene(pointCloud: pointCloud, mesh: mesh)
                     self._constructScene(withSCScene: self.scScene)
                     self.onTexturedMeshGenerated?(mesh)
-                    
+
                 case .failure(let error):
                     print("Error processing mesh: \(String(describing: error.localizedDescription))")
                 }

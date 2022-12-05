@@ -12,7 +12,7 @@ struct GalleryView: View {
     var url: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     @State var urls : [URL] = []
     @EnvironmentObject var fileController : FileController
-    
+
     var body: some View {
         NavigationView{
             List{
@@ -35,7 +35,7 @@ struct GalleryView: View {
             .listStyle(InsetGroupedListStyle())
         }
     }
-    
+
     func delete(at offsets: IndexSet) {
         if let first = offsets.first {
             try! FileManager.default.removeItem(at: urls[first])
@@ -49,11 +49,11 @@ struct RenderView : View {
     @State var fileList : [URL]
     @State var isTapped = false
     @EnvironmentObject var fileController : FileController
-    
+
     private let adaptiveColumns = [
         GridItem(.adaptive(minimum: 170))
     ]
-    
+
     var body : some View {
         ScrollView{
             LazyVGrid(columns: adaptiveColumns, spacing: 20){
@@ -64,7 +64,7 @@ struct RenderView : View {
                                 .cornerRadius(30)
                             Image(uiImage: "\(thumbnailImage(file: file))".load()).resizable().scaledToFit()
                         }.frame(width: 170, height: 170)
-                        
+
                         Text(file.deletingPathExtension().lastPathComponent)
                             .font(.system(size: 20, weight: .medium, design: .rounded))
                             .minimumScaleFactor(0.5)
@@ -76,27 +76,27 @@ struct RenderView : View {
                 }
             }
         }
-        
+
         if isTapped{
             NavigationLink("", destination: SceneRenderingView(scnPath: selectedUrl), isActive: $isTapped)
         }
     }
-    
+
     func thumbnailImage(file : URL) -> URL {
         let fileName = file.deletingPathExtension().lastPathComponent
         let direction = fileName.components(separatedBy: "_").first!
         let result = file.deletingLastPathComponent().appendingPathComponent("\(direction).png")
         return result
     }
-    
+
     func checkSCNFile(fileURL : URL) -> Bool {
-        if(fileURL.pathExtension == "scn"){
+        if(fileURL.pathExtension == "scn" || fileURL.lastPathComponent == "Mesh.ply"){
             return true
         }else{
             return false
         }
     }
-    
+
     func getFileName(url : URL) -> String {
         let deletedComponent = url.deletingPathExtension()
         let result = deletedComponent.lastPathComponent
@@ -105,25 +105,25 @@ struct RenderView : View {
 }
 
 struct SceneRenderingView : View {
-    
+
     @State private var scene : SCNScene?
     private var scnFile : URL
-    
+
     init(scnPath : URL) {
         self.scnFile = scnPath
         _scene = State(initialValue: SCNSceneSource(url: scnFile)?.scene()!)
     }
-    
+
     var body : some View {
         NavigationView{
             ZStack{
                 Color.white.ignoresSafeArea()
-                
+
                 CustomSceneView(scene: $scene)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        
+
     }
 }
 

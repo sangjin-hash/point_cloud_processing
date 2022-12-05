@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		86274780E103A2503EA94DD4 /* Pods_Creadto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFA7FBA5A18266FE5C49462 /* Pods_Creadto.framework */; };
 		E652401A28EB41840064D766 /* PLYFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401928EB41840064D766 /* PLYFile.swift */; };
 		E652401E28EC4F650064D766 /* PointCloudVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401D28EC4F650064D766 /* PointCloudVertex.swift */; };
 		E654149A293343AB001F0107 /* PreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6541499293343AB001F0107 /* PreviewController.swift */; };
@@ -31,6 +30,7 @@
 		E6B9944B29251AE800DCEDBE /* TrueDepthCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B9944A29251AE800DCEDBE /* TrueDepthCameraController.swift */; };
 		E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E05AB228EDB08E0075732A /* CustomSceneView.swift */; };
 		E6F0F9A8291229420082741A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E6F0F9A7291229420082741A /* Alamofire */; };
+		E6FE7A602937AC1C0026CD07 /* Pods_Creadto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFA7FBA5A18266FE5C49462 /* Pods_Creadto.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -74,7 +74,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6F0F9A8291229420082741A /* Alamofire in Frameworks */,
-				86274780E103A2503EA94DD4 /* Pods_Creadto.framework in Frameworks */,
+				E6FE7A602937AC1C0026CD07 /* Pods_Creadto.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +136,7 @@
 				E6B5159028D09685006FCE79 /* AppDelegate.swift */,
 				E6B515A928D0C1CF006FCE79 /* CreadtoApp.swift */,
 				E6B515AE28D0D178006FCE79 /* MainTabView.swift */,
+				E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */,
 				E6B515A128D09685006FCE79 /* Creadto-Bridging-Header.h */,
 				E6B5159228D09685006FCE79 /* Shaders.metal */,
 				E6B5159428D09685006FCE79 /* ShaderTypes.h */,
@@ -160,7 +161,6 @@
 				E6B5159528D09685006FCE79 /* Renderer.swift */,
 				E6B5159728D09685006FCE79 /* MainController.swift */,
 				E6B5159C28D09685006FCE79 /* Assets.xcassets */,
-				E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */,
 				E6B5159928D09685006FCE79 /* Main.storyboard */,
 				E6B5159E28D09685006FCE79 /* LaunchScreen.storyboard */,
 				E65ADF8C28D169DF007C5886 /* MetalBuffer.swift */,
