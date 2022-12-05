@@ -56,20 +56,11 @@ import Vision
     /** You may customize the shutter button by setting ShutterButton's public properties, or by hiding it and adding your own */
     @objc public let shutterButton = ShutterButton()
     
-//    private let requestHandler = VNSequenceRequestHandler()
-//    private var segmentationRequest = VNGeneratePersonSegmentationRequest()
-    
     /** A convenience initializer that simply calls init() and sets the delegate */
     @objc public convenience init(delegate: ScanningViewControllerDelegate) {
         self.init()
         self.delegate = delegate
-//        self.initializeRequests()
     }
-    
-//    private func initializeRequests(){
-//        segmentationRequest.qualityLevel = .accurate
-//        segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8
-//    }
     
     @objc public func shutterTapped(_ sender: UIButton?) {
         guard
@@ -308,13 +299,6 @@ import Vision
         let pointCloud: SCPointCloud
         
         if isScanning {
-//            try? requestHandler.perform([segmentationRequest], on: colorBuffer)
-//            guard let maskPixelBuffer = segmentationRequest.results?.first?.pixelBuffer else { return }
-//            let originalImage = CIImage(cvPixelBuffer: colorBuffer)
-//            let maskImage = CIImage(cvPixelBuffer: maskPixelBuffer)
-//            let targetSize = CGSize(width: originalImage.extent.height, height: originalImage.extent.width)
-//            let resizeMaskImage = resizeCIImage(maskImage, targetSize)
-            
             pointCloud = _reconstructionManager.buildPointCloud()
         } else {
             // When the user is not scanning, render a preview by reconstructing the most recent depth buffer
@@ -593,18 +577,4 @@ import Vision
     @objc private func dismissTapped(_ sender: UIButton?) {
         delegate?.scanningViewControllerDidCancel(self)
     }
-    
-    private func resizeCIImage(_ inputImage : CIImage, _ size : CGSize) -> CIImage {
-        let resizeFilter = CIFilter(name: "CILanczosScaleTransform")!
-        let scale = size.width / (inputImage.extent.height)
-        let aspectRatio = size.height / ((inputImage.extent.width) * scale)
-        
-        resizeFilter.setValue(inputImage, forKey: kCIInputImageKey)
-        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
-        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
-        
-        let outputImage = resizeFilter.outputImage!
-        return outputImage
-    }
-    
 }
