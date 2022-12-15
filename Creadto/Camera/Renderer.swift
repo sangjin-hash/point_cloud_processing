@@ -602,6 +602,9 @@ private extension Renderer {
         }
     }
     
+    /**
+     Depth Map is a coordinate system where the Y coordinate is smaller at the top and larger at the bottom like image data, but ARKit is a coordinate system where the Y coordinate is smaller from the bottom and larger at the top.
+     */
     static func makeRotateToARCameraMatrix(orientation: UIInterfaceOrientation) -> matrix_float4x4 {
         // flip to ARKit Camera's coordinate
         let flipYZ = matrix_float4x4(

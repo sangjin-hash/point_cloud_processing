@@ -8,7 +8,6 @@
 import Foundation
 import Metal
 import simd
-import StandardCyborgFusion
 
 public class AspectFillTextureCommandEncoder {
     

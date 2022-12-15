@@ -90,7 +90,7 @@ struct RenderView : View {
     }
 
     func checkSCNFile(fileURL : URL) -> Bool {
-        if(fileURL.pathExtension == "scn" || fileURL.lastPathComponent == "Mesh.ply"){
+        if(fileURL.pathExtension == "scn" || fileURL.lastPathComponent == "Mesh.ply" || fileURL.lastPathComponent == "Face.ply"){
             return true
         }else{
             return false
