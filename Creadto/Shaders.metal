@@ -25,19 +25,27 @@ constant auto yCbCrToRGB = float4x4(float4(+1.0000f, +1.0000f, +1.0000f, +0.0000
 constant float2 viewVertices[] = { float2(-1, 1), float2(-1, -1), float2(1, 1), float2(1, -1) };
 constant float2 viewTexCoords[] = { float2(0, 0), float2(0, 1), float2(1, 0), float2(1, 1) };
 
-/// Retrieves the world position of a specified camera point with depth
-static simd_float4 worldPoint(simd_float2 cameraPoint, float depth, matrix_float3x3 cameraIntrinsicsInversed, matrix_float4x4 localToWorld) {
+/// Retrieves the world position of a specified camera point with depth for render
+static simd_float4 renderWorldPoint(simd_float2 cameraPoint, float depth, matrix_float3x3 cameraIntrinsicsInversed, matrix_float4x4 localToWorld) {
     const auto localPoint = cameraIntrinsicsInversed * simd_float3(cameraPoint, 1) * depth;
     const auto worldPoint = localToWorld * simd_float4(localPoint, 1);
     
     return worldPoint / worldPoint.w;
-    //return simd_float4(localPoint, 1);
+}
+
+/// Retrieves the world position of a specified camera point with depth
+static simd_float4 worldPoint(simd_float2 cameraPoint, float depth, matrix_float3x3 cameraIntrinsicsInversed, matrix_float4x4 cameraToWorld) {
+    const auto localPoint = cameraIntrinsicsInversed * simd_float3(cameraPoint, 1) * depth;
+    const auto worldPoint = cameraToWorld * simd_float4(localPoint, 1);
+    
+    return worldPoint / worldPoint.w;
 }
 
 ///  Vertex shader that takes in a 2D grid-point and infers its 3D position in world-space, along with RGB and confidence
 vertex void unprojectVertex(uint vertexID [[vertex_id]],
                             constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
                             device ParticleUniforms *particleUniforms [[buffer(kParticleUniforms)]],
+                            device ParticleUniforms *rotateParticleUniforms [[ buffer(kWorldCoordinateUniforms) ]],
                             constant float2 *gridPoints [[buffer(kGridPoints)]],
                             texture2d<float, access::sample> capturedImageTextureY [[texture(kTextureY)]],
                             texture2d<float, access::sample> capturedImageTextureCbCr [[texture(kTextureCbCr)]],
@@ -50,7 +58,9 @@ vertex void unprojectVertex(uint vertexID [[vertex_id]],
     // Sample the depth map to get the depth value
     const auto depth = depthTexture.sample(colorSampler, texCoord).r;
     // With a 2D point plus depth, we can now get its 3D position
-    const auto position = worldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.localToWorld);
+    
+    const auto render_position = renderWorldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.localToWorld);
+    const auto position = worldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.cameraToWorld);
     
     // Sample Y and CbCr textures to get the YCbCr color at the given texture coordinate
     const auto ycbcr = float4(capturedImageTextureY.sample(colorSampler, texCoord).r, capturedImageTextureCbCr.sample(colorSampler, texCoord.xy).rg, 1);
@@ -58,10 +68,21 @@ vertex void unprojectVertex(uint vertexID [[vertex_id]],
     // Sample the confidence map to get the confidence value
     const auto confidence = confidenceTexture.sample(colorSampler, texCoord).r;
     
-    // Write the data to the buffer
-    particleUniforms[currentPointIndex].position = position.xyz;
+    /**
+     Mark : Since the point cloud is collected from the corresponding vertex and rendering is done afterwards,
+     therefore two particle buffers must be created.
+     */
+    
+    // Write the data to the buffer & particleUniforms -> Render in View
+    //particleUniforms[currentPointIndex].position = render_position.xyz;
+    particleUniforms[currentPointIndex].position = render_position.xyz;
     particleUniforms[currentPointIndex].color = sampledColor;
     particleUniforms[currentPointIndex].confidence = confidence;
+    
+    // World coordinate rotation -> Not Render
+    rotateParticleUniforms[currentPointIndex].position = (uniforms.rotateAroundY * position).xyz;
+    rotateParticleUniforms[currentPointIndex].color = sampledColor;
+    rotateParticleUniforms[currentPointIndex].confidence = confidence;
 }
 
 vertex RGBVertexOut rgbVertex(uint vertexID [[vertex_id]],

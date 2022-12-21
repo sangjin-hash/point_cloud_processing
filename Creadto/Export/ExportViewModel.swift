@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 import SceneKit
 
 class ExportViewModel : ObservableObject {
-    private let apiURL = URL(string: "http://192.168.219.149:3000")
+    private let apiURL = URL(string: "http://192.168.219.106:3000")
     var fileController = FileController()
     
     private func checkPLYFile(fileURL : URL) -> Bool {

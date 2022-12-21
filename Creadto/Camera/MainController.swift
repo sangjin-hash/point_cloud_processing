@@ -81,8 +81,13 @@ final class MainController: UIViewController, ARSessionDelegate {
         // enable the scene depth frame-semantic.
         let configuration = ARWorldTrackingConfiguration()
         configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth]
+        configuration.worldAlignment = .camera
 //        // When auto focus is on, the deviation of the calibration is larger than when it is off.
 //        configuration.isAutoFocusEnabled = true
+        
+        // A Boolean value specifying whether ARKit analyzes scene lighting in captured camera images
+        //configuration.isLightEstimationEnabled = true
+        
         // Run the view's session
         session.run(configuration)
         
@@ -125,7 +130,6 @@ final class MainController: UIViewController, ARSessionDelegate {
                 let fileName = fileNameList[plyCounter-1] + renderer.getDate()
                 self.renderer.saveAsPlyFile(
                     fileName: fileName,
-                    lastCameraTransform: renderer.lastCameraTransform,
                     plyCounter: plyCounter,
                     afterGlobalThread: [afterSave, renderer.clearParticles],
                     errorCallback: onSaveError,

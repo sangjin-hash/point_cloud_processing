@@ -36,7 +36,9 @@ final class Renderer {
     // The max number of command buffers in flight
     private let maxInFlightBuffers = 5
     
-    private lazy var rotateToARCamera = Self.makeRotateToARCameraMatrix(orientation: orientation)
+    private lazy var rotateToRenderARCamera = Self.makeRotateToRenderARCameraMatrix(orientation: orientation)
+    private lazy var rotateToARCamera = Self.makeRotateToARCameraMatrix()
+    
     private let session: ARSession
     
     // Segmentation에 사용되는 object들
@@ -86,11 +88,13 @@ final class Renderer {
         uniforms.confidenceThreshold = Int32(confidenceThreshold)
         uniforms.particleSize = particleSize
         uniforms.cameraResolution = cameraResolution
+        uniforms.rotateAroundY = rotateAroundY
         return uniforms
     }()
     private var pointCloudUniformsBuffers = [MetalBuffer<PointCloudUniforms>]()
     // Particles buffer
     private var particlesBuffer: MetalBuffer<ParticleUniforms>
+    private var worldCoordinateBuffer : MetalBuffer<ParticleUniforms>
     private var currentPointIndex = 0
     private var currentPointCount = 0
     
@@ -98,6 +102,15 @@ final class Renderer {
     private var sampleFrame: ARFrame { session.currentFrame! }
     private lazy var cameraResolution = Float2(Float(sampleFrame.camera.imageResolution.width), Float(sampleFrame.camera.imageResolution.height))
     private lazy var viewToCamera = sampleFrame.displayTransform(for: orientation, viewportSize: viewportSize).inverted()
+    
+    // Before rotation, points are created around the negative z-axis, so rotating them by -135 degrees will place them in the middle of the positive x and z axis
+    private lazy var rotateAroundY = matrix_float4x4(
+        [cos(-135 * .degreesToRadian), 0, -sin(-135 *  .degreesToRadian), 0],
+        [                  0, 1,                    0, 0],
+        [sin(-135 *  .degreesToRadian), 0,  cos(-135 * .degreesToRadian), 0],
+        [                  0, 0,                    0, 1]
+    )
+    
     lazy var lastCameraTransform = sampleFrame.camera.transform
     
     // interfaces
@@ -128,6 +141,7 @@ final class Renderer {
             pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
         }
         particlesBuffer = .init(device: device, count: maxPoints, index: kParticleUniforms.rawValue)
+        worldCoordinateBuffer = .init(device: device, count: maxPoints, index: kWorldCoordinateUniforms.rawValue)
         // rbg does not need to read/write depth
         let relaxedStateDescriptor = MTLDepthStencilDescriptor()
         relaxedStencilState = device.makeDepthStencilState(descriptor: relaxedStateDescriptor)!
@@ -176,7 +190,8 @@ final class Renderer {
         let viewMatrixInversed = viewMatrix.inverse
         let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: viewportSize, zNear: 0.001, zFar: 0)
         pointCloudUniforms.viewProjectionMatrix = projectionMatrix * viewMatrix
-        pointCloudUniforms.localToWorld = viewMatrixInversed * rotateToARCamera
+        pointCloudUniforms.localToWorld = viewMatrixInversed * rotateToRenderARCamera
+        pointCloudUniforms.cameraToWorld = viewMatrixInversed * rotateToARCamera
         pointCloudUniforms.cameraIntrinsicsInversed = cameraIntrinsicsInversed
     }
     
@@ -276,10 +291,10 @@ final class Renderer {
             retainingTextures.removeAll()
             // copy gpu point buffer to cpu
             var i = self.cpuParticlesBuffer.count
-            while (i < self.maxPoints && self.particlesBuffer[i].position != simd_float3(0.0,0.0,0.0)) {
-                let position = self.particlesBuffer[i].position
-                let color = self.particlesBuffer[i].color
-                let confidence = self.particlesBuffer[i].confidence
+            while (i < self.maxPoints && self.worldCoordinateBuffer[i].position != simd_float3(0.0,0.0,0.0)) {
+                let position = self.worldCoordinateBuffer[i].position
+                let color = self.worldCoordinateBuffer[i].color
+                let confidence = self.worldCoordinateBuffer[i].confidence
                 if confidence == 2 { self.highConfCount += 1 }
                 self.cpuParticlesBuffer.append(
                     CPUParticle(position: position,
@@ -293,6 +308,7 @@ final class Renderer {
         renderEncoder.setRenderPipelineState(unprojectPipelineState)
         renderEncoder.setVertexBuffer(pointCloudUniformsBuffers[currentBufferIndex])
         renderEncoder.setVertexBuffer(particlesBuffer)
+        renderEncoder.setVertexBuffer(worldCoordinateBuffer)
         renderEncoder.setVertexBuffer(gridPointsBuffer)
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureY!), index: Int(kTextureY.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
@@ -349,7 +365,6 @@ extension Renderer {
     }
     
     func saveAsPlyFile(fileName: String,
-                       lastCameraTransform : simd_float4x4,
                        plyCounter : Int,
                        afterGlobalThread: [() -> Void],
                        errorCallback: (XError) -> Void,
@@ -367,7 +382,6 @@ extension Renderer {
             
             do { self.savedCloudURLs.append(try PLYFile.write(
                 fileName: fileName,
-                lastCameraTransform: lastCameraTransform,
                 plyCounter : plyCounter,
                 directoryURL : self.directoryURL!,
                 cpuParticlesBuffer: &self.cpuParticlesBuffer,
@@ -471,6 +485,7 @@ extension Renderer {
             pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
         }
         particlesBuffer = .init(device: device, count: maxPoints, index: kParticleUniforms.rawValue)
+        worldCoordinateBuffer = .init(device: device, count: maxPoints, index: kWorldCoordinateUniforms.rawValue)
     }
     
 }
@@ -604,8 +619,13 @@ private extension Renderer {
     
     /**
      Depth Map is a coordinate system where the Y coordinate is smaller at the top and larger at the bottom like image data, but ARKit is a coordinate system where the Y coordinate is smaller from the bottom and larger at the top.
+     
+     - makeRotateToRenderARCameraMatrix : The default orientation is UIInterfaceOrientation.portrait.
+     
+     - makeRotateToARCameraMatrix : Since the world point alignment is set to camera,
+     the default orientation is set to landscapeRight, so you need to rotate it by 180 degrees.
      */
-    static func makeRotateToARCameraMatrix(orientation: UIInterfaceOrientation) -> matrix_float4x4 {
+    static func makeRotateToRenderARCameraMatrix(orientation: UIInterfaceOrientation) -> matrix_float4x4 {
         // flip to ARKit Camera's coordinate
         let flipYZ = matrix_float4x4(
             [1, 0, 0, 0],
@@ -613,7 +633,21 @@ private extension Renderer {
             [0, 0, -1, 0],
             [0, 0, 0, 1] )
 
+        // For rendering
         let rotationAngle = Float(cameraToDisplayRotation(orientation: orientation)) * .degreesToRadian
+        return flipYZ * matrix_float4x4(simd_quaternion(rotationAngle, Float3(0, 0, 1)))
+    }
+    
+    static func makeRotateToARCameraMatrix() -> matrix_float4x4 {
+        // flip to ARKit Camera's coordinate
+        let flipYZ = matrix_float4x4(
+            [1, 0, 0, 0],
+            [0, -1, 0, 0],
+            [0, 0, -1, 0],
+            [0, 0, 0, 1] )
+
+        // For World coordinate
+        let rotationAngle = Float(cameraToDisplayRotation(orientation: UIInterfaceOrientation.landscapeLeft)) * .degreesToRadian
         return flipYZ * matrix_float4x4(simd_quaternion(rotationAngle, Float3(0, 0, 1)))
     }
     
