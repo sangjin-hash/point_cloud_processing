@@ -81,6 +81,13 @@ final class MainController: UIViewController, ARSessionDelegate {
         // enable the scene depth frame-semantic.
         let configuration = ARWorldTrackingConfiguration()
         configuration.frameSemantics = [.sceneDepth, .smoothedSceneDepth]
+        configuration.worldAlignment = .camera
+//        // When auto focus is on, the deviation of the calibration is larger than when it is off.
+//        configuration.isAutoFocusEnabled = true
+        
+        // A Boolean value specifying whether ARKit analyzes scene lighting in captured camera images
+        //configuration.isLightEstimationEnabled = true
+        
         // Run the view's session
         session.run(configuration)
         
@@ -123,7 +130,6 @@ final class MainController: UIViewController, ARSessionDelegate {
                 let fileName = fileNameList[plyCounter-1] + renderer.getDate()
                 self.renderer.saveAsPlyFile(
                     fileName: fileName,
-                    lastCameraTransform: renderer.lastCameraTransform,
                     plyCounter: plyCounter,
                     afterGlobalThread: [afterSave, renderer.clearParticles],
                     errorCallback: onSaveError,
@@ -236,6 +242,15 @@ extension MainController {
     }
     
     private func goToFrontTrueDepthCameraView() {
+//        guard let svc = self.storyboard?.instantiateViewController(withIdentifier: "TrueDepth") else {
+//                return
+//            }
+//        svc.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
+//        NotificationCenter.default.post(name: .sendDirectoryData,
+//                                        object: nil,
+//                                        userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : renderer.directoryURL])
+//        self.present(svc, animated: true)
+        
         let trueDepthCameraController = TrueDepthCameraController()
         present(trueDepthCameraController, animated: true, completion: nil)
         NotificationCenter.default.post(name: .sendDirectoryData,
