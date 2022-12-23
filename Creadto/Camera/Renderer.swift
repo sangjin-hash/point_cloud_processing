@@ -292,8 +292,8 @@ final class Renderer {
             // copy gpu point buffer to cpu
             var i = self.cpuParticlesBuffer.count
             while (i < self.maxPoints && self.worldCoordinateBuffer[i].position != simd_float3(0.0,0.0,0.0)) {
-                let position = self.worldCoordinateBuffer[i].position
-                let color = self.worldCoordinateBuffer[i].color
+                let position = round(self.worldCoordinateBuffer[i].position * 1000) / 1000
+                let color = round(self.worldCoordinateBuffer[i].color * 1000) / 1000
                 let confidence = self.worldCoordinateBuffer[i].confidence
                 if confidence == 2 { self.highConfCount += 1 }
                 self.cpuParticlesBuffer.append(
