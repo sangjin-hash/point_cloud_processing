@@ -70,7 +70,7 @@ final class Renderer {
     // The current viewport size
     private var viewportSize = CGSize()
     
-    var convertedScene = SCNScene()
+    private var convertedScene = SCNScene()
     
     // RGB buffer
     private lazy var rgbUniforms: RGBUniforms = {
@@ -418,53 +418,11 @@ extension Renderer {
             return PointCloudVertex(x: v.position.x, y: v.position.y, z: v.position.z, r: v.color.x/255.0, g: v.color.y/255.0, b: v.color.z/255.0)
         }
         
-        let node = buildNode(points: vertices)
+        let node = SCNFile.buildNode(points: vertices)
         return node
     }
-    
-    private func buildNode(points: [PointCloudVertex]) -> SCNNode {
-        let vertexData = NSData(
-            bytes: points,
-            length: MemoryLayout<PointCloudVertex>.size * points.count
-        )
-        let positionSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.vertex,
-            vectorCount: points.count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: 0,
-            dataStride: MemoryLayout<PointCloudVertex>.size
-        )
-        let colorSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.color,
-            vectorCount: points.count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: MemoryLayout<Float>.size * 3,
-            dataStride: MemoryLayout<PointCloudVertex>.size
-        )
-        let elements = SCNGeometryElement(
-            data: nil,
-            primitiveType: .point,
-            primitiveCount: points.count,
-            bytesPerIndex: MemoryLayout<Int>.size
-        )
         
-        elements.maximumPointScreenSpaceRadius = 2.0
-        elements.minimumPointScreenSpaceRadius = 2.0
-        elements.pointSize = 2.0
-        
-        let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [elements])
-        pointsGeometry.firstMaterial?.lightingModel = SCNMaterial.LightingModel.constant
-        return SCNNode(geometry: pointsGeometry)
-    }
-    
     func saveConvertedScene(path: String){
-        
         let success = convertedScene.write(to: URL.init(fileURLWithPath:path), options: nil, delegate: nil) { (totalProgress, error, stop) in
             print("Progress \(totalProgress) Error: \(String(describing: error))")
         }
