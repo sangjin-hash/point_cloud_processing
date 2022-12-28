@@ -33,6 +33,9 @@ final class Renderer {
     // set to 0 for continous sampling
     private let cameraRotationThreshold = cos(0 * .degreesToRadian)
     private let cameraTranslationThreshold: Float = pow(0.00, 2)   // (meter-squared)
+    
+    // The person segmentation output value is 0 ~ 255(person). If the value is up to 200, we determine that the point is person.
+    private let segmentationThreshold = 200
     // The max number of command buffers in flight
     private let maxInFlightBuffers = 5
     
@@ -70,7 +73,7 @@ final class Renderer {
     // The current viewport size
     private var viewportSize = CGSize()
     
-    var convertedScene = SCNScene()
+    private var convertedScene = SCNScene()
     
     // RGB buffer
     private lazy var rgbUniforms: RGBUniforms = {
@@ -105,9 +108,9 @@ final class Renderer {
     
     // Before rotation, points are created around the negative z-axis, so rotating them by -135 degrees will place them in the middle of the positive x and z axis
     private lazy var rotateAroundY = matrix_float4x4(
-        [cos(-135 * .degreesToRadian), 0, -sin(-135 *  .degreesToRadian), 0],
+        [cos(-90 * .degreesToRadian), 0, -sin(-90 *  .degreesToRadian), 0],
         [                  0, 1,                    0, 0],
-        [sin(-135 *  .degreesToRadian), 0,  cos(-135 * .degreesToRadian), 0],
+        [sin(-90 *  .degreesToRadian), 0,  cos(-90 * .degreesToRadian), 0],
         [                  0, 0,                    0, 1]
     )
     
@@ -418,53 +421,11 @@ extension Renderer {
             return PointCloudVertex(x: v.position.x, y: v.position.y, z: v.position.z, r: v.color.x/255.0, g: v.color.y/255.0, b: v.color.z/255.0)
         }
         
-        let node = buildNode(points: vertices)
+        let node = SCNFile.buildNode(points: vertices)
         return node
     }
-    
-    private func buildNode(points: [PointCloudVertex]) -> SCNNode {
-        let vertexData = NSData(
-            bytes: points,
-            length: MemoryLayout<PointCloudVertex>.size * points.count
-        )
-        let positionSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.vertex,
-            vectorCount: points.count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: 0,
-            dataStride: MemoryLayout<PointCloudVertex>.size
-        )
-        let colorSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.color,
-            vectorCount: points.count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: MemoryLayout<Float>.size * 3,
-            dataStride: MemoryLayout<PointCloudVertex>.size
-        )
-        let elements = SCNGeometryElement(
-            data: nil,
-            primitiveType: .point,
-            primitiveCount: points.count,
-            bytesPerIndex: MemoryLayout<Int>.size
-        )
         
-        elements.maximumPointScreenSpaceRadius = 2.0
-        elements.minimumPointScreenSpaceRadius = 2.0
-        elements.pointSize = 2.0
-        
-        let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [elements])
-        pointsGeometry.firstMaterial?.lightingModel = SCNMaterial.LightingModel.constant
-        return SCNNode(geometry: pointsGeometry)
-    }
-    
     func saveConvertedScene(path: String){
-        
         let success = convertedScene.write(to: URL.init(fileURLWithPath:path), options: nil, delegate: nil) { (totalProgress, error, stop) in
             print("Progress \(totalProgress) Error: \(String(describing: error))")
         }
@@ -573,7 +534,7 @@ private extension Renderer {
             let alternatingOffsetX = Float(gridY % 2) * spacing / 2
             for gridX in 0 ..< deltaX {
                 let cameraPoint = Float2(alternatingOffsetX + (Float(gridX) + 0.5) * spacing, (Float(gridY) + 0.5) * spacing)
-                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] == 255) {
+                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] >= segmentationThreshold) {
                     points.append(cameraPoint)
                 }
             }

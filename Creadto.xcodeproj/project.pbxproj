@@ -15,6 +15,7 @@
 		E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8E28D16A2E007C5886 /* Helpers.swift */; };
 		E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9028D16A58007C5886 /* CPUParticle.swift */; };
 		E65ADF9328D16AD5007C5886 /* XError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9228D16AD5007C5886 /* XError.swift */; };
+		E688A2092959D90400055C37 /* SCNFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E688A2082959D90400055C37 /* SCNFile.swift */; };
 		E68A2D3129232795006F3DD4 /* ExportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A2D3029232795006F3DD4 /* ExportViewModel.swift */; };
 		E68A6500291E6C34000E4A77 /* FileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A64FF291E6C34000E4A77 /* FileController.swift */; };
 		E6AE007A291E4B910087DA91 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AE0079291E4B910087DA91 /* ExportView.swift */; };
@@ -45,6 +46,7 @@
 		E65ADF8E28D16A2E007C5886 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		E65ADF9028D16A58007C5886 /* CPUParticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUParticle.swift; sourceTree = "<group>"; };
 		E65ADF9228D16AD5007C5886 /* XError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XError.swift; sourceTree = "<group>"; };
+		E688A2082959D90400055C37 /* SCNFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNFile.swift; sourceTree = "<group>"; };
 		E68A2D3029232795006F3DD4 /* ExportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewModel.swift; sourceTree = "<group>"; };
 		E68A64FF291E6C34000E4A77 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };
 		E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = ScenePreviewViewController.scn; sourceTree = "<group>"; };
@@ -109,6 +111,32 @@
 			path = Preview;
 			sourceTree = "<group>";
 		};
+		E688A2032959CFD700055C37 /* IO */ = {
+			isa = PBXGroup;
+			children = (
+				E688A2072959D71F00055C37 /* ply */,
+				E688A2062959D71500055C37 /* scn */,
+			);
+			path = IO;
+			sourceTree = "<group>";
+		};
+		E688A2062959D71500055C37 /* scn */ = {
+			isa = PBXGroup;
+			children = (
+				E688A2082959D90400055C37 /* SCNFile.swift */,
+				E652401D28EC4F650064D766 /* PointCloudVertex.swift */,
+			);
+			path = scn;
+			sourceTree = "<group>";
+		};
+		E688A2072959D71F00055C37 /* ply */ = {
+			isa = PBXGroup;
+			children = (
+				E652401928EB41840064D766 /* PLYFile.swift */,
+			);
+			path = ply;
+			sourceTree = "<group>";
+		};
 		E6B5158428D09685006FCE79 = {
 			isa = PBXGroup;
 			children = (
@@ -156,6 +184,7 @@
 		E6B515AC28D0D0EB006FCE79 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
+				E688A2032959CFD700055C37 /* IO */,
 				E654149829334386001F0107 /* Preview */,
 				E6B9944929251AC800DCEDBE /* TrueDepthCamera */,
 				E6B5159528D09685006FCE79 /* Renderer.swift */,
@@ -167,8 +196,6 @@
 				E65ADF8E28D16A2E007C5886 /* Helpers.swift */,
 				E65ADF9028D16A58007C5886 /* CPUParticle.swift */,
 				E65ADF9228D16AD5007C5886 /* XError.swift */,
-				E652401928EB41840064D766 /* PLYFile.swift */,
-				E652401D28EC4F650064D766 /* PointCloudVertex.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -320,6 +347,7 @@
 				E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */,
 				E6B5159328D09685006FCE79 /* Shaders.metal in Sources */,
 				E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */,
+				E688A2092959D90400055C37 /* SCNFile.swift in Sources */,
 				E6B5159628D09685006FCE79 /* Renderer.swift in Sources */,
 				E65ADF8D28D169DF007C5886 /* MetalBuffer.swift in Sources */,
 				E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */,

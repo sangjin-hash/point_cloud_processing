@@ -16,38 +16,35 @@ struct MainTabView: View {
             TabView(selection: $selectedIndex) {
                 GalleryView()
                     .environmentObject(fileController)
-                    .onTapGesture {
-                        self.selectedIndex = 0
-                    }
                     .tabItem{
                         VStack(spacing: 4){
                             Image(systemName: "photo")
                             Text("Gallery")
                         }
+                    }.onAppear {
+                        self.selectedIndex = 0
                     }.tag(0)
                 
                 CameraController()
-                    .onTapGesture {
-                        self.selectedIndex = 1
-                    }
                     .tabItem{
                         VStack(spacing: 4){
                             Image(systemName: "camera")
                             Text("Camera")
                         }
+                    }.onAppear {
+                        self.selectedIndex = 1
                     }.tag(1)
                 
                 
                 ExportView()
                     .environmentObject(fileController)
-                    .onTapGesture {
-                        self.selectedIndex = 2
-                    }
                     .tabItem{
                         VStack(spacing: 4){
                             Image(systemName: "square.and.arrow.up")
                             Text("Export")
                         }
+                    }.onAppear {
+                        self.selectedIndex = 2
                     }.tag(2)
             }
         }

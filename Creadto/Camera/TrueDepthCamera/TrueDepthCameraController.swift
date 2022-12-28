@@ -8,6 +8,7 @@
 import UIKit
 import StandardCyborgUI
 import StandardCyborgFusion
+import SceneKit
 
 class TrueDepthCameraController : UIViewController {
     private var lastScene: SCScene?
@@ -21,6 +22,10 @@ class TrueDepthCameraController : UIViewController {
     
     private var sceneThumbnailURL: URL? = nil
     private var scenePlyURL: URL? = nil
+    private var sceneSCNURL: URL? = nil
+    
+    private var pointCloud : Array<PointCloudVertex> = []
+    private var convertedScene = SCNScene()
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     
@@ -107,8 +112,19 @@ class TrueDepthCameraController : UIViewController {
         if plyCounter == 0 { createDirectory() }
         let fileName = "Face"
         self.scenePlyURL = directoryURL!.appendingPathComponent("\(fileName).ply")
+        self.sceneSCNURL = directoryURL!.appendingPathComponent("\(fileName).scn")
         self.sceneThumbnailURL = directoryURL!.appendingPathComponent("\(fileName).png")
         scene.pointCloud!.writeToPLY(atPath: scenePlyURL!.path)
+        
+        let cloud = self.convertPLYToSCN(file: self.scenePlyURL!)
+        cloud.name = "cloud"
+        
+        self.convertedScene.rootNode.enumerateChildNodes{ (node, stop) in
+            node.removeFromParentNode()
+        }
+        self.convertedScene.rootNode.addChildNode(cloud)
+        
+        self.saveConvertedScene(path: sceneSCNURL!.path)
         
         if let thumbnail = thumbnail, let pngData = thumbnail.pngData() {
             try? pngData.write(to: sceneThumbnailURL!)
@@ -121,6 +137,41 @@ class TrueDepthCameraController : UIViewController {
         
         print("[TrueDepthCameraController] saveScene")
         print("plyCounter = \(self.plyCounter) url = \(self.directoryURL)")
+    }
+    
+    private func convertPLYToSCN(file : URL) -> SCNNode{
+        let data = try! String(contentsOf: file, encoding: .ascii)
+        var lines = data.components(separatedBy: "\n")
+        
+        while !lines.isEmpty {
+            let line = lines.removeFirst()
+            if line.hasPrefix("end_header") {
+                break
+            }
+        }
+        
+        self.pointCloud = lines.filter {$0 != ""}
+            .map({ (line : String) -> PointCloudVertex in
+                let elements = line.components(separatedBy: " ")
+                
+                return PointCloudVertex(
+                    x: Float(elements[0])!,
+                    y: Float(elements[1])!,
+                    z: Float(elements[2])!,
+                    r: Float(elements[6])! / 255.0,
+                    g: Float(elements[7])! / 255.0,
+                    b: Float(elements[8])! / 255.0)
+            })
+        
+        let node = SCNFile.buildNode(points: self.pointCloud)
+        return node
+    }
+    
+    func saveConvertedScene(path: String){
+        let success = convertedScene.write(to: URL.init(fileURLWithPath:path), options: nil, delegate: nil) { (totalProgress, error, stop) in
+            print("Progress \(totalProgress) Error: \(String(describing: error))")
+        }
+        print("Success : \(success)")
     }
     
     private func deleteScene() {
