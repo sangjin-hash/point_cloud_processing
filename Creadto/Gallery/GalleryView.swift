@@ -90,7 +90,7 @@ struct RenderView : View {
     }
 
     func checkSCNFile(fileURL : URL) -> Bool {
-        if(fileURL.pathExtension == "scn" || fileURL.lastPathComponent == "Mesh.ply" || fileURL.lastPathComponent == "Face.usdz"){
+        if(fileURL.pathExtension == "scn" || fileURL.lastPathComponent == "Mesh.ply"){
             return true
         }else{
             return false
@@ -120,7 +120,8 @@ struct SceneRenderingView : View {
                 Color.white.ignoresSafeArea()
 
                 CustomSceneView(scene: $scene)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    //.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(width: 300, height: 400)
             }
         }
 

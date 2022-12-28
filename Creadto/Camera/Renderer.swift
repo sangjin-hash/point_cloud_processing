@@ -33,6 +33,9 @@ final class Renderer {
     // set to 0 for continous sampling
     private let cameraRotationThreshold = cos(0 * .degreesToRadian)
     private let cameraTranslationThreshold: Float = pow(0.00, 2)   // (meter-squared)
+    
+    // The person segmentation output value is 0 ~ 255(person). If the value is up to 200, we determine that the point is person.
+    private let segmentationThreshold = 200
     // The max number of command buffers in flight
     private let maxInFlightBuffers = 5
     
@@ -105,9 +108,9 @@ final class Renderer {
     
     // Before rotation, points are created around the negative z-axis, so rotating them by -135 degrees will place them in the middle of the positive x and z axis
     private lazy var rotateAroundY = matrix_float4x4(
-        [cos(-135 * .degreesToRadian), 0, -sin(-135 *  .degreesToRadian), 0],
+        [cos(-90 * .degreesToRadian), 0, -sin(-90 *  .degreesToRadian), 0],
         [                  0, 1,                    0, 0],
-        [sin(-135 *  .degreesToRadian), 0,  cos(-135 * .degreesToRadian), 0],
+        [sin(-90 *  .degreesToRadian), 0,  cos(-90 * .degreesToRadian), 0],
         [                  0, 0,                    0, 1]
     )
     
@@ -531,7 +534,7 @@ private extension Renderer {
             let alternatingOffsetX = Float(gridY % 2) * spacing / 2
             for gridX in 0 ..< deltaX {
                 let cameraPoint = Float2(alternatingOffsetX + (Float(gridX) + 0.5) * spacing, (Float(gridY) + 0.5) * spacing)
-                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] == 255) {
+                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] >= segmentationThreshold) {
                     points.append(cameraPoint)
                 }
             }
