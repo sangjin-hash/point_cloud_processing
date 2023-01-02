@@ -16,10 +16,10 @@ class ExportViewModel : ObservableObject {
     var jsonURL : URL?
     
     private func checkPLYFile(fileURL : URL) -> Bool {
-        if(fileURL.pathExtension == "ply"){
-            return true
-        }else{
+        if(fileURL.lastPathComponent == "Face.ply" || fileURL.pathExtension != "ply"){
             return false
+        } else {
+            return true
         }
     }
 

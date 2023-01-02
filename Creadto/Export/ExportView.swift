@@ -20,7 +20,7 @@ struct ExportView: View {
             List{
                 Section{
                     ForEach(urls, id: \.self){ selectedUrl in
-                        NavigationLink(destination: FileView(fileList: fileController.getContentsOfDirectory(url: selectedUrl)), label: {
+                        NavigationLink(destination: FileView(selectedUrl: selectedUrl, fileList: fileController.getContentsOfDirectory(url: selectedUrl)), label: {
                             HStack{
                                 Text(selectedUrl.lastPathComponent)
                                 Spacer()
@@ -53,6 +53,7 @@ struct ExportView: View {
 }
 
 struct FileView : View {
+    @State var selectedUrl : URL
     @State var fileList : [URL]
     @State private var isPresented = false
     @EnvironmentObject var fileController : FileController
@@ -72,6 +73,13 @@ struct FileView : View {
                         isPresented.toggle()
                     }
                 }.onDelete(perform: delete)
+            }
+        }.onAppear{
+            if selectedUrl.hasDirectoryPath {
+                fileList = fileController.getContentsOfDirectory(url: selectedUrl)
+            }
+            else {
+                fileList = fileController.getContentsOfDirectory(url: selectedUrl.deletingLastPathComponent())
             }
         }.sheet(isPresented: $isPresented, content: {
             ModalView(activityItems: [fileList[selectedIndex]])

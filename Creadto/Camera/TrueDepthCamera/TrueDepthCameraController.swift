@@ -130,7 +130,6 @@ class TrueDepthCameraController : UIViewController {
             try? pngData.write(to: sceneThumbnailURL!)
         }
         
-        plyCounter += 1
         NotificationCenter.default.post(name: .sendDirectoryData,
                                         object: nil,
                                         userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : directoryURL])

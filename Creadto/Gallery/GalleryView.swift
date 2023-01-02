@@ -59,11 +59,11 @@ struct RenderView : View {
             LazyVGrid(columns: adaptiveColumns, spacing: 20){
                 ForEach(fileList.filter { self.checkSCNFile(fileURL: $0)}, id: \.self){ file in
                     VStack{
-                        ZStack{
-                            Rectangle()
-                                .cornerRadius(30)
-                            Image(uiImage: "\(thumbnailImage(file: file))".load()).resizable().scaledToFit()
-                        }.frame(width: 170, height: 170)
+                        Image(uiImage: "\(thumbnailImage(file: file))".load())
+                            .resizable()
+                            .clipShape(Rectangle())
+                            .cornerRadius(30)
+                            .frame(width: 170, height: 170)
 
                         Text(file.deletingPathExtension().lastPathComponent)
                             .font(.system(size: 20, weight: .medium, design: .rounded))
@@ -74,6 +74,13 @@ struct RenderView : View {
                         isTapped.toggle()
                     }
                 }
+            }
+        }.onAppear{
+            if selectedUrl.hasDirectoryPath {
+                fileList = fileController.getContentsOfDirectory(url: selectedUrl)
+            }
+            else {
+                fileList = fileController.getContentsOfDirectory(url: selectedUrl.deletingLastPathComponent())
             }
         }
 

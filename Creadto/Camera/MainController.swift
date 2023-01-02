@@ -14,7 +14,7 @@ final class MainController: UIViewController, ARSessionDelegate {
     var renderer: Renderer!
     
     var plyCounter: Int = 0
-    private var directoryURL: URL? = nil
+//    private var directoryURL: URL? = nil
     
     //private let selectedFormat: String = "Ascii"
     private let selectedFormat: String = "Binary Little Endian"
@@ -117,7 +117,7 @@ final class MainController: UIViewController, ARSessionDelegate {
         case showSceneButton:
             renderer.isInViewSceneMode = !renderer.isInViewSceneMode
             if !renderer.isInViewSceneMode {
-                if plyCounter % 4 == 0 {
+                if plyCounter % 4 == 0 && renderer.directoryURL == nil {
                     renderer.createDirectory()
                 }
                 renderer.clearParticles()

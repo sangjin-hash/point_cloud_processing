@@ -157,6 +157,8 @@ final class Renderer {
         
         inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
         self.initializeRequests()
+        
+        // notification 등록하기
     }
     
     func drawRectResized(size: CGSize) {

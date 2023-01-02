@@ -10,7 +10,11 @@ import Foundation
 class FileController : ObservableObject {
     func getContentsOfDirectory(url: URL) -> [URL] {
         do {
-            return try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+            var list = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+            list.sort {
+                ($0.lastPathComponent) < ($1.lastPathComponent)
+            }
+            return list
         } catch {
             print(error)
             return []
