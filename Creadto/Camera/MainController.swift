@@ -16,7 +16,8 @@ final class MainController: UIViewController, ARSessionDelegate {
     var plyCounter: Int = 0
     private var directoryURL: URL? = nil
     
-    private let selectedFormat: String = "Ascii"
+    //private let selectedFormat: String = "Ascii"
+    private let selectedFormat: String = "Binary Little Endian"
     let fileNameList = ["Front_", "Left_", "Back_", "Right_"]
         
     override func viewDidLoad() {

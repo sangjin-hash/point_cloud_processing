@@ -13,7 +13,7 @@ struct ExportView: View {
     private let url: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     @State private var urls : [URL] = []
     @EnvironmentObject var fileController : FileController
-    @StateObject private var viewModel = ExportViewModel()
+    @StateObject var viewModel = ExportViewModel()
     
     var body: some View {
         NavigationView{
@@ -28,9 +28,7 @@ struct ExportView: View {
                             .frame(height: 50)
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                Task {
-                                    viewModel.sendToServer(url: selectedUrl)
-                                }
+                                viewModel.sendToServer(url: selectedUrl)
                             }
                         })
                     }

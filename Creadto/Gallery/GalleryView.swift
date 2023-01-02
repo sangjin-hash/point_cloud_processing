@@ -78,19 +78,29 @@ struct RenderView : View {
         }
 
         if isTapped{
-            NavigationLink("", destination: SceneRenderingView(scnPath: selectedUrl), isActive: $isTapped)
+            if selectedUrl.lastPathComponent == "Measurement.json" {
+                NavigationLink("", destination: MeasureView(jsonURL: selectedUrl).navigationBarTitle("", displayMode: .inline), isActive: $isTapped)
+            }
+            else {
+                NavigationLink("", destination: SceneRenderingView(scnPath: selectedUrl), isActive: $isTapped)
+            }
         }
     }
 
     func thumbnailImage(file : URL) -> URL {
         let fileName = file.deletingPathExtension().lastPathComponent
-        let direction = fileName.components(separatedBy: "_").first!
-        let result = file.deletingLastPathComponent().appendingPathComponent("\(direction).png")
-        return result
+        if(fileName == "Measurement") {
+            let result = Bundle.main.url(forResource: "Measurement", withExtension: "jpeg")
+            return result!
+        } else {
+            let direction = fileName.components(separatedBy: "_").first!
+            let result = file.deletingLastPathComponent().appendingPathComponent("\(direction).png")
+            return result
+        }
     }
 
     func checkSCNFile(fileURL : URL) -> Bool {
-        if(fileURL.pathExtension == "scn" || fileURL.lastPathComponent == "Mesh.ply"){
+        if(fileURL.pathExtension == "scn" || fileURL.lastPathComponent == "Mesh.ply" || fileURL.lastPathComponent == "Measurement.json"){
             return true
         }else{
             return false
@@ -120,11 +130,28 @@ struct SceneRenderingView : View {
                 Color.white.ignoresSafeArea()
 
                 CustomSceneView(scene: $scene)
-                    //.frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .frame(width: 300, height: 400)
+                    .edgesIgnoringSafeArea(.top)
             }
         }
 
+    }
+}
+
+struct MeasureView : UIViewControllerRepresentable {
+    typealias UIViewControllerType = MeasureViewController
+    let jsonURL : URL
+    
+    init(jsonURL: URL) {
+        self.jsonURL = jsonURL
+    }
+    
+    func makeUIViewController(context: Context) -> MeasureViewController {
+        let vc = MeasureViewController(jsonURL: jsonURL)
+        return vc
+    }
+    
+    func updateUIViewController(_ uiViewController: MeasureViewController, context: Context) {
+        
     }
 }
 

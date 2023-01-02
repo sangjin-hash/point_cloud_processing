@@ -5,14 +5,15 @@
 //  Created by 이상진 on 2022/11/15.
 //
 
-import Foundation
 import Alamofire
 import UniformTypeIdentifiers
 import SceneKit
 
+
 class ExportViewModel : ObservableObject {
-    private let apiURL = URL(string: "http://192.168.219.106:3000")
+    private let apiURL = URL(string: "http://192.168.219.101:3000")
     var fileController = FileController()
+    var jsonURL : URL?
     
     private func checkPLYFile(fileURL : URL) -> Bool {
         if(fileURL.pathExtension == "ply"){
@@ -39,23 +40,23 @@ class ExportViewModel : ObservableObject {
         
         Task {
             do {
-                try await sendDataCounter(counter: counter)
-                for i in 0...counter-1 {
-                    let filePath = plyList[i]
-                    let mimeType = filePath.getMimeType()
-                    let fileName = filePath.path.components(separatedBy: "/").last!
-                    
-                    let fileData = try? Data(contentsOf: filePath)
-                    
-                    try await fileUpload(fileData: fileData ?? Data(), fileName: fileName, mimeType: mimeType)
-                }
-                print("4. fileUpload 끝 && observeStatus")
-                
+//                try await sendDataCounter(counter: counter)
+//                for i in 0...counter-1 {
+//                    let filePath = plyList[i]
+//                    let mimeType = filePath.getMimeType()
+//                    let fileName = filePath.path.components(separatedBy: "/").last!
+//
+//                    let fileData = try? Data(contentsOf: filePath)
+//
+//                    try await fileUpload(fileData: fileData ?? Data(), fileName: fileName, mimeType: mimeType)
+//                }
+//                print("4. fileUpload 끝 && observeStatus")
+
                 while(true){
-                    let res = try await observeStatus()
-                    if(res.Status == "Meshed"){
+                    let res = try await observeStatus(saveURL: url)
+                    if(res.Status == "Meshed") {
                         break;
-                    }else{
+                    } else {
                         sleep(5)
                         print("status = \(res.Status)")
                     }
@@ -83,9 +84,7 @@ class ExportViewModel : ObservableObject {
             switch response.result {
             case .success(let value) :
                 do {
-                    let data = try JSONSerialization.data(withJSONObject: value, options: .prettyPrinted)
-                    let _userData = try JSONDecoder().decode(UserData.self, from: data)
-                    print("3. sendDataCounter 응답 = \(_userData)")
+                    print("sendDataCounter response Success")
                 } catch {
                     print("sendDataCounter response error")
                 }
@@ -97,7 +96,7 @@ class ExportViewModel : ObservableObject {
         .value
     }
     
-    private func observeStatus() async throws -> UserData {
+    private func observeStatus(saveURL : URL) async throws -> UserData {
         return try await AF.request(apiURL!,
                    method: .post,
                    parameters: ["Status" : "check"],
@@ -111,6 +110,12 @@ class ExportViewModel : ObservableObject {
                     let data = try JSONSerialization.data(withJSONObject: value, options: .prettyPrinted)
                     let _userData = try JSONDecoder().decode(UserData.self, from: data)
                     print("observeStatus response = \(_userData)")
+                    
+                    if(_userData.Status == "Measured") {
+                        let jsonData = _userData.Data!.data(using: .utf8)!
+                        self.jsonURL = saveURL.appendingPathComponent("Measurement.json")
+                        try! jsonData.write(to: self.jsonURL!)
+                    }
                 } catch {
                     print("observeStatus response error")
                 }
@@ -140,9 +145,7 @@ class ExportViewModel : ObservableObject {
             switch response.result {
             case .success(let value) :
                 do{
-                    let data = try JSONSerialization.data(withJSONObject: value, options: .prettyPrinted)
-                    let userData = try JSONDecoder().decode(UserData.self, from: data)
-                    print("fileUpload response = \(userData)")
+                    print("fileUpload response = Success")
                 } catch {
                     print("fileUpload response error")
                 }
@@ -198,11 +201,6 @@ class ExportViewModel : ObservableObject {
         let previewImageURL = path.deletingLastPathComponent().appendingPathComponent("Mesh.png")
         try? pngData!.write(to: previewImageURL)
     }
-}
-
-struct UserData : Codable {
-    let Status : String
-    let Data : Data?
 }
 
 extension URL {
