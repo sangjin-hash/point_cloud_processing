@@ -9,11 +9,11 @@ import SwiftUI
 import Alamofire
 import UniformTypeIdentifiers
 
-struct ExportView: View {
+struct ConvertView: View {
     private let url: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     @State private var urls : [URL] = []
     @EnvironmentObject var fileController : FileController
-    @StateObject var viewModel = ExportViewModel()
+    @StateObject var viewModel = ConvertViewModel()
     
     var body: some View {
         NavigationView{
@@ -38,7 +38,7 @@ struct ExportView: View {
             .onAppear{
                 urls = fileController.getContentsOfDirectory(url: url)
             } 
-            .navigationTitle("Export")
+            .navigationTitle("Convert")
             .listStyle(InsetGroupedListStyle())
         }
     }

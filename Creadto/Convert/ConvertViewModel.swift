@@ -10,7 +10,7 @@ import UniformTypeIdentifiers
 import SceneKit
 
 
-class ExportViewModel : ObservableObject {
+class ConvertViewModel : ObservableObject {
     private let apiURL = URL(string: "http://192.168.219.101:3000")
     var fileController = FileController()
     var jsonURL : URL?
@@ -40,17 +40,17 @@ class ExportViewModel : ObservableObject {
         
         Task {
             do {
-//                try await sendDataCounter(counter: counter)
-//                for i in 0...counter-1 {
-//                    let filePath = plyList[i]
-//                    let mimeType = filePath.getMimeType()
-//                    let fileName = filePath.path.components(separatedBy: "/").last!
-//
-//                    let fileData = try? Data(contentsOf: filePath)
-//
-//                    try await fileUpload(fileData: fileData ?? Data(), fileName: fileName, mimeType: mimeType)
-//                }
-//                print("4. fileUpload 끝 && observeStatus")
+                try await sendDataCounter(counter: counter)
+                for i in 0...counter-1 {
+                    let filePath = plyList[i]
+                    let mimeType = filePath.getMimeType()
+                    let fileName = filePath.path.components(separatedBy: "/").last!
+
+                    let fileData = try? Data(contentsOf: filePath)
+
+                    try await fileUpload(fileData: fileData ?? Data(), fileName: fileName, mimeType: mimeType)
+                }
+                print("4. fileUpload 끝 && observeStatus")
 
                 while(true){
                     let res = try await observeStatus(saveURL: url)

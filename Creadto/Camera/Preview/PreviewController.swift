@@ -78,7 +78,7 @@ class PreviewController: UIViewController {
         scnView.allowsCameraControl = true
         scnView.autoenablesDefaultLighting = true
         scnView.antialiasingMode = .multisampling2X
-        scnView.backgroundColor = UIColor.clear
+        scnView.backgroundColor = UIColor(hue: 0.9556, saturation: 0, brightness: 0.97, alpha: 1.0) /* #f7f7f7 */
     }
     
     func setupCamera() {
@@ -99,6 +99,11 @@ class PreviewController: UIViewController {
         mainController.renderer.savedCloudURLs.removeLast()
         
         mainController.plyCounter -= 1
+        
+        if(mainController.plyCounter == 0){
+            try? FileManager.default.removeItem(at: mainController.renderer.directoryURL!)
+            mainController.renderer.directoryURL = nil
+        }
         dismiss(animated: true)
     }
     

@@ -36,12 +36,12 @@ struct MainTabView: View {
                     }.tag(1)
                 
                 
-                ExportView()
+                ConvertView()
                     .environmentObject(fileController)
                     .tabItem{
                         VStack(spacing: 4){
                             Image(systemName: "square.and.arrow.up")
-                            Text("Export")
+                            Text("Convert")
                         }
                     }.onAppear {
                         self.selectedIndex = 2

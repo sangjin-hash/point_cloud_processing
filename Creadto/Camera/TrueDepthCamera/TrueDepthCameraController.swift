@@ -235,8 +235,6 @@ extension TrueDepthCameraController: ScanningViewControllerDelegate {
         vc.rightButton.addTarget(self, action: #selector(savePreviewedSceneTapped), for: UIControl.Event.touchUpInside)
         vc.leftButton.setTitle("Rescan", for: UIControl.State.normal)
         vc.rightButton.setTitle("Save", for: UIControl.State.normal)
-        vc.leftButton.backgroundColor = UIColor(named: "DestructiveAction")
-        vc.rightButton.backgroundColor = UIColor(named: "SaveAction")
         scenePreviewVC = vc
         controller.present(vc, animated: false)
     }
