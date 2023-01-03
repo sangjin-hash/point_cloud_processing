@@ -9,18 +9,18 @@ import SwiftUI
 import Alamofire
 import UniformTypeIdentifiers
 
-struct ExportView: View {
+struct ConvertView: View {
     private let url: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     @State private var urls : [URL] = []
     @EnvironmentObject var fileController : FileController
-    @StateObject private var viewModel = ExportViewModel()
+    @StateObject var viewModel = ConvertViewModel()
     
     var body: some View {
         NavigationView{
             List{
                 Section{
                     ForEach(urls, id: \.self){ selectedUrl in
-                        NavigationLink(destination: FileView(fileList: fileController.getContentsOfDirectory(url: selectedUrl)), label: {
+                        NavigationLink(destination: FileView(selectedUrl: selectedUrl, fileList: fileController.getContentsOfDirectory(url: selectedUrl)), label: {
                             HStack{
                                 Text(selectedUrl.lastPathComponent)
                                 Spacer()
@@ -28,9 +28,7 @@ struct ExportView: View {
                             .frame(height: 50)
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                Task {
-                                    viewModel.sendToServer(url: selectedUrl)
-                                }
+                                viewModel.sendToServer(url: selectedUrl)
                             }
                         })
                     }
@@ -40,7 +38,7 @@ struct ExportView: View {
             .onAppear{
                 urls = fileController.getContentsOfDirectory(url: url)
             } 
-            .navigationTitle("Export")
+            .navigationTitle("Convert")
             .listStyle(InsetGroupedListStyle())
         }
     }
@@ -55,6 +53,7 @@ struct ExportView: View {
 }
 
 struct FileView : View {
+    @State var selectedUrl : URL
     @State var fileList : [URL]
     @State private var isPresented = false
     @EnvironmentObject var fileController : FileController
@@ -74,6 +73,13 @@ struct FileView : View {
                         isPresented.toggle()
                     }
                 }.onDelete(perform: delete)
+            }
+        }.onAppear{
+            if selectedUrl.hasDirectoryPath {
+                fileList = fileController.getContentsOfDirectory(url: selectedUrl)
+            }
+            else {
+                fileList = fileController.getContentsOfDirectory(url: selectedUrl.deletingLastPathComponent())
             }
         }.sheet(isPresented: $isPresented, content: {
             ModalView(activityItems: [fileList[selectedIndex]])

@@ -72,7 +72,7 @@ import UIKit
         let sceneView = SCNView()
         sceneView.scene = scene
         sceneView.allowsCameraControl = true
-        sceneView.backgroundColor = UIColor.clear
+        sceneView.backgroundColor = UIColor(hue: 0.9556, saturation: 0, brightness: 0.97, alpha: 1.0) /* #f7f7f7 */
         return sceneView
     }()
     

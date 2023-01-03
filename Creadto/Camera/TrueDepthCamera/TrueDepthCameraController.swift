@@ -130,7 +130,6 @@ class TrueDepthCameraController : UIViewController {
             try? pngData.write(to: sceneThumbnailURL!)
         }
         
-        plyCounter += 1
         NotificationCenter.default.post(name: .sendDirectoryData,
                                         object: nil,
                                         userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : directoryURL])
@@ -236,8 +235,6 @@ extension TrueDepthCameraController: ScanningViewControllerDelegate {
         vc.rightButton.addTarget(self, action: #selector(savePreviewedSceneTapped), for: UIControl.Event.touchUpInside)
         vc.leftButton.setTitle("Rescan", for: UIControl.State.normal)
         vc.rightButton.setTitle("Save", for: UIControl.State.normal)
-        vc.leftButton.backgroundColor = UIColor(named: "DestructiveAction")
-        vc.rightButton.backgroundColor = UIColor(named: "SaveAction")
         scenePreviewVC = vc
         controller.present(vc, animated: false)
     }
