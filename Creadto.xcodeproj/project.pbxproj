@@ -22,6 +22,7 @@
 		E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8E28D16A2E007C5886 /* Helpers.swift */; };
 		E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9028D16A58007C5886 /* CPUParticle.swift */; };
 		E65ADF9328D16AD5007C5886 /* XError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9228D16AD5007C5886 /* XError.swift */; };
+		E65B1E112976839E00342FD0 /* BodyPreviewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E65B1E102976839E00342FD0 /* BodyPreviewController.scn */; };
 		E688A2092959D90400055C37 /* SCNFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E688A2082959D90400055C37 /* SCNFile.swift */; };
 		E68A2D3129232795006F3DD4 /* ConvertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A2D3029232795006F3DD4 /* ConvertViewModel.swift */; };
 		E68A6500291E6C34000E4A77 /* FileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A64FF291E6C34000E4A77 /* FileController.swift */; };
@@ -61,11 +62,11 @@
 		E65ADF8E28D16A2E007C5886 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		E65ADF9028D16A58007C5886 /* CPUParticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUParticle.swift; sourceTree = "<group>"; };
 		E65ADF9228D16AD5007C5886 /* XError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XError.swift; sourceTree = "<group>"; };
+		E65B1E102976839E00342FD0 /* BodyPreviewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = BodyPreviewController.scn; sourceTree = "<group>"; };
 		E688A2082959D90400055C37 /* SCNFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNFile.swift; sourceTree = "<group>"; };
 		E68A2D3029232795006F3DD4 /* ConvertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertViewModel.swift; sourceTree = "<group>"; };
 		E68A64FF291E6C34000E4A77 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };
 		E6A5FF642961D910001E80D1 /* Measurement.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Measurement.jpeg; sourceTree = "<group>"; };
-		E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = ScenePreviewViewController.scn; sourceTree = "<group>"; };
 		E6AD14C12926175000E9F4AF /* StandardCyborgFusion.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = StandardCyborgFusion.xcframework; path = Pods/StandardCyborgFusion/StandardCyborgFusion.xcframework; sourceTree = "<group>"; };
 		E6AD14C22926175000E9F4AF /* StandardCyborgUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StandardCyborgUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6AD14C32926175000E9F4AF /* StandardCyborgUI.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = StandardCyborgUI.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +123,7 @@
 		E60551DD295EC4C200679B69 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				E65B1E102976839E00342FD0 /* BodyPreviewController.scn */,
 				E6A5FF642961D910001E80D1 /* Measurement.jpeg */,
 				E60551DE295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj */,
 				E60551E0295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj */,
@@ -227,7 +229,6 @@
 				E6B5159028D09685006FCE79 /* AppDelegate.swift */,
 				E6B515A928D0C1CF006FCE79 /* CreadtoApp.swift */,
 				E6B515AE28D0D178006FCE79 /* MainTabView.swift */,
-				E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */,
 				E6B515A128D09685006FCE79 /* Creadto-Bridging-Header.h */,
 				E6B5159228D09685006FCE79 /* Shaders.metal */,
 				E6B5159428D09685006FCE79 /* ShaderTypes.h */,
@@ -349,6 +350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E60551DF295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj in Resources */,
+				E65B1E112976839E00342FD0 /* BodyPreviewController.scn in Resources */,
 				E6B515A028D09685006FCE79 /* LaunchScreen.storyboard in Resources */,
 				E6A5FF652961D910001E80D1 /* Measurement.jpeg in Resources */,
 				E6B5159D28D09685006FCE79 /* Assets.xcassets in Resources */,

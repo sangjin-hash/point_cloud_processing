@@ -70,10 +70,6 @@ class TrueDepthCameraController : UIViewController {
         print("plyCounter = \(self.plyCounter) url = \(self.directoryURL)")
     }
         
-    @objc private func deletePreviewedSceneTapped() {
-        deleteScene()
-        dismiss(animated: true)
-    }
     
     @objc private func dismissPreviewedScanTapped() {
         dismiss(animated: false)
@@ -112,16 +108,25 @@ class TrueDepthCameraController : UIViewController {
         if plyCounter == 0 { createDirectory() }
         let fileName = "Face"
         self.scenePlyURL = directoryURL!.appendingPathComponent("\(fileName).ply")
+
         self.sceneSCNURL = directoryURL!.appendingPathComponent("\(fileName).scn")
         self.sceneThumbnailURL = directoryURL!.appendingPathComponent("\(fileName).png")
+        
         scene.pointCloud!.writeToPLY(atPath: scenePlyURL!.path)
         
         let cloud = self.convertPLYToSCN(file: self.scenePlyURL!)
         cloud.name = "cloud"
         
+        guard let sceneURL = Bundle.scuiResourcesBundle.url(forResource: "ScenePreviewViewController", withExtension: "scn") else {
+            fatalError("Could not find scene file for ScenePreviewViewController")
+        }
+        
         self.convertedScene.rootNode.enumerateChildNodes{ (node, stop) in
             node.removeFromParentNode()
         }
+        
+        self.convertedScene = try! SCNScene(url: sceneURL, options: nil)
+        self.convertedScene.background.contents = UIColor.clear
         self.convertedScene.rootNode.addChildNode(cloud)
         
         self.saveConvertedScene(path: sceneSCNURL!.path)
@@ -171,30 +176,6 @@ class TrueDepthCameraController : UIViewController {
             print("Progress \(totalProgress) Error: \(String(describing: error))")
         }
         print("Success : \(success)")
-    }
-    
-    private func deleteScene() {
-//        let fileManager = FileManager.default
-//
-//        if fileManager.fileExists(atPath: scenePlyURL!.path) {
-//            try? fileManager.removeItem(at: scenePlyURL!)
-//        }
-//
-//        if fileManager.fileExists(atPath: sceneThumbnailURL!.path) {
-//            try? fileManager.removeItem(at: sceneThumbnailURL!)
-//        }
-//
-//        plyCounter -= 1
-//        if plyCounter == 0 {
-//            if fileManager.fileExists(atPath: directoryURL!.path) {
-//                try? fileManager.removeItem(at: directoryURL!)
-//            }
-//            directoryURL = nil
-//        }
-//
-//        NotificationCenter.default.post(name: .sendDirectoryData,
-//                                        object: nil,
-//                                        userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : directoryURL])
     }
     
     func getDate() -> String {
