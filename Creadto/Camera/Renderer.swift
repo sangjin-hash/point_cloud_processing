@@ -403,10 +403,16 @@ extension Renderer {
             
             let cloud = self.convertCloud()
             cloud.name = "cloud"
-                
+            
+            guard let sceneURL = Bundle.main.url(forResource: "BodyPreviewController", withExtension: "scn") else {
+                fatalError("Could not find scene file for BodyPreviewController")
+            }
+            
             self.convertedScene.rootNode.enumerateChildNodes{ (node, stop) in
                 node.removeFromParentNode()
             }
+            self.convertedScene = try! SCNScene(url: sceneURL, options: nil)
+            self.convertedScene.background.contents = UIColor.clear
             self.convertedScene.rootNode.addChildNode(cloud)
                 
             let output = self.savedCloudURLs.last!.deletingPathExtension().appendingPathExtension("scn")

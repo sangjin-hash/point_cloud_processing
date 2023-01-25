@@ -11,7 +11,7 @@ import SceneKit
 
 
 class ConvertViewModel : ObservableObject {
-    private let apiURL = URL(string: "http://192.168.219.101:3000")
+    private let apiURL = URL(string: "http://192.168.219.148:3000")
     var fileController = FileController()
     var jsonURL : URL?
     
@@ -97,6 +97,7 @@ class ConvertViewModel : ObservableObject {
     }
     
     private func observeStatus(saveURL : URL) async throws -> UserData {
+        print("observeStatus 호출")
         return try await AF.request(apiURL!,
                    method: .post,
                    parameters: ["Status" : "check"],

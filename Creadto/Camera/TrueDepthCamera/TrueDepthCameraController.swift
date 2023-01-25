@@ -23,6 +23,7 @@ class TrueDepthCameraController : UIViewController {
     private var sceneThumbnailURL: URL? = nil
     private var scenePlyURL: URL? = nil
     private var sceneSCNURL: URL? = nil
+    private var meshSCNURL: URL? = nil
     
     private var pointCloud : Array<PointCloudVertex> = []
     private var convertedScene = SCNScene()
@@ -70,10 +71,6 @@ class TrueDepthCameraController : UIViewController {
         print("plyCounter = \(self.plyCounter) url = \(self.directoryURL)")
     }
         
-    @objc private func deletePreviewedSceneTapped() {
-        deleteScene()
-        dismiss(animated: true)
-    }
     
     @objc private func dismissPreviewedScanTapped() {
         dismiss(animated: false)
@@ -114,14 +111,31 @@ class TrueDepthCameraController : UIViewController {
         self.scenePlyURL = directoryURL!.appendingPathComponent("\(fileName).ply")
         self.sceneSCNURL = directoryURL!.appendingPathComponent("\(fileName).scn")
         self.sceneThumbnailURL = directoryURL!.appendingPathComponent("\(fileName).png")
+        
+        self.meshSCNURL = directoryURL!.appendingPathComponent("\(fileName)_Mesh.scn")
+        
         scene.pointCloud!.writeToPLY(atPath: scenePlyURL!.path)
         
+        guard let sceneURL = Bundle.scuiResourcesBundle.url(forResource: "ScenePreviewViewController", withExtension: "scn") else {
+            fatalError("Could not find scene file for ScenePreviewViewController")
+        }
+        
+        let meshScene = try! SCNScene(url: sceneURL, options: nil)
+        let mesh = scene.mesh!.buildMeshNode()
+        mesh.name = "mesh"
+        meshScene.background.contents = UIColor.clear
+        meshScene.rootNode.addChildNode(mesh)
+        meshScene.write(to: self.meshSCNURL!, options: nil, delegate: nil)
+
         let cloud = self.convertPLYToSCN(file: self.scenePlyURL!)
         cloud.name = "cloud"
         
         self.convertedScene.rootNode.enumerateChildNodes{ (node, stop) in
             node.removeFromParentNode()
         }
+        
+        self.convertedScene = try! SCNScene(url: sceneURL, options: nil)
+        self.convertedScene.background.contents = UIColor.clear
         self.convertedScene.rootNode.addChildNode(cloud)
         
         self.saveConvertedScene(path: sceneSCNURL!.path)
@@ -171,30 +185,6 @@ class TrueDepthCameraController : UIViewController {
             print("Progress \(totalProgress) Error: \(String(describing: error))")
         }
         print("Success : \(success)")
-    }
-    
-    private func deleteScene() {
-//        let fileManager = FileManager.default
-//
-//        if fileManager.fileExists(atPath: scenePlyURL!.path) {
-//            try? fileManager.removeItem(at: scenePlyURL!)
-//        }
-//
-//        if fileManager.fileExists(atPath: sceneThumbnailURL!.path) {
-//            try? fileManager.removeItem(at: sceneThumbnailURL!)
-//        }
-//
-//        plyCounter -= 1
-//        if plyCounter == 0 {
-//            if fileManager.fileExists(atPath: directoryURL!.path) {
-//                try? fileManager.removeItem(at: directoryURL!)
-//            }
-//            directoryURL = nil
-//        }
-//
-//        NotificationCenter.default.post(name: .sendDirectoryData,
-//                                        object: nil,
-//                                        userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : directoryURL])
     }
     
     func getDate() -> String {

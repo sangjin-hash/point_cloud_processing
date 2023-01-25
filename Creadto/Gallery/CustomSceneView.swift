@@ -17,6 +17,7 @@ struct CustomSceneView: UIViewRepresentable {
         view.autoenablesDefaultLighting = true
         view.antialiasingMode = .multisampling2X
         view.scene = scene
+        view.pointOfView = scene?.rootNode.childNode(withName: "camera", recursively: true)
         return view
     }
     

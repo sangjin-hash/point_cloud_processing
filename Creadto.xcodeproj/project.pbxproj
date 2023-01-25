@@ -14,6 +14,7 @@
 		E60551EA295EC86400679B69 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60551E9295EC86400679B69 /* CustomTableViewCell.swift */; };
 		E60551EC295EC88800679B69 /* MeasureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60551EB295EC88800679B69 /* MeasureViewController.swift */; };
 		E615ABA4295D2F51009E36A3 /* MeasureData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E615ABA3295D2F51009E36A3 /* MeasureData.swift */; };
+		E63B0CA7297FD2D000FA633B /* BodyPreviewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E63B0CA6297FD2D000FA633B /* BodyPreviewController.scn */; };
 		E652401A28EB41840064D766 /* PLYFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401928EB41840064D766 /* PLYFile.swift */; };
 		E652401E28EC4F650064D766 /* PointCloudVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652401D28EC4F650064D766 /* PointCloudVertex.swift */; };
 		E654149A293343AB001F0107 /* PreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6541499293343AB001F0107 /* PreviewController.swift */; };
@@ -53,6 +54,7 @@
 		E60551E9295EC86400679B69 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
 		E60551EB295EC88800679B69 /* MeasureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureViewController.swift; sourceTree = "<group>"; };
 		E615ABA3295D2F51009E36A3 /* MeasureData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureData.swift; sourceTree = "<group>"; };
+		E63B0CA6297FD2D000FA633B /* BodyPreviewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = BodyPreviewController.scn; sourceTree = "<group>"; };
 		E652401928EB41840064D766 /* PLYFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLYFile.swift; sourceTree = "<group>"; };
 		E652401D28EC4F650064D766 /* PointCloudVertex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloudVertex.swift; sourceTree = "<group>"; };
 		E6541499293343AB001F0107 /* PreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewController.swift; sourceTree = "<group>"; };
@@ -65,7 +67,6 @@
 		E68A2D3029232795006F3DD4 /* ConvertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertViewModel.swift; sourceTree = "<group>"; };
 		E68A64FF291E6C34000E4A77 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };
 		E6A5FF642961D910001E80D1 /* Measurement.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Measurement.jpeg; sourceTree = "<group>"; };
-		E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = ScenePreviewViewController.scn; sourceTree = "<group>"; };
 		E6AD14C12926175000E9F4AF /* StandardCyborgFusion.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = StandardCyborgFusion.xcframework; path = Pods/StandardCyborgFusion/StandardCyborgFusion.xcframework; sourceTree = "<group>"; };
 		E6AD14C22926175000E9F4AF /* StandardCyborgUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StandardCyborgUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6AD14C32926175000E9F4AF /* StandardCyborgUI.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = StandardCyborgUI.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +123,7 @@
 		E60551DD295EC4C200679B69 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				E63B0CA6297FD2D000FA633B /* BodyPreviewController.scn */,
 				E6A5FF642961D910001E80D1 /* Measurement.jpeg */,
 				E60551DE295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj */,
 				E60551E0295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj */,
@@ -227,7 +229,6 @@
 				E6B5159028D09685006FCE79 /* AppDelegate.swift */,
 				E6B515A928D0C1CF006FCE79 /* CreadtoApp.swift */,
 				E6B515AE28D0D178006FCE79 /* MainTabView.swift */,
-				E6AD14C0292603D200E9F4AF /* ScenePreviewViewController.scn */,
 				E6B515A128D09685006FCE79 /* Creadto-Bridging-Header.h */,
 				E6B5159228D09685006FCE79 /* Shaders.metal */,
 				E6B5159428D09685006FCE79 /* ShaderTypes.h */,
@@ -350,6 +351,7 @@
 			files = (
 				E60551DF295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj in Resources */,
 				E6B515A028D09685006FCE79 /* LaunchScreen.storyboard in Resources */,
+				E63B0CA7297FD2D000FA633B /* BodyPreviewController.scn in Resources */,
 				E6A5FF652961D910001E80D1 /* Measurement.jpeg in Resources */,
 				E6B5159D28D09685006FCE79 /* Assets.xcassets in Resources */,
 				E60551E1295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj in Resources */,
@@ -580,7 +582,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = 8NNADH8KB4;
+				DEVELOPMENT_TEAM = M9WR26927H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Re:verse";
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -598,7 +600,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.creadto.reverse;
+				PRODUCT_BUNDLE_IDENTIFIER = com.creadto.reverse1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Creadto/Creadto-Bridging-Header.h";
@@ -617,7 +619,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = 8NNADH8KB4;
+				DEVELOPMENT_TEAM = M9WR26927H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Re:verse";
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -635,7 +637,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.creadto.reverse;
+				PRODUCT_BUNDLE_IDENTIFIER = com.creadto.reverse1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Creadto/Creadto-Bridging-Header.h";
