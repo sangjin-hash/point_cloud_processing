@@ -26,6 +26,7 @@ struct CustomSceneView: UIViewRepresentable {
             pointsElement.minimumPointScreenSpaceRadius = pointSize
             pointsElement.maximumPointScreenSpaceRadius = pointSize
         }
+
         return view
     }
     

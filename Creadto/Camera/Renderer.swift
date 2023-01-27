@@ -411,6 +411,7 @@ extension Renderer {
             self.convertedScene.rootNode.enumerateChildNodes{ (node, stop) in
                 node.removeFromParentNode()
             }
+            
             self.convertedScene = try! SCNScene(url: sceneURL, options: nil)
             self.convertedScene.background.contents = UIColor.clear
             self.convertedScene.rootNode.addChildNode(cloud)
