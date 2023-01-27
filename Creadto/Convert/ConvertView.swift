@@ -15,20 +15,45 @@ struct ConvertView: View {
     @EnvironmentObject var fileController : FileController
     @StateObject var viewModel = ConvertViewModel()
     
+    @State private var selectedIndex = -1
+    private let status = ["Uploading...", "Processing...", "Downloading..."]
+    
     var body: some View {
         NavigationView{
             List{
                 Section{
-                    ForEach(urls, id: \.self){ selectedUrl in
+                    ForEach(Array(urls.enumerated()), id: \.offset){ index, selectedUrl in
                         NavigationLink(destination: FileView(selectedUrl: selectedUrl, fileList: fileController.getContentsOfDirectory(url: selectedUrl)), label: {
-                            HStack{
-                                Text(selectedUrl.lastPathComponent)
-                                Spacer()
-                            }
-                            .frame(height: 50)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                viewModel.sendToServer(url: selectedUrl)
+                            VStack{
+                                HStack{
+                                    Text(selectedUrl.lastPathComponent)
+                                    Spacer()
+                                }
+                                .frame(height: 50)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedIndex = index
+                                    viewModel.sendToServer(url: selectedUrl)
+                                    viewModel.isLock.toggle()
+                                }.disabled(viewModel.isLock)
+                                
+                                if selectedIndex == index && viewModel.isLock {
+                                    VStack{
+                                        HStack(spacing: 10){
+                                            Text(status[viewModel.statusIndex])
+                                            ProgressView()
+
+                                            Spacer()
+                                            Text("\(Int(viewModel.progressAmount))%")
+                                        }
+                                        
+                                        ProgressView(value: viewModel.progressAmount, total: 100)
+                                            .shadow(color: Color(red: 0, green: 0, blue: 0.6),
+                                                                radius: 4.0, x: 1.0, y: 2.0)
+                                            .padding()
+                                            
+                                    }
+                                }
                             }
                         })
                     }

@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E60551DF295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj in Resources */ = {isa = PBXBuildFile; fileRef = E60551DE295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj */; };
-		E60551E1295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj in Resources */ = {isa = PBXBuildFile; fileRef = E60551E0295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj */; };
 		E60551E5295EC58600679B69 /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60551E4295EC58600679B69 /* UserData.swift */; };
 		E60551E8295EC85100679B69 /* CustomTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60551E7295EC85100679B69 /* CustomTableView.swift */; };
 		E60551EA295EC86400679B69 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60551E9295EC86400679B69 /* CustomTableViewCell.swift */; };
@@ -47,8 +45,6 @@
 		0D18D79955828FAD557C3C10 /* Pods-Creadto.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Creadto.debug.xcconfig"; path = "Target Support Files/Pods-Creadto/Pods-Creadto.debug.xcconfig"; sourceTree = "<group>"; };
 		7CFA7FBA5A18266FE5C49462 /* Pods_Creadto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Creadto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE50B9EC64A6A10CAABB7E92 /* Pods-Creadto.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Creadto.release.xcconfig"; path = "Target Support Files/Pods-Creadto/Pods-Creadto.release.xcconfig"; sourceTree = "<group>"; };
-		E60551DE295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Realistic_White_Male_Low_Poly.obj; sourceTree = "<group>"; };
-		E60551E0295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Realistic_White_Female_Low_Poly.obj; sourceTree = "<group>"; };
 		E60551E4295EC58600679B69 /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		E60551E7295EC85100679B69 /* CustomTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableView.swift; sourceTree = "<group>"; };
 		E60551E9295EC86400679B69 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
@@ -125,8 +121,6 @@
 			children = (
 				E63B0CA6297FD2D000FA633B /* BodyPreviewController.scn */,
 				E6A5FF642961D910001E80D1 /* Measurement.jpeg */,
-				E60551DE295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj */,
-				E60551E0295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
@@ -349,12 +343,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E60551DF295EC4CC00679B69 /* Realistic_White_Male_Low_Poly.obj in Resources */,
 				E6B515A028D09685006FCE79 /* LaunchScreen.storyboard in Resources */,
 				E63B0CA7297FD2D000FA633B /* BodyPreviewController.scn in Resources */,
 				E6A5FF652961D910001E80D1 /* Measurement.jpeg in Resources */,
 				E6B5159D28D09685006FCE79 /* Assets.xcassets in Resources */,
-				E60551E1295EC50900679B69 /* Realistic_White_Female_Low_Poly.obj in Resources */,
 				E6B5159B28D09685006FCE79 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

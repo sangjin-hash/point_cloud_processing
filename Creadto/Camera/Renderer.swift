@@ -18,7 +18,7 @@ final class Renderer {
     var highConfCount = 0
     var savingError: XError? = nil
 
-    private let maxPoints = 1_000_000
+    private let maxPoints = 8_000_000
     // Number of sample points on the grid initial: 3M
     
     var numGridPoints = 110592 // spacing : 5

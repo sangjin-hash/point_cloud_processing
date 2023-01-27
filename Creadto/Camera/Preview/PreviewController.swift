@@ -27,7 +27,6 @@ class PreviewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        //setupCamera()
         
         view.backgroundColor = UIColor.white
         view.addSubview(scnView)
@@ -88,13 +87,6 @@ class PreviewController: UIViewController {
             pointsElement.minimumPointScreenSpaceRadius = pointSize
             pointsElement.maximumPointScreenSpaceRadius = pointSize
         }
-    }
-    
-    func setupCamera() {
-        cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0 , y: 5, z:10)
-        scene.rootNode.addChildNode(cameraNode)
     }
     
     @objc
