@@ -11,9 +11,28 @@ import SceneKit
 
 
 class ConvertViewModel : ObservableObject {
-    private let apiURL = URL(string: "http://192.168.219.101:3000")
+    private let apiURL = URL(string: "http://192.168.219.148:3000")
+    @Published var isLock = false
+    @Published var progressAmount = 0.0
+    @Published var statusIndex = 0
+    
+    private var plyTotalCounter = 0
+    private var plyCounter = 0
+    
+    private let uploadProgressOffset = 0.3
+    private let processProgressOffset = 0.6
+    private let downloadProgressOffset = 0.1
+    
+    
     var fileController = FileController()
     var jsonURL : URL?
+    
+    private func initVariables() {
+        self.plyTotalCounter = 0
+        self.plyCounter = 0
+        self.progressAmount = 0.0
+        self.statusIndex = 0
+    }
     
     private func checkPLYFile(fileURL : URL) -> Bool {
         if(fileURL.lastPathComponent == "Face.ply" || fileURL.pathExtension != "ply"){
@@ -22,26 +41,25 @@ class ConvertViewModel : ObservableObject {
             return true
         }
     }
-
+   
     func sendToServer(url : URL){
         let fileList = fileController.getContentsOfDirectory(url: url)
-        var _counter = 0
         var _plyList : [URL] = []
+        self.initVariables()
+        
         fileList.map{ file in
             if(checkPLYFile(fileURL: file)){
                 _plyList.append(file)
-                _counter += 1
+                self.plyTotalCounter += 1
             }
         }
         
-        let counter = _counter
         let plyList = _plyList
-        print("1. 보내고자 하는 ply file 수 = \(counter)")
         
         Task {
             do {
-                try await sendDataCounter(counter: counter)
-                for i in 0...counter-1 {
+                try await sendDataCounter(counter: self.plyTotalCounter)
+                for i in 0...self.plyTotalCounter-1 {
                     let filePath = plyList[i]
                     let mimeType = filePath.getMimeType()
                     let fileName = filePath.path.components(separatedBy: "/").last!
@@ -55,6 +73,7 @@ class ConvertViewModel : ObservableObject {
                 while(true){
                     let res = try await observeStatus(saveURL: url)
                     if(res.Status == "Meshed") {
+                        self.statusIndex = 2
                         break;
                     } else {
                         sleep(5)
@@ -66,6 +85,11 @@ class ConvertViewModel : ObservableObject {
             } catch {
                 print("sendDataCounter Error")
             }
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.isLock.toggle()
+            }
+            
         }
         
     }
@@ -97,6 +121,7 @@ class ConvertViewModel : ObservableObject {
     }
     
     private func observeStatus(saveURL : URL) async throws -> UserData {
+        print("observeStatus 호출")
         return try await AF.request(apiURL!,
                    method: .post,
                    parameters: ["Status" : "check"],
@@ -115,6 +140,10 @@ class ConvertViewModel : ObservableObject {
                         let jsonData = _userData.Data!.data(using: .utf8)!
                         self.jsonURL = saveURL.appendingPathComponent("Measurement.json")
                         try! jsonData.write(to: self.jsonURL!)
+                    } else {
+                        if let _progress = Double(_userData.Data!) {
+                            self.progressAmount += _progress * self.processProgressOffset
+                        }
                     }
                 } catch {
                     print("observeStatus response error")
@@ -129,8 +158,6 @@ class ConvertViewModel : ObservableObject {
     
     
     private func fileUpload(fileData : Data, fileName: String, mimeType: String) async throws -> UserData {
-        print("fileUpload 호출")
-        
         return try await AF.upload(multipartFormData: { multipart in
             multipart.append(fileData,
                              withName: "ply",
@@ -138,7 +165,9 @@ class ConvertViewModel : ObservableObject {
                              mimeType:  mimeType)
         }, to: apiURL!, method: .post).uploadProgress(closure: {
             progress in
-            print(progress.fractionCompleted * 100)
+            let n = progress.fractionCompleted * 100.0 + Double(self.plyCounter) * 100.0
+            let m = Double(self.plyTotalCounter) * 100.0
+            self.progressAmount = n * self.uploadProgressOffset / m
         })
         .responseJSON {
             response in
@@ -146,6 +175,8 @@ class ConvertViewModel : ObservableObject {
             case .success(let value) :
                 do{
                     print("fileUpload response = Success")
+                    self.plyCounter += 1
+                    self.statusIndex = 1
                 } catch {
                     print("fileUpload response error")
                 }
@@ -164,6 +195,9 @@ class ConvertViewModel : ObservableObject {
                    parameters: ["mesh" : "request"],
                    encoding: URLEncoding.default,
                    headers: ["Content-Type" : "application/octet-stream"])
+        .downloadProgress{ (progress) in
+            self.progressAmount += progress.fractionCompleted * 100.0 * self.downloadProgressOffset
+        }
         .validate(statusCode: 200..<300)
         .response{ response in
             switch response.result {

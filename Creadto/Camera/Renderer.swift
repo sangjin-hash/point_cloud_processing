@@ -18,11 +18,12 @@ final class Renderer {
     var highConfCount = 0
     var savingError: XError? = nil
 
-    private let maxPoints = 1_000_000
+    private let maxPoints = 8_000_000
     // Number of sample points on the grid initial: 3M
-    //var numGridPoints = 110592 // spacing : 5
+    
+    var numGridPoints = 110592 // spacing : 5
     //var numGridPoints = 172800 // spacing : 4
-    var numGridPoints = 307200 // spacing : 3
+    //var numGridPoints = 307200 // spacing : 3
     
     // Particle's size in pixels
     private let particleSize: Float = 5
@@ -74,6 +75,11 @@ final class Renderer {
     private var viewportSize = CGSize()
     
     private var convertedScene = SCNScene()
+    
+    // Detach Segmentation
+    private lazy var gridPointsBuffer = MetalBuffer<Float2>(device: device,
+                                                            array: makeGridPoints(),
+                                                            index: kGridPoints.rawValue, options: [])
     
     // RGB buffer
     private lazy var rgbUniforms: RGBUniforms = {
@@ -266,27 +272,27 @@ final class Renderer {
     }
     
     private func accumulatePoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
-        try? requestHandler.perform([segmentationRequest],
-                                    on: frame.capturedImage)
-        guard let maskPixelBuffer =
-                segmentationRequest.results?.first?.pixelBuffer else { return }
-        
-        
-        
-        let maskCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
-        let originalCIImage = CIImage(cvPixelBuffer: frame.capturedImage)
-        let targetSize = CGSize(width: originalCIImage.extent.height, height: originalCIImage.extent.width)
-        let resizeMaskCIImage = resizeCIImage(maskCIImage, targetSize)
-        let resizeMaskCGImage = ciContext.createCGImage(resizeMaskCIImage, from: resizeMaskCIImage.extent)
-        let segmentation1DArray = convertImageToArray(fromCGImage: resizeMaskCGImage)
-        
-        let gridArray = makeGridPoints(array: segmentation1DArray!)
-        guard gridArray.count > 0 else {
-            return
-        }
-        let gridPointsBuffer = MetalBuffer<Float2>(device: device,
-                                                   array: gridArray,
-                                                   index: kGridPoints.rawValue, options: [])
+//        try? requestHandler.perform([segmentationRequest],
+//                                    on: frame.capturedImage)
+//        guard let maskPixelBuffer =
+//                segmentationRequest.results?.first?.pixelBuffer else { return }
+//
+//
+//
+//        let maskCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
+//        let originalCIImage = CIImage(cvPixelBuffer: frame.capturedImage)
+//        let targetSize = CGSize(width: originalCIImage.extent.height, height: originalCIImage.extent.width)
+//        let resizeMaskCIImage = resizeCIImage(maskCIImage, targetSize)
+//        let resizeMaskCGImage = ciContext.createCGImage(resizeMaskCIImage, from: resizeMaskCIImage.extent)
+//        let segmentation1DArray = convertImageToArray(fromCGImage: resizeMaskCGImage)
+//
+//        let gridArray = makeGridPoints(array: segmentation1DArray!)
+//        guard gridArray.count > 0 else {
+//            return
+//        }
+//        let gridPointsBuffer = MetalBuffer<Float2>(device: device,
+//                                                   array: gridArray,
+//                                                   index: kGridPoints.rawValue, options: [])
         
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
         
@@ -546,6 +552,25 @@ private extension Renderer {
                 if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] == segmentationThreshold) {
                     points.append(cameraPoint)
                 }
+            }
+        }
+        
+        return points
+    }
+    
+    func makeGridPoints() -> [Float2] {
+        let gridArea = cameraResolution.x * cameraResolution.y
+        let spacing = sqrt(gridArea / Float(numGridPoints))
+        let deltaX = Int(round(cameraResolution.x / spacing))
+        let deltaY = Int(round(cameraResolution.y / spacing))
+        
+        var points = [Float2]()
+        for gridY in 0 ..< deltaY {
+            let alternatingOffsetX = Float(gridY % 2) * spacing / 2
+            for gridX in 0 ..< deltaX {
+                let cameraPoint = Float2(alternatingOffsetX + (Float(gridX) + 0.5) * spacing, (Float(gridY) + 0.5) * spacing)
+                
+                points.append(cameraPoint)
             }
         }
         
