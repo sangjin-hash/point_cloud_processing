@@ -20,7 +20,7 @@ class MeasureViewController: UIViewController {
     
     private let jsonURL : URL
     
-    private var memberName = ["Front\nFace\n", "Neck\n", "Front\ntorso\n", "Chest\n", "Waist\n",
+    private var memberName = ["Height\n","Front\nFace\n", "Neck\n", "Front\ntorso\n", "Chest\n", "Waist\n",
                       "Hip\n", "Thigh\n", "Mid\nThigh\n", "Knee\n", "Calf\n",
                       "Ankle\n", "Mid\nFace\n", "Neck\nto Chest\n","Front\ntorso\n", "Front\nCenter\n"]
     private var memberName2 = ["Armpit\n", "Armhole\n", "Knee\nlocation\n","Knee\nheight\n", "Side\nface\n",
@@ -39,8 +39,6 @@ class MeasureViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        //setLight()
-        //setCamera()
         _setupData()
         sceneView.scene = scene
         
@@ -65,21 +63,22 @@ class MeasureViewController: UIViewController {
         let jsonData = try! JSONDecoder().decode(Measurement.self, from: _data)
         
         // mock data
-        memberName[0] += _measureData.X_Measure_1001 == nil ? "_" : (String(_measureData.X_Measure_1001!) + "cm")
-        memberName[1] += _measureData.X_Measure_1002 == nil ? "_" : (String(_measureData.X_Measure_1002!) + "cm")
-        memberName[2] += _measureData.X_Measure_1003 == nil ? "_" : (String(_measureData.X_Measure_1003!) + "cm")
-        memberName[3] += _measureData.X_Measure_1004 == nil ? "_" : (String(_measureData.X_Measure_1004!) + "cm")
-        memberName[4] += _measureData.X_Measure_1005 == nil ? "_" : (String(_measureData.X_Measure_1005!) + "cm")
-        memberName[5] += _measureData.X_Measure_1006 == nil ? "_" : (String(_measureData.X_Measure_1006!) + "cm")
-        memberName[6] += _measureData.X_Measure_1007 == nil ? "_" : (String(_measureData.X_Measure_1007!) + "cm")
-        memberName[7] += _measureData.X_Measure_1008 == nil ? "_" : (String(_measureData.X_Measure_1008!) + "cm")
-        memberName[8] += _measureData.X_Measure_1009 == nil ? "_" : (String(_measureData.X_Measure_1009!) + "cm")
-        memberName[9] += _measureData.X_Measure_1010 == nil ? "_" : (String(_measureData.X_Measure_1010!) + "cm")
-        memberName[10] += _measureData.X_Measure_1011 == nil ? "_" : (String(_measureData.X_Measure_1011!) + "cm")
-        memberName[11] += _measureData.X_Measure_1101 == nil ? "_" : (String(_measureData.X_Measure_1101!) + "cm")
-        memberName[12] += _measureData.X_Measure_1102 == nil ? "_" : (String(_measureData.X_Measure_1102!) + "cm")
-        memberName[13] += _measureData.X_Measure_1103 == nil ? "_" : (String(_measureData.X_Measure_1103!) + "cm")
-        memberName[14] += _measureData.X_Measure_1104 == nil ? "_" : (String(_measureData.X_Measure_1104!) + "cm")
+        memberName[0] += _measureData.X_Measure_1000 == nil ? "-" : (String(_measureData.X_Measure_1000!) + "cm")
+        memberName[1] += _measureData.X_Measure_1001 == nil ? "_" : (String(_measureData.X_Measure_1001!) + "cm")
+        memberName[2] += _measureData.X_Measure_1002 == nil ? "_" : (String(_measureData.X_Measure_1002!) + "cm")
+        memberName[3] += _measureData.X_Measure_1003 == nil ? "_" : (String(_measureData.X_Measure_1003!) + "cm")
+        memberName[4] += _measureData.X_Measure_1004 == nil ? "_" : (String(_measureData.X_Measure_1004!) + "cm")
+        memberName[5] += _measureData.X_Measure_1005 == nil ? "_" : (String(_measureData.X_Measure_1005!) + "cm")
+        memberName[6] += _measureData.X_Measure_1006 == nil ? "_" : (String(_measureData.X_Measure_1006!) + "cm")
+        memberName[7] += _measureData.X_Measure_1007 == nil ? "_" : (String(_measureData.X_Measure_1007!) + "cm")
+        memberName[8] += _measureData.X_Measure_1008 == nil ? "_" : (String(_measureData.X_Measure_1008!) + "cm")
+        memberName[9] += _measureData.X_Measure_1009 == nil ? "_" : (String(_measureData.X_Measure_1009!) + "cm")
+        memberName[10] += _measureData.X_Measure_1010 == nil ? "_" : (String(_measureData.X_Measure_1010!) + "cm")
+        memberName[11] += _measureData.X_Measure_1011 == nil ? "_" : (String(_measureData.X_Measure_1011!) + "cm")
+        memberName[12] += _measureData.X_Measure_1101 == nil ? "_" : (String(_measureData.X_Measure_1101!) + "cm")
+        memberName[13] += _measureData.X_Measure_1102 == nil ? "_" : (String(_measureData.X_Measure_1102!) + "cm")
+        memberName[14] += _measureData.X_Measure_1103 == nil ? "_" : (String(_measureData.X_Measure_1103!) + "cm")
+        memberName[15] += _measureData.X_Measure_1104 == nil ? "_" : (String(_measureData.X_Measure_1104!) + "cm")
 
         memberName2[0] += _measureData.X_Measure_2001 == nil ? "_" : (String(_measureData.X_Measure_2001!) + "cm")
         memberName2[1] += _measureData.X_Measure_2002 == nil ? "_" : (String(_measureData.X_Measure_2002!) + "cm")
@@ -104,28 +103,6 @@ class MeasureViewController: UIViewController {
         sceneView.allowsCameraControl = true
         sceneView.autoenablesDefaultLighting = true
         sceneView.backgroundColor = UIColor.white
-    }
-    
-    private func setLight(){
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light?.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 50, z: 35)
-        scene?.rootNode.addChildNode(lightNode)
-        
-        let back_lightNode = SCNNode()
-        back_lightNode.light = SCNLight()
-        back_lightNode.light?.type = .omni
-        back_lightNode.position = SCNVector3(x: 0, y: 50, z: -35)
-        scene?.rootNode.addChildNode(back_lightNode)
-    }
-    
-    private func setCamera() {
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        cameraNode.camera?.fieldOfView = 90
-        cameraNode.position = SCNVector3(x: 0, y: 40, z: 70)
-        scene?.rootNode.addChildNode(cameraNode)
     }
     
     func configureTableView() {
@@ -183,10 +160,24 @@ extension MeasureViewController: UITableViewDelegate, UITableViewDataSource {
         case left_customTableView :
             let cell = left_customTableView.dequeueReusableCell(withIdentifier: "cellIdentifier", for: indexPath) as! CustomTableViewCell
             cell.measurementLabel.text = memberName[indexPath.row]
+            
+            let subString = memberName[indexPath.row].split(separator: "\n")
+            let attributedString = NSMutableAttributedString(string: cell.measurementLabel.text!)
+            attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: (cell.measurementLabel.text! as NSString).range(of: String(subString.last!)))
+            attributedString.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: (cell.measurementLabel.text! as NSString).range(of: String(subString.last!)))
+            cell.measurementLabel.attributedText = attributedString
+            
             return cell
         case right_customTableView :
             let cell = right_customTableView.dequeueReusableCell(withIdentifier: "cellIdentifier", for: indexPath) as! CustomTableViewCell
             cell.measurementLabel.text = memberName2[indexPath.row]
+            
+            let subString = memberName2[indexPath.row].split(separator: "\n")
+            let attributedString = NSMutableAttributedString(string: cell.measurementLabel.text!)
+            attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: (cell.measurementLabel.text! as NSString).range(of: String(subString.last!)))
+            attributedString.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: (cell.measurementLabel.text! as NSString).range(of: String(subString.last!)))
+            cell.measurementLabel.attributedText = attributedString
+            
             return cell
         default :
             fatalError("Invalid table")

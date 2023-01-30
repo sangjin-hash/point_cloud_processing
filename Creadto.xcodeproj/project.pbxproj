@@ -21,7 +21,6 @@
 		E65ADF8F28D16A2E007C5886 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF8E28D16A2E007C5886 /* Helpers.swift */; };
 		E65ADF9128D16A58007C5886 /* CPUParticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9028D16A58007C5886 /* CPUParticle.swift */; };
 		E65ADF9328D16AD5007C5886 /* XError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65ADF9228D16AD5007C5886 /* XError.swift */; };
-		E65B1E112976839E00342FD0 /* BodyPreviewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E65B1E102976839E00342FD0 /* BodyPreviewController.scn */; };
 		E688A2092959D90400055C37 /* SCNFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E688A2082959D90400055C37 /* SCNFile.swift */; };
 		E68A2D3129232795006F3DD4 /* ConvertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A2D3029232795006F3DD4 /* ConvertViewModel.swift */; };
 		E68A6500291E6C34000E4A77 /* FileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A64FF291E6C34000E4A77 /* FileController.swift */; };
@@ -60,7 +59,6 @@
 		E65ADF8E28D16A2E007C5886 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		E65ADF9028D16A58007C5886 /* CPUParticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUParticle.swift; sourceTree = "<group>"; };
 		E65ADF9228D16AD5007C5886 /* XError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XError.swift; sourceTree = "<group>"; };
-		E65B1E102976839E00342FD0 /* BodyPreviewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = BodyPreviewController.scn; sourceTree = "<group>"; };
 		E688A2082959D90400055C37 /* SCNFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNFile.swift; sourceTree = "<group>"; };
 		E68A2D3029232795006F3DD4 /* ConvertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertViewModel.swift; sourceTree = "<group>"; };
 		E68A64FF291E6C34000E4A77 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };

@@ -8,6 +8,7 @@
 import Foundation
 
 struct Measurement : Codable {
+    let X_Measure_1000 : Double?
     let X_Measure_1001 : Double?
     let X_Measure_1002 : Double?
     let X_Measure_1003 : Double?

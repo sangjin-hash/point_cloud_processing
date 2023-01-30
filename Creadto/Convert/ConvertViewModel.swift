@@ -68,12 +68,19 @@ class ConvertViewModel : ObservableObject {
 
                     try await fileUpload(fileData: fileData ?? Data(), fileName: fileName, mimeType: mimeType)
                 }
+
+                DispatchQueue.main.async { [weak self] in
+                    self?.statusIndex = 1
+                }
+
                 print("4. fileUpload 끝 && observeStatus")
 
                 while(true){
                     let res = try await observeStatus(saveURL: url)
                     if(res.Status == "Meshed") {
-                        self.statusIndex = 2
+                        DispatchQueue.main.async { [weak self] in
+                            self?.statusIndex = 2
+                        }
                         break;
                     } else {
                         sleep(5)
@@ -141,9 +148,9 @@ class ConvertViewModel : ObservableObject {
                         self.jsonURL = saveURL.appendingPathComponent("Measurement.json")
                         try! jsonData.write(to: self.jsonURL!)
                     } else {
-                        if let _progress = Double(_userData.Data!) {
-                            self.progressAmount += _progress * self.processProgressOffset
-                        }
+//                        if let _progress = Double(_userData.Data!) {
+//                            self.progressAmount += _progress * self.processProgressOffset
+//                        }
                     }
                 } catch {
                     print("observeStatus response error")
@@ -165,9 +172,13 @@ class ConvertViewModel : ObservableObject {
                              mimeType:  mimeType)
         }, to: apiURL!, method: .post).uploadProgress(closure: {
             progress in
-            let n = progress.fractionCompleted * 100.0 + Double(self.plyCounter) * 100.0
-            let m = Double(self.plyTotalCounter) * 100.0
-            self.progressAmount = n * self.uploadProgressOffset / m
+            let n = progress.fractionCompleted + Double(self.plyCounter)
+            let m = Double(self.plyTotalCounter)
+            let result = n * self.uploadProgressOffset / m * 100.0
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.progressAmount = result
+            }
         })
         .responseJSON {
             response in
@@ -176,7 +187,6 @@ class ConvertViewModel : ObservableObject {
                 do{
                     print("fileUpload response = Success")
                     self.plyCounter += 1
-                    self.statusIndex = 1
                 } catch {
                     print("fileUpload response error")
                 }
