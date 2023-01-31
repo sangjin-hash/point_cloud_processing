@@ -26,6 +26,7 @@
 		E68A6500291E6C34000E4A77 /* FileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68A64FF291E6C34000E4A77 /* FileController.swift */; };
 		E6A5FF652961D910001E80D1 /* Measurement.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = E6A5FF642961D910001E80D1 /* Measurement.jpeg */; };
 		E6AE007A291E4B910087DA91 /* ConvertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AE0079291E4B910087DA91 /* ConvertView.swift */; };
+		E6B084D22988A683009CEF7A /* DetailsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B084D12988A683009CEF7A /* DetailsData.swift */; };
 		E6B5159128D09685006FCE79 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5159028D09685006FCE79 /* AppDelegate.swift */; };
 		E6B5159328D09685006FCE79 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E6B5159228D09685006FCE79 /* Shaders.metal */; };
 		E6B5159628D09685006FCE79 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5159528D09685006FCE79 /* Renderer.swift */; };
@@ -38,6 +39,7 @@
 		E6B9944B29251AE800DCEDBE /* TrueDepthCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B9944A29251AE800DCEDBE /* TrueDepthCameraController.swift */; };
 		E6E05AB328EDB08E0075732A /* CustomSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E05AB228EDB08E0075732A /* CustomSceneView.swift */; };
 		E6F0F9A8291229420082741A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E6F0F9A7291229420082741A /* Alamofire */; };
+		E6FC7EC52988DA5600959C24 /* DetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6FC7EC42988DA5600959C24 /* DetailsView.swift */; };
 		E6FE7A602937AC1C0026CD07 /* Pods_Creadto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFA7FBA5A18266FE5C49462 /* Pods_Creadto.framework */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +69,7 @@
 		E6AD14C22926175000E9F4AF /* StandardCyborgUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StandardCyborgUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6AD14C32926175000E9F4AF /* StandardCyborgUI.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = StandardCyborgUI.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6AE0079291E4B910087DA91 /* ConvertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertView.swift; sourceTree = "<group>"; };
+		E6B084D12988A683009CEF7A /* DetailsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsData.swift; sourceTree = "<group>"; };
 		E6B5158D28D09685006FCE79 /* Creadto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Creadto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6B5159028D09685006FCE79 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E6B5159228D09685006FCE79 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
@@ -81,6 +84,7 @@
 		E6B515AE28D0D178006FCE79 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		E6B9944A29251AE800DCEDBE /* TrueDepthCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrueDepthCameraController.swift; sourceTree = "<group>"; };
 		E6E05AB228EDB08E0075732A /* CustomSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSceneView.swift; sourceTree = "<group>"; };
+		E6FC7EC42988DA5600959C24 /* DetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +135,7 @@
 				E60551E6295EC84500679B69 /* UI */,
 				E615ABA2295D2C78009E36A3 /* Model */,
 				E60551EB295EC88800679B69 /* MeasureViewController.swift */,
+				E6FC7EC42988DA5600959C24 /* DetailsView.swift */,
 			);
 			path = Measure;
 			sourceTree = "<group>";
@@ -156,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				E615ABA3295D2F51009E36A3 /* MeasureData.swift */,
+				E6B084D12988A683009CEF7A /* DetailsData.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -401,6 +407,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E615ABA4295D2F51009E36A3 /* MeasureData.swift in Sources */,
+				E6FC7EC52988DA5600959C24 /* DetailsView.swift in Sources */,
 				E652401E28EC4F650064D766 /* PointCloudVertex.swift in Sources */,
 				E65ADF9328D16AD5007C5886 /* XError.swift in Sources */,
 				E68A6500291E6C34000E4A77 /* FileController.swift in Sources */,
@@ -422,6 +429,7 @@
 				E654149A293343AB001F0107 /* PreviewController.swift in Sources */,
 				E6AE007A291E4B910087DA91 /* ConvertView.swift in Sources */,
 				E656A3AF29210D2F00875675 /* GalleryView.swift in Sources */,
+				E6B084D22988A683009CEF7A /* DetailsData.swift in Sources */,
 				E6B5159828D09685006FCE79 /* MainController.swift in Sources */,
 				E68A2D3129232795006F3DD4 /* ConvertViewModel.swift in Sources */,
 				E6B5159128D09685006FCE79 /* AppDelegate.swift in Sources */,
