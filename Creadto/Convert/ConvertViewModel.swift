@@ -35,7 +35,7 @@ class ConvertViewModel : ObservableObject {
     }
     
     private func checkPLYFile(fileURL : URL) -> Bool {
-        if(fileURL.lastPathComponent == "Face.ply" || fileURL.pathExtension != "ply"){
+        if(fileURL.pathExtension != "ply"){
             return false
         } else {
             return true
