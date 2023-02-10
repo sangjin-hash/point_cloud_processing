@@ -21,7 +21,6 @@ class TrueDepthCameraController : UIViewController {
     private var directoryURL: URL? = nil
     
     private var sceneThumbnailURL: URL? = nil
-    private var scenePlyURL: URL? = nil
     private var sceneSCNURL: URL? = nil
     private var meshSCNURL: URL? = nil
     
@@ -106,15 +105,12 @@ class TrueDepthCameraController : UIViewController {
 //    }
     
     private func saveScene(scene: SCScene, thumbnail: UIImage?) {
-        if plyCounter == 0 { createDirectory() }
+        if plyCounter == 0 && directoryURL == nil { createDirectory() }
         let fileName = "Face"
-        self.scenePlyURL = directoryURL!.appendingPathComponent("\(fileName).ply")
         self.sceneSCNURL = directoryURL!.appendingPathComponent("\(fileName).scn")
         self.sceneThumbnailURL = directoryURL!.appendingPathComponent("\(fileName).png")
         
         self.meshSCNURL = directoryURL!.appendingPathComponent("\(fileName)_Mesh.scn")
-        
-        scene.pointCloud!.writeToPLY(atPath: scenePlyURL!.path)
         
         guard let sceneURL = Bundle.scuiResourcesBundle.url(forResource: "ScenePreviewViewController", withExtension: "scn") else {
             fatalError("Could not find scene file for ScenePreviewViewController")
@@ -125,20 +121,58 @@ class TrueDepthCameraController : UIViewController {
         mesh.name = "mesh"
         meshScene.background.contents = UIColor.clear
         meshScene.rootNode.addChildNode(mesh)
-        meshScene.write(to: self.meshSCNURL!, options: nil, delegate: nil)
-
-        let cloud = self.convertPLYToSCN(file: self.scenePlyURL!)
-        cloud.name = "cloud"
+        meshScene.write(to: URL.init(fileURLWithPath: self.meshSCNURL!.path), options: nil, delegate: nil)
         
-        self.convertedScene.rootNode.enumerateChildNodes{ (node, stop) in
-            node.removeFromParentNode()
+        let fileManager = FileManager.default
+        let tmpDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
+        do {
+            let contents = try fileManager.contentsOfDirectory(atPath: tmpDirectory.path)
+            for file in contents {
+                let sourceURL = tmpDirectory.appendingPathComponent(file)
+                let destinationURL = directoryURL!.appendingPathComponent(file)
+                try fileManager.moveItem(at: sourceURL, to: destinationURL)
+            }
+            
+            var isDirectory: ObjCBool = false
+            
+            let _contents = try fileManager.contentsOfDirectory(atPath: directoryURL!.path)
+            for _file in _contents {
+                let targetURL = directoryURL!.appendingPathComponent(_file)
+                if fileManager.fileExists(atPath: targetURL.path, isDirectory: &isDirectory){
+                    if isDirectory.boolValue {
+                        let __contents = try fileManager.contentsOfDirectory(atPath: targetURL.path)
+                        for __file in __contents {
+                            let _targetURL = targetURL.appendingPathComponent(__file)
+                            if(_targetURL.pathExtension == "ply"){
+                                if(__file == "temp-point-cloud-mesh.ply") {
+                                    try fileManager.moveItem(at: _targetURL, to: directoryURL!.appendingPathComponent(__file))
+                                } else {
+                                    // temp-point-cloud.ply
+                                    let cloud = self.convertPLYToSCN(file: _targetURL)
+                                    cloud.name = "cloud"
+                                    
+                                    self.convertedScene.rootNode.enumerateChildNodes{ (node, stop) in
+                                        node.removeFromParentNode()
+                                    }
+                                    
+                                    self.convertedScene = try! SCNScene(url: sceneURL, options: nil)
+                                    self.convertedScene.background.contents = UIColor.clear
+                                    self.convertedScene.rootNode.addChildNode(cloud)
+                                    
+                                    self.saveConvertedScene(path: sceneSCNURL!.path)
+                                }
+                            }
+                            
+                        }
+                        
+                    }
+                }
+            }
+        } catch {
+            print("Error reading contents of directory or moving file : \(error)")
         }
         
-        self.convertedScene = try! SCNScene(url: sceneURL, options: nil)
-        self.convertedScene.background.contents = UIColor.clear
-        self.convertedScene.rootNode.addChildNode(cloud)
         
-        self.saveConvertedScene(path: sceneSCNURL!.path)
         
         if let thumbnail = thumbnail, let pngData = thumbnail.pngData() {
             try? pngData.write(to: sceneThumbnailURL!)
