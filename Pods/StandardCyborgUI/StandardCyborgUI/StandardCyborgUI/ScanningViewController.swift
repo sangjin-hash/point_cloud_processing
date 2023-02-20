@@ -51,7 +51,6 @@ import Vision
     @objc public let dismissButton = UIButton()
     
     private var flipButton = UIButton(type: .system)
-    private var rgbButton = UIButton(type: .system)
     
     /** You may customize the shutter button by setting ShutterButton's public properties, or by hiding it and adding your own */
     @objc public let shutterButton = ShutterButton()
@@ -181,14 +180,6 @@ import Vision
         
         NotificationCenter.default.addObserver(self, selector: #selector(_thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
         
-        rgbButton.translatesAutoresizingMaskIntoConstraints = false
-        rgbButton.setBackgroundImage(UIImage(named: "blind_button"), for: .normal)
-        // touch event 처리 넣기
-        rgbButton.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-        rgbButton.layer.cornerRadius = 25
-        rgbButton.layer.masksToBounds = true
-        view.addSubview(rgbButton)
-        
         flipButton.translatesAutoresizingMaskIntoConstraints = false
         flipButton.setBackgroundImage(UIImage(named: "refresh"), for: .normal)
         flipButton.addTarget(self, action: #selector(dismissTapped(_:)), for: UIControl.Event.touchUpInside)
@@ -203,11 +194,6 @@ import Vision
         _mirrorModeBackground.isHidden = true
         
         NSLayoutConstraint.activate([
-            rgbButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
-            rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
-            rgbButton.widthAnchor.constraint(equalToConstant: 50),
-            rgbButton.heightAnchor.constraint(equalToConstant: 50),
-            
             flipButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
             flipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
             flipButton.widthAnchor.constraint(equalToConstant: 50),
@@ -381,6 +367,8 @@ import Vision
     private let _mirrorModeLabel = UILabel()
     private let _mirrorModeButton = UIButton()
     
+    private var _crossLineView = CrossLineView()
+    
     // MARK: - UI State Management
     
     private enum _State: Equatable {
@@ -408,6 +396,11 @@ import Vision
         _metalLayer.framebufferOnly = false
         
         _metalContainerView.layer.addSublayer(_metalLayer)
+        
+        _crossLineView = CrossLineView(frame: view.bounds)
+        _crossLineView.backgroundColor = .clear
+        _metalContainerView.addSubview(_crossLineView)
+        
         view.addSubview(_metalContainerView)
         view.addSubview(_countdownLabel)
         view.addSubview(_scanFailedLabel)
@@ -463,7 +456,7 @@ import Vision
             
         case .scanning:
             shutterButton.shutterButtonState = .scanning
-            
+            _crossLineView.isHidden = true
         }
         
         _cameraManager.isFocusLocked = _state == .scanning

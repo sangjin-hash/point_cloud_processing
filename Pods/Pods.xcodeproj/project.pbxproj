@@ -43,6 +43,7 @@
 		D2998F6289FE0F29511EEC802E8C6603 /* ScanningViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8109C04782F63BF780765CD132CB6B0E /* ScanningViewRenderer.swift */; };
 		DB20D74C2AD0ACDFCADF09971CFA00DB /* StandardCyborgUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 91E094DDF23810F0E05E8073E5AC542F /* StandardCyborgUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E5B5FE0A22A66A5B2F3FB49E1B1A7C29 /* NodeToNodeLineNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9065C2F458A49DEF36E790B925C71F19 /* NodeToNodeLineNode.swift */; };
+		E60F23F4299F4A3800D8CFC1 /* CrossLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F23F3299F4A3800D8CFC1 /* CrossLineView.swift */; };
 		E637468E2937C2F100DE64D6 /* ScenePreviewViewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */; };
 		E637468F2937C2F300DE64D6 /* ScenePreviewViewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */; };
 		E6FE7A5F2937A38C0026CD07 /* ScenePreviewViewController.scn in Resources */ = {isa = PBXBuildFile; fileRef = E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */; };
@@ -124,6 +125,7 @@
 		C64DE1C4E2268B6E04879D623A545C87 /* ScanningViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScanningViewController.swift; path = StandardCyborgUI/StandardCyborgUI/ScanningViewController.swift; sourceTree = "<group>"; };
 		E327BA8192DCD93A3C16EA7453025767 /* Pods-Creadto-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Creadto-Info.plist"; sourceTree = "<group>"; };
 		E4B6305B0973E477D557A6A2027BE43E /* PointCloudCommandEncoder.metal */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.metal; name = PointCloudCommandEncoder.metal; path = StandardCyborgUI/StandardCyborgUI/PointCloudCommandEncoder.metal; sourceTree = "<group>"; };
+		E60F23F3299F4A3800D8CFC1 /* CrossLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossLineView.swift; sourceTree = "<group>"; };
 		E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = ScenePreviewViewController.scn; path = /Users/sangjin/Creadto/Pods/StandardCyborgUI/StandardCyborgUI/StandardCyborgUI/ScenePreviewViewController.scn; sourceTree = "<absolute>"; };
 		E8E73C64B4A54DF8E7B781AADD36E8E4 /* StandardCyborgFusion-xcframeworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "StandardCyborgFusion-xcframeworks.sh"; sourceTree = "<group>"; };
 		ED42D4EE6E8CB1F153C1CB77AB4DF4ED /* Pods-Creadto.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Creadto.debug.xcconfig"; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 		1E8BEFFC3DFC3BB60F97182C58FB6231 /* StandardCyborgUI */ = {
 			isa = PBXGroup;
 			children = (
+				E60F23F3299F4A3800D8CFC1 /* CrossLineView.swift */,
 				E6FE7A5E2937A38C0026CD07 /* ScenePreviewViewController.scn */,
 				16477D011AC2D58CEC86A5B9616B70F1 /* AspectFillTextureCommandEncoder.swift */,
 				C5B8E0A2116188F306129198FD110055 /* Bundle+SCUI.swift */,
@@ -502,6 +505,7 @@
 				958B5E7D60D34BC5585FD01A897958E4 /* ScanningHapticFeedbackEngine.swift in Sources */,
 				4CC0937A7D2BEB48ECE9DE2D04A67AAF /* ScanningViewController.swift in Sources */,
 				D2998F6289FE0F29511EEC802E8C6603 /* ScanningViewRenderer.swift in Sources */,
+				E60F23F4299F4A3800D8CFC1 /* CrossLineView.swift in Sources */,
 				FF18A8BF86512AD8EDD6F4D3C550DAFA /* ScenePreviewViewController.swift in Sources */,
 				36AE00B759B17EAA4ADFEDE1570586FC /* SCMeshingHelper.swift in Sources */,
 				7EA6792FC68AF093C997020BD5DF1F6B /* SCMetalSimulatorStubs.m in Sources */,

@@ -16,7 +16,7 @@ struct ConvertView: View {
     @StateObject var viewModel = ConvertViewModel()
     
     @State private var selectedIndex = -1
-    private let status = ["Uploading...", "Processing...", "Downloading..."]
+    private let status = ["Calculating estimated time...","Uploading...", "Processing...", "Downloading..."]
     
     var body: some View {
         NavigationView{
@@ -33,8 +33,8 @@ struct ConvertView: View {
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     selectedIndex = index
-                                    viewModel.sendToServer(url: selectedUrl)
                                     viewModel.isLock.toggle()
+                                    viewModel.sendToServer(url: selectedUrl)
                                 }.disabled(viewModel.isLock)
                                 
                                 if selectedIndex == index && viewModel.isLock {

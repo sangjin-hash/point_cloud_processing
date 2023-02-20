@@ -11,17 +11,24 @@ import SceneKit
 
 
 class ConvertViewModel : ObservableObject {
-    private let apiURL = URL(string: "http://192.168.219.148:3000")
+    private let apiURL = URL(string: "http://49.175.197.110:49152")
     @Published var isLock = false
     @Published var progressAmount = 0.0
     @Published var statusIndex = 0
     
     private var plyTotalCounter = 0
     private var plyCounter = 0
+    private var totalPointCount = 0
+    private var pointArray = [Int]()
+    private var client_expectedTime = 0
+    private var server_expectedTime = 0
     
-    private let uploadProgressOffset = 0.3
-    private let processProgressOffset = 0.6
-    private let downloadProgressOffset = 0.1
+    private var uploadProgressOffset = 0.0
+    private var processProgressOffset = 0.0
+    private let downloadProgressOffset = 0.03
+    
+    private var server_start = 0
+    //private var server_lock = true
     
     
     var fileController = FileController()
@@ -50,6 +57,34 @@ class ConvertViewModel : ObservableObject {
         fileList.map{ file in
             if(checkPLYFile(fileURL: file)){
                 _plyList.append(file)
+                
+                let ply = try! Data(contentsOf: file)
+                guard let plyString = String(data: ply, encoding: .utf8) else {
+                    print("Error converting data to string")
+                    return
+                }
+                
+                let scanner = Scanner(string : plyString)
+                var header : NSString?
+                scanner.scanUpTo("end_header\n", into: &header)
+                
+                let headerLines = header?.components(separatedBy: "\n") ?? []
+                for line in headerLines {
+                    let components = line.components(separatedBy: " ")
+                    if components[0] == "element" && components[1] == "vertex" {
+                        var point = 0
+                        if(components[2].contains("\r")){
+                            point = Int(components[2].dropLast(1))!
+                        }else {
+                            point = Int(components[2])!
+                        }
+                        print("point = \(point)")
+                        totalPointCount += point
+                        pointArray.append(point)
+                        break
+                    }
+                }
+                
                 self.plyTotalCounter += 1
             }
         }
@@ -65,13 +100,14 @@ class ConvertViewModel : ObservableObject {
                     let fileName = filePath.path.components(separatedBy: "/").last!
 
                     let fileData = try? Data(contentsOf: filePath)
-
-                    try await fileUpload(fileData: fileData ?? Data(), fileName: fileName, mimeType: mimeType)
+                    let start = CFAbsoluteTimeGetCurrent()
+                    try await fileUpload(fileData: fileData ?? Data(), fileName: fileName, mimeType: mimeType, start : start)
                 }
 
                 DispatchQueue.main.async { [weak self] in
-                    self?.statusIndex = 1
+                    self?.statusIndex = 2
                 }
+
 
                 print("4. fileUpload 끝 && observeStatus")
 
@@ -79,10 +115,26 @@ class ConvertViewModel : ObservableObject {
                     let res = try await observeStatus(saveURL: url)
                     if(res.Status == "Meshed") {
                         DispatchQueue.main.async { [weak self] in
-                            self?.statusIndex = 2
+                            self?.statusIndex = 3
                         }
                         break;
-                    } else {
+                    } else if(res.Status != "Received") {
+                        self.server_start += 1
+                        if(server_start < self.server_expectedTime){
+                            let time_percent = Double(self.server_start) / Double(self.server_expectedTime) * 100.0
+                            let result = Double(time_percent) * processProgressOffset
+                            
+                            DispatchQueue.main.async { [weak self] in
+                                let uploadProgressAmount = self!.uploadProgressOffset * 100.0
+                                self?.progressAmount = result + uploadProgressAmount
+                            }
+                            sleep(1)
+                        }else{
+                            sleep(5)
+                            print("Process time exceed expected time")
+                        }
+                    }
+                    else {
                         sleep(5)
                         print("status = \(res.Status)")
                     }
@@ -147,11 +199,7 @@ class ConvertViewModel : ObservableObject {
                         let jsonData = _userData.Data!.data(using: .utf8)!
                         self.jsonURL = saveURL.appendingPathComponent("Measurement.json")
                         try! jsonData.write(to: self.jsonURL!)
-                    } else {
-//                        if let _progress = Double(_userData.Data!) {
-//                            self.progressAmount += _progress * self.processProgressOffset
-//                        }
-                    }
+                    } else {}
                 } catch {
                     print("observeStatus response error")
                 }
@@ -164,7 +212,7 @@ class ConvertViewModel : ObservableObject {
     }
     
     
-    private func fileUpload(fileData : Data, fileName: String, mimeType: String) async throws -> UserData {
+    private func fileUpload(fileData : Data, fileName: String, mimeType: String, start: CFAbsoluteTime) async throws -> UserData {
         return try await AF.upload(multipartFormData: { multipart in
             multipart.append(fileData,
                              withName: "ply",
@@ -172,12 +220,14 @@ class ConvertViewModel : ObservableObject {
                              mimeType:  mimeType)
         }, to: apiURL!, method: .post).uploadProgress(closure: {
             progress in
-            let n = progress.fractionCompleted + Double(self.plyCounter)
-            let m = Double(self.plyTotalCounter)
-            let result = n * self.uploadProgressOffset / m * 100.0
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.progressAmount = result
+            if(self.plyCounter > 0) {
+                let n = progress.fractionCompleted + Double(self.plyCounter - 1)
+                let m = Double(self.plyTotalCounter - 1)
+                let result = n * self.uploadProgressOffset / m * 100.0
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.progressAmount = result
+                }
             }
         })
         .responseJSON {
@@ -186,6 +236,29 @@ class ConvertViewModel : ObservableObject {
             case .success(let value) :
                 do{
                     print("fileUpload response = Success")
+                    if(self.plyCounter == 0) {
+                        let end = (CFAbsoluteTimeGetCurrent() - start)
+                        let _end = String(format: "%.2f", end)
+                        
+                        // pointArray[0] : _end = totalPointCount - pointArray[0] : x
+                        self.client_expectedTime = Int(Double(self.totalPointCount - self.pointArray[0]) * Double(_end)! / Double(self.pointArray[0]))
+                        print("client_expectedTime = \(self.client_expectedTime)")
+                        
+                        // [Server] 90909(Number of points) : 1s = totalPointCount : server_expected_time
+                        self.server_expectedTime = Int(self.totalPointCount / 90909)
+                        print("Server_expectedTime = \(self.server_expectedTime)")
+                        let totalTime = self.client_expectedTime + self.server_expectedTime
+                        
+                        self.uploadProgressOffset = 0.97 * Double(self.client_expectedTime) / Double(totalTime)
+                        self.processProgressOffset = 0.97 - self.uploadProgressOffset
+                        
+                        print("uploadProgressOffset = \(self.uploadProgressOffset)")
+                        print("processProgressOffset = \(self.processProgressOffset)")
+                        
+                        DispatchQueue.main.async { [weak self] in
+                            self?.statusIndex = 1
+                        }
+                    }
                     self.plyCounter += 1
                 } catch {
                     print("fileUpload response error")
@@ -206,7 +279,10 @@ class ConvertViewModel : ObservableObject {
                    encoding: URLEncoding.default,
                    headers: ["Content-Type" : "application/octet-stream"])
         .downloadProgress{ (progress) in
-            self.progressAmount += progress.fractionCompleted * 100.0 * self.downloadProgressOffset
+            let result = progress.fractionCompleted * 100.0 * self.downloadProgressOffset
+            DispatchQueue.main.async { [weak self] in
+                self?.progressAmount += result
+            }
         }
         .validate(statusCode: 200..<300)
         .response{ response in
