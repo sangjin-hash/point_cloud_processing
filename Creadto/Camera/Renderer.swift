@@ -49,6 +49,7 @@ final class Renderer {
     public var ciContext : CIContext!
     let requestHandler = VNSequenceRequestHandler()
     var segmentationRequest = VNGeneratePersonSegmentationRequest()
+    var isSegmentationWork = true
 
     // Metal objects and textures
     private let device: MTLDevice
@@ -80,6 +81,8 @@ final class Renderer {
     private lazy var gridPointsBuffer = MetalBuffer<Float2>(device: device,
                                                             array: makeGridPoints(),
                                                             index: kGridPoints.rawValue, options: [])
+    
+    private var seg_gridPointsBuffer: MetalBuffer<Float2>? = nil
     
     // RGB buffer
     private lazy var rgbUniforms: RGBUniforms = {
@@ -272,27 +275,28 @@ final class Renderer {
     }
     
     private func accumulatePoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
-//        try? requestHandler.perform([segmentationRequest],
-//                                    on: frame.capturedImage)
-//        guard let maskPixelBuffer =
-//                segmentationRequest.results?.first?.pixelBuffer else { return }
-//
-//
-//
-//        let maskCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
-//        let originalCIImage = CIImage(cvPixelBuffer: frame.capturedImage)
-//        let targetSize = CGSize(width: originalCIImage.extent.height, height: originalCIImage.extent.width)
-//        let resizeMaskCIImage = resizeCIImage(maskCIImage, targetSize)
-//        let resizeMaskCGImage = ciContext.createCGImage(resizeMaskCIImage, from: resizeMaskCIImage.extent)
-//        let segmentation1DArray = convertImageToArray(fromCGImage: resizeMaskCGImage)
-//
-//        let gridArray = makeGridPoints(array: segmentation1DArray!)
-//        guard gridArray.count > 0 else {
-//            return
-//        }
-//        let gridPointsBuffer = MetalBuffer<Float2>(device: device,
-//                                                   array: gridArray,
-//                                                   index: kGridPoints.rawValue, options: [])
+        if(isSegmentationWork){
+            try? requestHandler.perform([segmentationRequest],
+                                        on: frame.capturedImage)
+            guard let maskPixelBuffer =
+                    segmentationRequest.results?.first?.pixelBuffer else { return }
+
+            let maskCIImage = CIImage(cvPixelBuffer: maskPixelBuffer)
+            let originalCIImage = CIImage(cvPixelBuffer: frame.capturedImage)
+            let targetSize = CGSize(width: originalCIImage.extent.height, height: originalCIImage.extent.width)
+            let resizeMaskCIImage = resizeCIImage(maskCIImage, targetSize)
+            let resizeMaskCGImage = ciContext.createCGImage(resizeMaskCIImage, from: resizeMaskCIImage.extent)
+            let segmentation1DArray = convertImageToArray(fromCGImage: resizeMaskCGImage)
+
+            let gridArray = makeGridPoints(array: segmentation1DArray!)
+            guard gridArray.count > 0 else {
+                return
+            }
+            
+            self.seg_gridPointsBuffer = MetalBuffer<Float2>(device: device,
+                                                       array: gridArray,
+                                                       index: kGridPoints.rawValue, options: [])
+        }
         
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
         
@@ -320,7 +324,13 @@ final class Renderer {
         renderEncoder.setVertexBuffer(pointCloudUniformsBuffers[currentBufferIndex])
         renderEncoder.setVertexBuffer(particlesBuffer)
         renderEncoder.setVertexBuffer(worldCoordinateBuffer)
-        renderEncoder.setVertexBuffer(gridPointsBuffer)
+        
+        if(isSegmentationWork){
+            renderEncoder.setVertexBuffer(seg_gridPointsBuffer!)
+        } else {
+            renderEncoder.setVertexBuffer(gridPointsBuffer)
+        }
+        
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureY!), index: Int(kTextureY.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))

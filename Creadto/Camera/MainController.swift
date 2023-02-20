@@ -10,6 +10,7 @@ final class MainController: UIViewController, ARSessionDelegate {
     private var showSceneButton = UIButton(type: .system)
     private var saveButton = UIButton(type: .system)
     private var flipButton = UIButton(type: .system)
+    private var segmentationToggle = UISwitch()
     private let session = ARSession()
     var renderer: Renderer!
     
@@ -58,6 +59,11 @@ final class MainController: UIViewController, ARSessionDelegate {
         flipButton.layer.masksToBounds = true
         view.addSubview(flipButton)
         
+        segmentationToggle.addTarget(self, action: #selector(self.switchStateDidChange(_:)), for: .valueChanged)
+        segmentationToggle.setOn(true, animated: false)
+        segmentationToggle.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(segmentationToggle)
+        
         NSLayoutConstraint.activate([
             rgbButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
             rgbButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
@@ -72,8 +78,24 @@ final class MainController: UIViewController, ARSessionDelegate {
             flipButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
             flipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
             flipButton.widthAnchor.constraint(equalToConstant: 50),
-            flipButton.heightAnchor.constraint(equalToConstant: 50)
+            flipButton.heightAnchor.constraint(equalToConstant: 50),
+            
+            segmentationToggle.topAnchor.constraint(equalTo: view.topAnchor, constant: 40),
+            segmentationToggle.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 50),
+            segmentationToggle.widthAnchor.constraint(equalToConstant: 120),
+            segmentationToggle.heightAnchor.constraint(equalToConstant: 80)
         ])
+    }
+    
+    @objc private func switchStateDidChange(_ sender: UISwitch!){
+        if (sender.isOn == true){
+            print("true")
+            renderer.isSegmentationWork = true
+        }
+        else{
+            print("false")
+            renderer.isSegmentationWork = false
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -198,10 +220,12 @@ extension MainController: MTKViewDelegate {
 extension MainController {
     private func setShowSceneButtonStyle(isScanning: Bool) -> Void {
         if isScanning {
+            segmentationToggle.isEnabled = false
             plyCounter += 1
             self.showSceneButton.setBackgroundImage(
                 UIImage(named: "ShutterButton-Selected"), for: .normal)
         } else {
+            segmentationToggle.isEnabled = true
             self.showSceneButton.setBackgroundImage(
                 UIImage(named: "ShutterButton-Recording"), for: .normal)
         }
