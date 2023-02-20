@@ -28,8 +28,6 @@ class ConvertViewModel : ObservableObject {
     private let downloadProgressOffset = 0.03
     
     private var server_start = 0
-    //private var server_lock = true
-    
     
     var fileController = FileController()
     var jsonURL : URL?
@@ -48,6 +46,28 @@ class ConvertViewModel : ObservableObject {
             return true
         }
     }
+    
+    private func checkVertexCount(plyList : [URL]) {
+        plyList.map{ file in
+            let ply = try! Data(contentsOf: file)
+            guard let plyString = String(data: ply, encoding: .utf8) else {
+                print("Error converting data to string")
+                return
+            }
+            
+            let lines = plyString.components(separatedBy: ["\n", "\r"])
+            var vertexCount: Int
+            for line in lines {
+                if(line.hasPrefix("element vertex")) {
+                    vertexCount = Int(line.components(separatedBy: " ")[2])!
+                    print("vertexCount = \(vertexCount)")
+                    totalPointCount += vertexCount
+                    pointArray.append(vertexCount)
+                    break
+                }
+            }
+        }
+    }
    
     func sendToServer(url : URL){
         let fileList = fileController.getContentsOfDirectory(url: url)
@@ -57,34 +77,6 @@ class ConvertViewModel : ObservableObject {
         fileList.map{ file in
             if(checkPLYFile(fileURL: file)){
                 _plyList.append(file)
-                
-                let ply = try! Data(contentsOf: file)
-                guard let plyString = String(data: ply, encoding: .utf8) else {
-                    print("Error converting data to string")
-                    return
-                }
-                
-                let scanner = Scanner(string : plyString)
-                var header : NSString?
-                scanner.scanUpTo("end_header\n", into: &header)
-                
-                let headerLines = header?.components(separatedBy: "\n") ?? []
-                for line in headerLines {
-                    let components = line.components(separatedBy: " ")
-                    if components[0] == "element" && components[1] == "vertex" {
-                        var point = 0
-                        if(components[2].contains("\r")){
-                            point = Int(components[2].dropLast(1))!
-                        }else {
-                            point = Int(components[2])!
-                        }
-                        print("point = \(point)")
-                        totalPointCount += point
-                        pointArray.append(point)
-                        break
-                    }
-                }
-                
                 self.plyTotalCounter += 1
             }
         }
@@ -93,6 +85,7 @@ class ConvertViewModel : ObservableObject {
         
         Task {
             do {
+                checkVertexCount(plyList: plyList)
                 try await sendDataCounter(counter: self.plyTotalCounter)
                 for i in 0...self.plyTotalCounter-1 {
                     let filePath = plyList[i]

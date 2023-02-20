@@ -22,14 +22,7 @@ class MeasureViewController: UIViewController {
     private let jsonURL : URL
     
     private var memberName = ["Height\n", "Front\ntorso\n", "Chest\n", "Waist\n"]
-    private var memberName2 = ["Armpit\n", "Armhole\n", "Knee\nlocation\n", "Knee\nheight\n"]
-    
-//    private var memberName = ["Height\n","Front\nFace\n", "Neck\n", "Front\ntorso\n", "Chest\n", "Waist\n",
-//                      "Hip\n", "Thigh\n", "Mid\nThigh\n", "Knee\n", "Calf\n",
-//                      "Ankle\n", "Mid\nFace\n", "Neck\nto Chest\n","Front\ntorso\n", "Front\nCenter\n"]
-//    private var memberName2 = ["Armpit\n", "Armhole\n", "Knee\nlocation\n","Knee\nheight\n", "Side\nface\n",
-//                       "Shoulder\n", "Arm\n","Wrist\n", "Upper\narm\n", "Elbow\nmeasurement\n",
-//                       "Elbow\nlength\n", "Vertical\ntorso\n", "Vertical\nhip\n", "Hip\n", "Back\n",]
+    private var memberName2 = ["Armpit\nwidth\n", "Armhole\n", "Knee\nposition\n", "Knee\nheight\n"]
     
     private let detailButton : UIButton = {
         let button = UIButton(type: UIButton.ButtonType.custom)

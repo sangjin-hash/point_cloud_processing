@@ -47,7 +47,7 @@ struct TaskRow : View {
     var body : some View {
         HStack {
             Text("\(DetailsData.data[index].eng_part)")
-                .font(.system(size: 24))
+                .font(.system(size: 20))
             Spacer()
             Text("\(DetailsData.data[index].value)")
                 .font(.system(size: 24))
