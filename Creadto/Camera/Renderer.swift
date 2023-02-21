@@ -335,10 +335,16 @@ final class Renderer {
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(confidenceTexture!), index: Int(kTextureConfidence.rawValue))
-        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPointsBuffer.count)
         
-        currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % maxPoints
-        currentPointCount = min(currentPointCount + gridPointsBuffer.count, maxPoints)
+        if(isSegmentationWork){
+            renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: seg_gridPointsBuffer!.count)
+            currentPointIndex = (currentPointIndex + seg_gridPointsBuffer!.count) % maxPoints
+            currentPointCount = min(currentPointCount + seg_gridPointsBuffer!.count, maxPoints)
+        }else {
+            renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPointsBuffer.count)
+            currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % maxPoints
+            currentPointCount = min(currentPointCount + gridPointsBuffer.count, maxPoints)
+        }
         lastCameraTransform = frame.camera.transform
     }
 }
