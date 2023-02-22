@@ -150,7 +150,7 @@ final class MainController: UIViewController, ARSessionDelegate {
                     .lowercased(with: .none)
                     .split(separator: " ")
                     .joined(separator: "_")
-                let fileName = fileNameList[plyCounter-1] + renderer.getDate()
+                let fileName = fileNameList[plyCounter % 4] + renderer.getDate()
                 self.renderer.saveAsPlyFile(
                     fileName: fileName,
                     plyCounter: plyCounter,
@@ -221,7 +221,6 @@ extension MainController {
     private func setShowSceneButtonStyle(isScanning: Bool) -> Void {
         if isScanning {
             segmentationToggle.isEnabled = false
-            plyCounter += 1
             self.showSceneButton.setBackgroundImage(
                 UIImage(named: "ShutterButton-Selected"), for: .normal)
         } else {

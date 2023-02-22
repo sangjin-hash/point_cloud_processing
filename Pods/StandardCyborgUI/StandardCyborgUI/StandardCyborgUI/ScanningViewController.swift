@@ -399,7 +399,7 @@ import Vision
         
         _crossLineView = CrossLineView(frame: view.bounds)
         _crossLineView.backgroundColor = .clear
-        _metalContainerView.addSubview(_crossLineView)
+        //_metalContainerView.addSubview(_crossLineView)
         
         view.addSubview(_metalContainerView)
         view.addSubview(_countdownLabel)

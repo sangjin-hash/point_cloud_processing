@@ -99,8 +99,6 @@ class PreviewController: UIViewController {
         try? FileManager.default.removeItem(at: mainController.renderer.savedCloudURLs.last!)
         mainController.renderer.savedCloudURLs.removeLast()
         
-        mainController.plyCounter -= 1
-        
         if(mainController.plyCounter == 0){
             try? FileManager.default.removeItem(at: mainController.renderer.directoryURL!)
             mainController.renderer.directoryURL = nil
@@ -112,9 +110,11 @@ class PreviewController: UIViewController {
     private func saveTapped(_ sender: UIButton){
         let previewImage = scnView.snapshot()
         let pngData = previewImage.pngData()
-        let fileName = mainController.fileNameList[mainController.plyCounter-1].dropLast()
+        let fileName = mainController.fileNameList[mainController.plyCounter % 4].dropLast()
         let previewImageURL = mainController.renderer.directoryURL!.appendingPathComponent("\(fileName).png")
         try? pngData!.write(to: previewImageURL)
+        mainController.plyCounter += 1
+        if(mainController.plyCounter % 4 == 0) { mainController.renderer.directoryURL = nil }
         dismiss(animated: true)
     }
     

@@ -33,17 +33,17 @@ final class PLYFile {
         FileManager.default.createFile(atPath: plyFile.path, contents: nil, attributes: nil)
         
         var direction : String?
-        switch(plyCounter){
-        case 1 :
+        switch(plyCounter % 4){
+        case 0 :
             direction = "Front"
             break
-        case 2:
+        case 1:
             direction = "Left"
             break
-        case 3:
+        case 2:
             direction = "Back"
             break
-        case 4:
+        case 3:
             direction = "Right"
             break
         default :

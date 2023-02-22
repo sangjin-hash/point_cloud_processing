@@ -36,7 +36,7 @@ final class Renderer {
     private let cameraTranslationThreshold: Float = pow(0.00, 2)   // (meter-squared)
     
     // The person segmentation output value is 0 ~ 255(person).
-    private let segmentationThreshold = 255
+    private let segmentationThreshold = 200
     // The max number of command buffers in flight
     private let maxInFlightBuffers = 5
     
@@ -565,7 +565,7 @@ private extension Renderer {
             let alternatingOffsetX = Float(gridY % 2) * spacing / 2
             for gridX in 0 ..< deltaX {
                 let cameraPoint = Float2(alternatingOffsetX + (Float(gridX) + 0.5) * spacing, (Float(gridY) + 0.5) * spacing)
-                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] == segmentationThreshold) {
+                if(segmentation1DArray[Int(cameraPoint.y) * Int(cameraResolution.x) + Int(cameraPoint.x)] > segmentationThreshold) {
                     points.append(cameraPoint)
                 }
             }

@@ -24,7 +24,7 @@ struct DetailsData {
 extension DetailsData {
     static var data = [
         DetailsData(code: "X_Measure_1000", eng_part: "Height", kor_part: "키", value: "-"),
-        DetailsData(code: "X_Measure_1001", eng_part: "Width of face(Side)", kor_part: "앞 얼굴 중심 너비", value: "-"),
+        DetailsData(code: "X_Measure_1001", eng_part: "Width of face(Front)", kor_part: "앞 얼굴 중심 너비", value: "-"),
         DetailsData(code: "X_Measure_1002", eng_part: "Neck", kor_part: "목 둘레", value: "-"),
         DetailsData(code: "X_Measure_1003", eng_part: "Front torso", kor_part: "앞 품", value: "-"),
         DetailsData(code: "X_Measure_1004", eng_part: "Chest", kor_part: "가슴 둘레", value: "-"),
