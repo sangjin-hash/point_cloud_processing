@@ -55,6 +55,10 @@ import Vision
     /** You may customize the shutter button by setting ShutterButton's public properties, or by hiding it and adding your own */
     @objc public let shutterButton = ShutterButton()
     
+    private let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory())
+    private var tempFrameDirectoryURL : URL? = nil
+    private var frameIndex = 0
+    
     /** A convenience initializer that simply calls init() and sets the delegate */
     @objc public convenience init(delegate: ScanningViewControllerDelegate) {
         self.init()
@@ -93,6 +97,8 @@ import Vision
     /** Stops scanning immediately */
     @objc public func stopScanning(reason: ScanningTerminationReason) {
         guard _state == _State.scanning else { return }
+        
+        self.frameIndex = 0
         
         _state = .default
         _latestViewMatrix = matrix_identity_float4x4
@@ -199,6 +205,9 @@ import Vision
             flipButton.widthAnchor.constraint(equalToConstant: 50),
             flipButton.heightAnchor.constraint(equalToConstant: 50),
         ])
+        
+        self.tempFrameDirectoryURL = tempDirectoryURL.appendingPathComponent("Frame")
+        try! FileManager.default.createDirectory(at: self.tempFrameDirectoryURL!, withIntermediateDirectories: true, attributes: nil)
     }
     
     override open func viewDidAppear(_ animated: Bool) {
@@ -285,6 +294,16 @@ import Vision
         let pointCloud: SCPointCloud
         
         if isScanning {
+            let ciImage = CIImage(cvPixelBuffer: colorBuffer)
+            let context = CIContext(options: nil)
+            guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+            let uiImage = UIImage(cgImage: cgImage)
+            if let data = uiImage.jpegData(compressionQuality: 0.8) {
+                let fileName = self.tempFrameDirectoryURL!.appendingPathComponent("Frame_\(self.frameIndex).jpeg")
+                try? data.write(to: fileName)
+                self.frameIndex += 1
+            }
+            
             pointCloud = _reconstructionManager.buildPointCloud()
         } else {
             // When the user is not scanning, render a preview by reconstructing the most recent depth buffer

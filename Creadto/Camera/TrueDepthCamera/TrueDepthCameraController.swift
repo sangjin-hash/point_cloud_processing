@@ -72,6 +72,9 @@ class TrueDepthCameraController : UIViewController {
         
     
     @objc private func dismissPreviewedScanTapped() {
+        let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory())
+        let targetDirectory = tempDirectoryURL.appendingPathComponent("Frame")
+        try! FileManager.default.removeItem(at: targetDirectory)
         dismiss(animated: false)
     }
     
