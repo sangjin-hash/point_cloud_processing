@@ -57,7 +57,7 @@ import Vision
     
     private let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory())
     private var tempFrameDirectoryURL : URL? = nil
-    private var frameIndex = 0
+    //private var frameIndex = 0
     
     /** A convenience initializer that simply calls init() and sets the delegate */
     @objc public convenience init(delegate: ScanningViewControllerDelegate) {
@@ -98,7 +98,7 @@ import Vision
     @objc public func stopScanning(reason: ScanningTerminationReason) {
         guard _state == _State.scanning else { return }
         
-        self.frameIndex = 0
+        //self.frameIndex = 0
         
         _state = .default
         _latestViewMatrix = matrix_identity_float4x4
@@ -206,8 +206,8 @@ import Vision
             flipButton.heightAnchor.constraint(equalToConstant: 50),
         ])
         
-        self.tempFrameDirectoryURL = tempDirectoryURL.appendingPathComponent("Frame")
-        try! FileManager.default.createDirectory(at: self.tempFrameDirectoryURL!, withIntermediateDirectories: true, attributes: nil)
+//        self.tempFrameDirectoryURL = tempDirectoryURL.appendingPathComponent("Frame")
+//        try! FileManager.default.createDirectory(at: self.tempFrameDirectoryURL!, withIntermediateDirectories: true, attributes: nil)
     }
     
     override open func viewDidAppear(_ animated: Bool) {
@@ -294,15 +294,15 @@ import Vision
         let pointCloud: SCPointCloud
         
         if isScanning {
-            let ciImage = CIImage(cvPixelBuffer: colorBuffer)
-            let context = CIContext(options: nil)
-            guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
-            let uiImage = UIImage(cgImage: cgImage)
-            if let data = uiImage.jpegData(compressionQuality: 0.8) {
-                let fileName = self.tempFrameDirectoryURL!.appendingPathComponent("Frame_\(self.frameIndex).jpeg")
-                try? data.write(to: fileName)
-                self.frameIndex += 1
-            }
+//            let ciImage = CIImage(cvPixelBuffer: colorBuffer)
+//            let context = CIContext(options: nil)
+//            guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+//            let uiImage = UIImage(cgImage: cgImage)
+//            if let data = uiImage.jpegData(compressionQuality: 0.8) {
+//                let fileName = self.tempFrameDirectoryURL!.appendingPathComponent("Frame_\(self.frameIndex).jpeg")
+//                try? data.write(to: fileName)
+//                self.frameIndex += 1
+//            }
             
             pointCloud = _reconstructionManager.buildPointCloud()
         } else {

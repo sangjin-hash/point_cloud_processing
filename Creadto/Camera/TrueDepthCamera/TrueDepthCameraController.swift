@@ -41,7 +41,6 @@ class TrueDepthCameraController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: .sendDirectoryData, object: nil)
-        // loadScene()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -72,9 +71,9 @@ class TrueDepthCameraController : UIViewController {
         
     
     @objc private func dismissPreviewedScanTapped() {
-        let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory())
-        let targetDirectory = tempDirectoryURL.appendingPathComponent("Frame")
-        try! FileManager.default.removeItem(at: targetDirectory)
+//        let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory())
+//        let targetDirectory = tempDirectoryURL.appendingPathComponent("Frame")
+//        try! FileManager.default.removeItem(at: targetDirectory)
         dismiss(animated: false)
     }
     
@@ -82,30 +81,6 @@ class TrueDepthCameraController : UIViewController {
         saveScene(scene: scenePreviewVC!.scScene, thumbnail: scenePreviewVC?.renderedSceneImage)
         dismiss(animated: true)
     }
-    
-    // MARK: - Scene I/O
-    
-//    private func loadScene() {
-//        var isDir:ObjCBool = true
-//        if !FileManager.default.fileExists(atPath: directoryURL.path, isDirectory: &isDir) {
-//            do {
-//                try FileManager.default.createDirectory(atPath: directoryURL.path,
-//                                                        withIntermediateDirectories: false)
-//            } catch let e as NSError {
-//                print(e.localizedDescription)
-//            }
-//        }
-//
-//        if
-//            FileManager.default.fileExists(atPath: sceneGltfURL.path),
-//            let gltfAttributes = try? FileManager.default.attributesOfItem(atPath: sceneGltfURL.path),
-//            let dateCreated = gltfAttributes[FileAttributeKey.creationDate] as? Date
-//        {
-//            lastScene = SCScene(gltfAtPath: sceneGltfURL.path)
-//            lastSceneDate = dateCreated
-//            lastSceneThumbnail = UIImage(contentsOfFile: sceneThumbnailURL.path)
-//        }
-//    }
     
     private func saveScene(scene: SCScene, thumbnail: UIImage?) {
         if plyCounter == 0 && directoryURL == nil { createDirectory() }
@@ -147,6 +122,19 @@ class TrueDepthCameraController : UIViewController {
                         for __file in __contents {
                             let _targetURL = targetURL.appendingPathComponent(__file)
                             if(_targetURL.pathExtension == "ply"){
+                                // add comment direction in ply
+                                do {
+                                    var plyString = try String(contentsOf: _targetURL, encoding: .utf8)
+                                    var lines = plyString.components(separatedBy: .newlines)
+                                    
+                                    lines.removeAll { line in
+                                        line.hasPrefix("comment")
+                                    }
+                                    lines.insert("comment direction Face", at: 2)
+                                    plyString = lines.joined(separator: "\n")
+                                    try plyString.write(to: _targetURL, atomically: true, encoding: .utf8)
+                                }
+                                
                                 if(__file == "temp-point-cloud-mesh.ply") {
                                     try fileManager.moveItem(at: _targetURL, to: directoryURL!.appendingPathComponent(__file))
                                 } else {
@@ -163,11 +151,10 @@ class TrueDepthCameraController : UIViewController {
                                     self.convertedScene.rootNode.addChildNode(cloud)
                                     
                                     self.saveConvertedScene(path: sceneSCNURL!.path)
+                                    try fileManager.moveItem(at: _targetURL, to: directoryURL!.appendingPathComponent(__file))
                                 }
                             }
-                            
                         }
-                        
                     }
                 }
             }

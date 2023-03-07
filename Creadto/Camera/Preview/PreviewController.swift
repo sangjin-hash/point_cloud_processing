@@ -99,6 +99,26 @@ class PreviewController: UIViewController {
         try? FileManager.default.removeItem(at: mainController.renderer.savedCloudURLs.last!)
         mainController.renderer.savedCloudURLs.removeLast()
         
+        // MARK: Delete png
+        var fileName = ""
+        switch(mainController.plyCounter % 4){
+        case 0 :
+            fileName = "Front"
+            break
+        case 1:
+            fileName = "Left"
+            break
+        case 2:
+            fileName = "Back"
+            break
+        case 3:
+            fileName = "Right"
+            break
+        default :
+            break
+        }
+        try? FileManager.default.removeItem(at: mainController.renderer.directoryURL!.appendingPathComponent("\(fileName).png"))
+        
         if(mainController.plyCounter == 0){
             try? FileManager.default.removeItem(at: mainController.renderer.directoryURL!)
             mainController.renderer.directoryURL = nil

@@ -146,6 +146,7 @@ final class MainController: UIViewController, ARSessionDelegate {
                 self.setShowSceneButtonStyle(isScanning: true)
             } else {
                 self.setShowSceneButtonStyle(isScanning: false)
+                self.renderer.captureFrame(plyCounter: plyCounter)
                 let format = selectedFormat
                     .lowercased(with: .none)
                     .split(separator: " ")
@@ -266,15 +267,6 @@ extension MainController {
     }
     
     private func goToFrontTrueDepthCameraView() {
-//        guard let svc = self.storyboard?.instantiateViewController(withIdentifier: "TrueDepth") else {
-//                return
-//            }
-//        svc.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
-//        NotificationCenter.default.post(name: .sendDirectoryData,
-//                                        object: nil,
-//                                        userInfo: [NotificationKey.plyCounter : plyCounter, NotificationKey.directoryURL : renderer.directoryURL])
-//        self.present(svc, animated: true)
-        
         let trueDepthCameraController = TrueDepthCameraController()
         present(trueDepthCameraController, animated: true, completion: nil)
         NotificationCenter.default.post(name: .sendDirectoryData,
