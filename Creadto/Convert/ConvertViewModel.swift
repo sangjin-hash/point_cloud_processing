@@ -42,6 +42,8 @@ class ConvertViewModel : ObservableObject {
     private func checkPLYFile(fileURL : URL) -> Bool {
         if(fileURL.pathExtension != "ply"){
             return false
+        } else if(fileURL.lastPathComponent == "temp-point-cloud.ply") {
+            return false
         } else {
             return true
         }

@@ -118,8 +118,9 @@ class PreviewController: UIViewController {
             break
         }
         try? FileManager.default.removeItem(at: mainController.renderer.directoryURL!.appendingPathComponent("\(fileName).png"))
+        try? FileManager.default.removeItem(at: mainController.renderer.directoryURL!.appendingPathComponent("capture_\(fileName).png"))
         
-        if(mainController.plyCounter == 0){
+        if(mainController.plyCounter % 4 == 0){
             try? FileManager.default.removeItem(at: mainController.renderer.directoryURL!)
             mainController.renderer.directoryURL = nil
         }
@@ -133,8 +134,8 @@ class PreviewController: UIViewController {
         let fileName = mainController.fileNameList[mainController.plyCounter % 4].dropLast()
         let previewImageURL = mainController.renderer.directoryURL!.appendingPathComponent("\(fileName).png")
         try? pngData!.write(to: previewImageURL)
+        //if(mainController.plyCounter % 4 == 0 && mainController.plyCounter > 0) { mainController.renderer.createDirectory() }
         mainController.plyCounter += 1
-        if(mainController.plyCounter % 4 == 0) { mainController.renderer.directoryURL = nil }
         dismiss(animated: true)
     }
     

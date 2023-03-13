@@ -139,7 +139,7 @@ final class MainController: UIViewController, ARSessionDelegate {
         case showSceneButton:
             renderer.isInViewSceneMode = !renderer.isInViewSceneMode
             if !renderer.isInViewSceneMode {
-                if plyCounter % 4 == 0 && renderer.directoryURL == nil {
+                if plyCounter % 4 == 0 {
                     renderer.createDirectory()
                 }
                 renderer.clearParticles()
